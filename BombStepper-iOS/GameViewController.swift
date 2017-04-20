@@ -15,23 +15,21 @@ class GameViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        presentMenuScene()
+        presentGameScene()
     }
 
-    func presentMenuScene() {
+    // TODO: Change to MenuScene
 
-        let view = self.view as! SKView
-        view.ignoresSiblingOrder = true
-        view.showsFPS = true
-        view.showsNodeCount = true
+    func presentGameScene() {
 
-        // TODO: Change to MenuScene
-        let scene = GKScene(fileNamed: "GameScene")!
-        let sceneNode = scene.rootNode as! GameScene
-        sceneNode.size = view.bounds.size
-        sceneNode.scaleMode = .aspectFill
+        let skView = self.view as! SKView
+        skView.ignoresSiblingOrder = true
+        skView.showsFPS = true
+        skView.showsNodeCount = true
 
-        view.presentScene(sceneNode)
+        let scene = SKScene(fileNamed: "GameScene")!
+        scene.scaleMode = .resizeFill
+        skView.presentScene(scene)
     }
     
     @IBAction func leaveGame(_ sender: UIButton) {
