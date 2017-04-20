@@ -11,6 +11,7 @@ import SpriteKit
 
 private let pressedAlpha: CGFloat = 0.15
 private let releasedAlpha: CGFloat = 0.04
+private let swipeSpeedThreshold = 700.0    // TODO: Make this a preference
 
 
 /**
@@ -40,7 +41,95 @@ class ControllerNode: SKNode {
         layoutButtons(for: sceneSize)
     }
 
-    private func layoutButtons(for sceneSize: CGSize) {
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+
+    final private class TouchData {
+        let node: SKShapeNode
+        var speeds: [Double] = []
+        var lastTime: TimeInterval
+        var lastY: CGFloat
+
+        init(node: SKShapeNode, time: TimeInterval, y: CGFloat) {
+            self.node = node
+            self.lastTime = time
+            self.lastY = y
+        }
+
+        func recordSpeed(time: TimeInterval, y: CGFloat) {
+            let speed = Double(y - lastY) / (time - lastTime)
+            lastTime = time
+            lastY = y
+            if speeds.count >= 4 { speeds.removeFirst() }
+            speeds.append(speed)
+        }
+
+        func touchIsSwipingDown() -> Bool {
+            guard speeds.count >= 4 else { return false }
+            return speeds.reduce(0, +) / Double(speeds.count) < -swipeSpeedThreshold
+        }
+    }
+
+
+    private var touchesData = [UITouch : TouchData]()
+
+    private func touchDown(_ touch: UITouch) {
+        let location = touch.location(in: self)
+        if let node = nodes(at: location).first as? SKShapeNode {
+            touchesData[touch] = TouchData(node: node, time: touch.timestamp, y: location.y)
+            node.alpha = pressedAlpha
+        }
+    }
+
+    private func touchMoved(_ touch: UITouch) {
+        if let data = touchesData[touch] {
+            data.recordSpeed(time: touch.timestamp, y: touch.location(in: self).y)
+            if data.touchIsSwipingDown() {
+                print("Report swiping down", data.node.name!)
+                touchUp(touch)
+            }
+        }
+    }
+
+    private func touchUp(_ touch: UITouch) {
+        if let node = touchesData.removeValue(forKey: touch)?.node {
+            node.alpha = releasedAlpha
+        }
+    }
+
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchDown)
+    }
+
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchMoved)
+    }
+
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchUp)
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchUp)
+    }
+}
+
+
+
+fileprivate extension ControllerNode {
+
+    class func regularButton(width: Int, name: String) -> SKShapeNode {
+        let node = SKShapeNode(rect: CGRect(x: -width/2, y: -width/2, width: width, height: width), cornerRadius: 4)
+        node.name = name
+        node.fillColor = .white
+        node.alpha = releasedAlpha
+        node.lineWidth = 0
+        return node
+    }
+
+    func layoutButtons(for sceneSize: CGSize) {
         let margin = CGFloat(2)
         let unit = CGFloat(Int(sceneSize.height / 8)) + margin   // let button be 2 x 2, and add margin
 
@@ -64,59 +153,7 @@ class ControllerNode: SKNode {
         zip(buttons, p).forEach { $0.position = $1 }
         buttons[0 ..< 6].forEach { $0.zRotation = -.pi/8 }
         buttons[6 ..< 12].forEach { $0.zRotation = .pi/8 }
-
-
-//        node.zRotation = -.pi/8
-
-
-        // ...
     }
-
-    var touchedNodes = [UITouch : SKShapeNode]()
-
-    func addTouchedNodes(for touch: UITouch) {
-        if let node = nodes(at:(touch.location(in: self))).first as? SKShapeNode {
-            touchedNodes[touch] = node
-            node.alpha = pressedAlpha
-        }
-        print("add:", touchedNodes.count)
-    }
-
-    func removeTouchedNodes(for touch: UITouch) {
-        if let node = touchedNodes.removeValue(forKey: touch) {
-            node.alpha = releasedAlpha
-        }
-        print("remove:", touchedNodes.count)
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(addTouchedNodes)
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(removeTouchedNodes)
-    }
-
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(removeTouchedNodes)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    private class func regularButton(width: Int, name: String) -> SKShapeNode {
-        let node = SKShapeNode(rect: CGRect(x: -width/2, y: -width/2, width: width, height: width), cornerRadius: 4)
-        node.name = name
-        node.fillColor = .white
-        node.alpha = releasedAlpha
-        node.lineWidth = 0
-        return node
-    }
-
 }
 
 
