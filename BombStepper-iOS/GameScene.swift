@@ -10,6 +10,11 @@ import SpriteKit
 import GameplayKit
 
 class GameScene: SKScene {
+
+
+    private var dasManager: DASManager!
+    private var testNode: SKShapeNode?
+    
     
     var entities = [GKEntity]()
     var graphs = [String : GKGraph]()
@@ -19,6 +24,21 @@ class GameScene: SKScene {
     private var spinnyNode : SKShapeNode?
     
     override func sceneDidLoad() {
+
+        if testNode == nil {
+            testNode = SKShapeNode(rect: CGRect(x: -50, y: -50, width: 100, height: 100))
+            testNode!.fillColor = .tileL
+            addChild(testNode!)
+        }
+
+        dasManager = DASManager(das: 8, performDAS: { [weak testNode] action in
+            let offset: CGFloat
+            switch action {
+            case .left: offset = -10
+            case .right: offset = 10
+            }
+            testNode?.position.x += offset
+        })
 
         self.lastUpdateTime = 0
         
@@ -31,7 +51,7 @@ class GameScene: SKScene {
         
         // Create shape node to use during mouse interaction
         let w = (self.size.width + self.size.height) * 0.05
-        self.spinnyNode = SKShapeNode.init(rectOf: CGSize.init(width: w, height: w), cornerRadius: w * 0.3)
+        self.spinnyNode = SKShapeNode.init(rectOf: CGSize(width: w, height: w), cornerRadius: w * 0.3)
         
         if let spinnyNode = self.spinnyNode {
             spinnyNode.lineWidth = 2.5
@@ -45,10 +65,18 @@ class GameScene: SKScene {
     
     
     func touchDown(atPoint pos : CGPoint) {
+
+        if pos.x < 0 {
+            dasManager.inputBegan(.left)
+        }
+        else {
+            dasManager.inputBegan(.right)
+        }
+        
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
             n.position = pos
             n.strokeColor = SKColor.green
-            self.addChild(n)
+            addChild(n)
         }
     }
     
@@ -56,18 +84,24 @@ class GameScene: SKScene {
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
             n.position = pos
             n.strokeColor = SKColor.blue
-            self.addChild(n)
+            addChild(n)
         }
     }
     
     func touchUp(atPoint pos : CGPoint) {
+        if pos.x < 0 {
+            dasManager.inputEnded(.left)
+        }
+        else {
+            dasManager.inputEnded(.right)
+        }
         if let n = self.spinnyNode?.copy() as! SKShapeNode? {
             n.position = pos
             n.strokeColor = SKColor.red
             self.addChild(n)
         }
     }
-    
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         if let label = self.label {
             label.run(SKAction.init(named: "Pulse")!, withKey: "fadeInOut")
@@ -75,7 +109,7 @@ class GameScene: SKScene {
         
         for t in touches { self.touchDown(atPoint: t.location(in: self)) }
     }
-    
+
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         for t in touches { self.touchMoved(toPoint: t.location(in: self)) }
     }
@@ -90,6 +124,9 @@ class GameScene: SKScene {
     
     
     override func update(_ currentTime: TimeInterval) {
+
+        dasManager.update()
+        
         // Called before each frame is rendered
         
         // Initialize _lastUpdateTime if it has not already been
@@ -108,3 +145,10 @@ class GameScene: SKScene {
         self.lastUpdateTime = currentTime
     }
 }
+
+
+
+
+
+
+

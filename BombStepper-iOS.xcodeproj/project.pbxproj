@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		DA0ED92A1EA7A5EA008F3C61 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0ED9291EA7A5EA008F3C61 /* Constants.swift */; };
+		DA0ED92C1EA7A7C8008F3C61 /* Tiles.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0ED92B1EA7A7C8008F3C61 /* Tiles.swift */; };
+		DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0ED92D1EA7AA11008F3C61 /* MenuViewController.swift */; };
+		DA0ED9301EA7AB8E008F3C61 /* Convenience.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0ED92F1EA7AB8E008F3C61 /* Convenience.swift */; };
+		DA0ED9321EA7B71A008F3C61 /* Tetromino.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */; };
+		DA0ED9341EA7C82C008F3C61 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DA0ED9331EA7C82C008F3C61 /* Settings.bundle */; };
 		DA4D28F61EA4F6C5008F3BDF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D28F51EA4F6C5008F3BDF /* AppDelegate.swift */; };
 		DA4D28F81EA4F6C5008F3BDF /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = DA4D28F71EA4F6C5008F3BDF /* GameScene.sks */; };
 		DA4D28FA1EA4F6C5008F3BDF /* Actions.sks in Resources */ = {isa = PBXBuildFile; fileRef = DA4D28F91EA4F6C5008F3BDF /* Actions.sks */; };
@@ -16,6 +22,8 @@
 		DA4D29031EA4F6C5008F3BDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29021EA4F6C5008F3BDF /* Assets.xcassets */; };
 		DA4D29061EA4F6C5008F3BDF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29041EA4F6C5008F3BDF /* LaunchScreen.storyboard */; };
 		DA4D29111EA4F6C5008F3BDF /* BombStepper_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */; };
+		DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8324A91EA7F3060076AF4E /* DASManager.swift */; };
+		DAFBC5751EA8BBF200B21F7C /* UserInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFBC5741EA8BBF200B21F7C /* UserInput.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -29,7 +37,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		DA4D28F21EA4F6C5008F3BDF /* BombStepper-iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "BombStepper-iOS.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		DA0ED9291EA7A5EA008F3C61 /* Constants.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		DA0ED92B1EA7A7C8008F3C61 /* Tiles.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tiles.swift; sourceTree = "<group>"; };
+		DA0ED92D1EA7AA11008F3C61 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
+		DA0ED92F1EA7AB8E008F3C61 /* Convenience.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Convenience.swift; sourceTree = "<group>"; };
+		DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tetromino.swift; sourceTree = "<group>"; };
+		DA0ED9331EA7C82C008F3C61 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		DA4D28F21EA4F6C5008F3BDF /* BombStepper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BombStepper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA4D28F51EA4F6C5008F3BDF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DA4D28F71EA4F6C5008F3BDF /* GameScene.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = GameScene.sks; sourceTree = "<group>"; };
 		DA4D28F91EA4F6C5008F3BDF /* Actions.sks */ = {isa = PBXFileReference; lastKnownFileType = file.sks; path = Actions.sks; sourceTree = "<group>"; };
@@ -42,6 +56,8 @@
 		DA4D290C1EA4F6C5008F3BDF /* BombStepper-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BombStepper-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombStepper_iOSTests.swift; sourceTree = "<group>"; };
 		DA4D29121EA4F6C5008F3BDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DA8324A91EA7F3060076AF4E /* DASManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DASManager.swift; sourceTree = "<group>"; };
+		DAFBC5741EA8BBF200B21F7C /* UserInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInput.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -74,7 +90,7 @@
 		DA4D28F31EA4F6C5008F3BDF /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				DA4D28F21EA4F6C5008F3BDF /* BombStepper-iOS.app */,
+				DA4D28F21EA4F6C5008F3BDF /* BombStepper.app */,
 				DA4D290C1EA4F6C5008F3BDF /* BombStepper-iOSTests.xctest */,
 			);
 			name = Products;
@@ -88,9 +104,17 @@
 				DA4D28F91EA4F6C5008F3BDF /* Actions.sks */,
 				DA4D28FB1EA4F6C5008F3BDF /* GameScene.swift */,
 				DA4D28FD1EA4F6C5008F3BDF /* GameViewController.swift */,
+				DA0ED92D1EA7AA11008F3C61 /* MenuViewController.swift */,
+				DA0ED9291EA7A5EA008F3C61 /* Constants.swift */,
+				DA0ED92F1EA7AB8E008F3C61 /* Convenience.swift */,
+				DA8324A91EA7F3060076AF4E /* DASManager.swift */,
+				DAFBC5741EA8BBF200B21F7C /* UserInput.swift */,
+				DA0ED92B1EA7A7C8008F3C61 /* Tiles.swift */,
+				DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */,
 				DA4D28FF1EA4F6C5008F3BDF /* Main.storyboard */,
 				DA4D29021EA4F6C5008F3BDF /* Assets.xcassets */,
 				DA4D29041EA4F6C5008F3BDF /* LaunchScreen.storyboard */,
+				DA0ED9331EA7C82C008F3C61 /* Settings.bundle */,
 				DA4D29071EA4F6C5008F3BDF /* Info.plist */,
 			);
 			path = "BombStepper-iOS";
@@ -122,7 +146,7 @@
 			);
 			name = "BombStepper-iOS";
 			productName = "BombStepper-iOS";
-			productReference = DA4D28F21EA4F6C5008F3BDF /* BombStepper-iOS.app */;
+			productReference = DA4D28F21EA4F6C5008F3BDF /* BombStepper.app */;
 			productType = "com.apple.product-type.application";
 		};
 		DA4D290B1EA4F6C5008F3BDF /* BombStepper-iOSTests */ = {
@@ -194,6 +218,7 @@
 				DA4D28F81EA4F6C5008F3BDF /* GameScene.sks in Resources */,
 				DA4D29031EA4F6C5008F3BDF /* Assets.xcassets in Resources */,
 				DA4D29061EA4F6C5008F3BDF /* LaunchScreen.storyboard in Resources */,
+				DA0ED9341EA7C82C008F3C61 /* Settings.bundle in Resources */,
 				DA4D28FA1EA4F6C5008F3BDF /* Actions.sks in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -212,9 +237,16 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */,
+				DAFBC5751EA8BBF200B21F7C /* UserInput.swift in Sources */,
 				DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */,
+				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,
+				DA0ED92C1EA7A7C8008F3C61 /* Tiles.swift in Sources */,
+				DA0ED9321EA7B71A008F3C61 /* Tetromino.swift in Sources */,
+				DA0ED9301EA7AB8E008F3C61 /* Convenience.swift in Sources */,
 				DA4D28FE1EA4F6C5008F3BDF /* GameViewController.swift in Sources */,
 				DA4D28F61EA4F6C5008F3BDF /* AppDelegate.swift in Sources */,
+				DA0ED92A1EA7A5EA008F3C61 /* Constants.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -358,7 +390,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.mathemusician.BombStepper-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = BombStepper;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Debug;
@@ -372,7 +404,7 @@
 				IPHONEOS_DEPLOYMENT_TARGET = 10.3;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "net.mathemusician.BombStepper-iOS";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_NAME = BombStepper;
 				SWIFT_VERSION = 3.0;
 			};
 			name = Release;
@@ -426,6 +458,7 @@
 				DA4D29171EA4F6C5008F3BDF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		DA4D29181EA4F6C5008F3BDF /* Build configuration list for PBXNativeTarget "BombStepper-iOSTests" */ = {
 			isa = XCConfigurationList;
@@ -434,6 +467,7 @@
 				DA4D291A1EA4F6C5008F3BDF /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
