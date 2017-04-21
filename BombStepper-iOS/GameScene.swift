@@ -51,7 +51,7 @@ final class GameScene: SKScene {
     }
 
     private func setupDASManager() {
-        dasManager = DASManager(das: 8, performDAS: { direction in
+        dasManager = DASManager(performDAS: { direction in
             print("DAS", direction)
         })
     }

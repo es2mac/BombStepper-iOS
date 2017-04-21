@@ -67,7 +67,7 @@ final class ControllerNode: SKNode {
 
 
     final private class TouchData {
-        static var swipeDownThreshold = 1250.0
+        static var swipeDownThreshold = 1000.0
 
         let node: SKShapeNode
         var speeds: [Double] = []

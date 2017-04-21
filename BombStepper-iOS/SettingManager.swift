@@ -46,7 +46,7 @@ final class SettingManager {
         fileprivate static let initialValuesDictionary: [String : Any] =
             [ SettingKey.dasValue : 9,
               SettingKey.swipeDropEnabled : true,
-              SettingKey.swipeDownThreshold : 1250.0,
+              SettingKey.swipeDownThreshold : 1000.0,
               SettingKey.button00 : Button.hardDrop.rawValue,
               SettingKey.button01 : Button.hardDrop.rawValue,
               SettingKey.button02 : Button.moveLeft.rawValue,

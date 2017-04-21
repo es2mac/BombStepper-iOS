@@ -69,26 +69,26 @@
 			<string>Minimum Swipe Speed</string>
 			<key>Values</key>
 			<array>
-				<integer>500</integer>
-				<integer>750</integer>
+				<integer>400</integer>
+				<integer>600</integer>
+				<integer>800</integer>
 				<integer>1000</integer>
-				<integer>1250</integer>
-				<integer>1500</integer>
-				<integer>1750</integer>
-				<integer>2000</integer>
+				<integer>1200</integer>
+				<integer>1400</integer>
+				<integer>1600</integer>
 			</array>
 			<key>Titles</key>
 			<array>
-				<string>500</string>
-				<string>750</string>
+				<string>400</string>
+				<string>600</string>
+				<string>800</string>
 				<string>1000</string>
-				<string>1250</string>
-				<string>1500</string>
-				<string>1750</string>
-				<string>2000</string>
+				<string>1200</string>
+				<string>1400</string>
+				<string>1600</string>
 			</array>
 			<key>DefaultValue</key>
-			<integer>1250</integer>
+			<integer>1000</integer>
 			<key>Key</key>
 			<string>swipeDownThreshold</string>
 		</dict>
