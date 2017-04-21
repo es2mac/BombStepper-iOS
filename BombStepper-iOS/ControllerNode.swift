@@ -38,7 +38,15 @@ final class ControllerNode: SKNode {
         buttons.forEach(addChild)
         layoutButtons(for: sceneSize)
 
-        settingManager.updateSettingsAction = { print($0) }
+        settingManager.updateSettingsAction = { [weak self] in self?.settings = $0 }
+
+        NotificationCenter.default.addObserver(forName: .UIApplicationWillResignActive, object: nil, queue: nil) { [weak self] _ in
+            self?.stopAllTouches()
+        }
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -47,6 +55,7 @@ final class ControllerNode: SKNode {
 
     fileprivate let buttons: [SKShapeNode]
     private let settingManager: SettingManager
+    private var settings = SettingManager.Settings.initial
 
     final private class TouchData {
         let node: SKShapeNode
@@ -100,6 +109,10 @@ final class ControllerNode: SKNode {
         if let node = touchesData.removeValue(forKey: touch)?.node {
             node.alpha = Alpha.releasedButton
         }
+    }
+
+    private func stopAllTouches() {
+        Array(touchesData.keys).forEach(touchUp)
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

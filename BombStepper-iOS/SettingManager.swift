@@ -9,12 +9,23 @@
 import Foundation
 
 
+enum Button: String {
+    case moveLeft    = "moveLeft"
+    case moveRight   = "moveRight"
+    case hardDrop    = "hardDrop"
+    case softDrop    = "softDrop"
+    case hold        = "hold"
+    case rotateLeft  = "rotateLeft"
+    case rotateRight = "rotateRight"
+    case none        = "none"
+}
+
 
 final class SettingManager {
 
     struct Settings {
 
-        enum SettingKey {
+        private enum SettingKey {
             static let dasValue           = "dasValue"
             static let swipeDropEnabled   = "swipeDropEnabled"
             static let swipeDownThreshold = "swipeDownThreshold"
@@ -32,68 +43,60 @@ final class SettingManager {
             static let button11           = "button11"
         }
 
-        enum ButtonValue {
-            static let moveLeft    = "moveLeft"
-            static let moveRight   = "moveRight"
-            static let hardDrop    = "hardDrop"
-            static let softDrop    = "softDrop"
-            static let hold        = "hold"
-            static let rotateLeft  = "rotateLeft"
-            static let rotateRight = "rotateRight"
-            static let none        = "none"
-        }
-
         fileprivate static let initialValuesDictionary: [String : Any] =
             [ SettingKey.dasValue : 9,
               SettingKey.swipeDropEnabled : true,
               SettingKey.swipeDownThreshold : 1250.0,
-              SettingKey.button00 : ButtonValue.hardDrop,
-              SettingKey.button01 : ButtonValue.hardDrop,
-              SettingKey.button02 : ButtonValue.moveLeft,
-              SettingKey.button03 : ButtonValue.moveRight,
-              SettingKey.button04 : ButtonValue.softDrop,
-              SettingKey.button05 : ButtonValue.softDrop,
-              SettingKey.button06 : ButtonValue.hold,
-              SettingKey.button07 : ButtonValue.hold,
-              SettingKey.button08 : ButtonValue.rotateLeft,
-              SettingKey.button09 : ButtonValue.rotateRight,
-              SettingKey.button10 : ButtonValue.none,
-              SettingKey.button11 : ButtonValue.none ]
+              SettingKey.button00 : Button.hardDrop.rawValue,
+              SettingKey.button01 : Button.hardDrop.rawValue,
+              SettingKey.button02 : Button.moveLeft.rawValue,
+              SettingKey.button03 : Button.moveRight.rawValue,
+              SettingKey.button04 : Button.softDrop.rawValue,
+              SettingKey.button05 : Button.softDrop.rawValue,
+              SettingKey.button06 : Button.hold.rawValue,
+              SettingKey.button07 : Button.hold.rawValue,
+              SettingKey.button08 : Button.rotateLeft.rawValue,
+              SettingKey.button09 : Button.rotateRight.rawValue,
+              SettingKey.button10 : Button.none.rawValue,
+              SettingKey.button11 : Button.none.rawValue ]
         
 
         let dasValue: Int
         let swipeDropEnabled: Bool
         let swipeDownThreshold: Double
-        let button00: String
-        let button01: String
-        let button02: String
-        let button03: String
-        let button04: String
-        let button05: String
-        let button06: String
-        let button07: String
-        let button08: String
-        let button09: String
-        let button10: String
-        let button11: String
+        let button00: Button
+        let button01: Button
+        let button02: Button
+        let button03: Button
+        let button04: Button
+        let button05: Button
+        let button06: Button
+        let button07: Button
+        let button08: Button
+        let button09: Button
+        let button10: Button
+        let button11: Button
+
+
+        static var initial = Settings(dictionary: initialValuesDictionary)
 
 
         init(dictionary: [String : Any]) {
             dasValue = dictionary[SettingKey.dasValue] as! Int
             swipeDropEnabled = dictionary[SettingKey.swipeDropEnabled] as! Bool
             swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold] as! Double
-            button00 = dictionary[SettingKey.button00] as! String
-            button01 = dictionary[SettingKey.button01] as! String
-            button02 = dictionary[SettingKey.button02] as! String
-            button03 = dictionary[SettingKey.button03] as! String
-            button04 = dictionary[SettingKey.button04] as! String
-            button05 = dictionary[SettingKey.button05] as! String
-            button06 = dictionary[SettingKey.button06] as! String
-            button07 = dictionary[SettingKey.button07] as! String
-            button08 = dictionary[SettingKey.button08] as! String
-            button09 = dictionary[SettingKey.button09] as! String
-            button10 = dictionary[SettingKey.button10] as! String
-            button11 = dictionary[SettingKey.button11] as! String
+            button00 = Button(rawValue: dictionary[SettingKey.button00] as! String)!
+            button01 = Button(rawValue: dictionary[SettingKey.button01] as! String)!
+            button02 = Button(rawValue: dictionary[SettingKey.button02] as! String)!
+            button03 = Button(rawValue: dictionary[SettingKey.button03] as! String)!
+            button04 = Button(rawValue: dictionary[SettingKey.button04] as! String)!
+            button05 = Button(rawValue: dictionary[SettingKey.button05] as! String)!
+            button06 = Button(rawValue: dictionary[SettingKey.button06] as! String)!
+            button07 = Button(rawValue: dictionary[SettingKey.button07] as! String)!
+            button08 = Button(rawValue: dictionary[SettingKey.button08] as! String)!
+            button09 = Button(rawValue: dictionary[SettingKey.button09] as! String)!
+            button10 = Button(rawValue: dictionary[SettingKey.button10] as! String)!
+            button11 = Button(rawValue: dictionary[SettingKey.button11] as! String)!
         }
     }
 
@@ -115,17 +118,17 @@ final class SettingManager {
         NotificationCenter.default.removeObserver(self)
     }
 
-    var temporarilyIgnoreChangeNotifications = false
+    private var temporarilyIgnoreChangeNotifications = false
+
     private func settingsDidChange(notification: Notification) {
         guard let defaults = notification.object as? UserDefaults else { return }
 
         if temporarilyIgnoreChangeNotifications == false {
             fetchSettings(from: defaults)
-            print(defaults)
         }
     }
 
-    // Fetch settings, and if missing defaults, set default settings
+    // Fetch settings, and if missing defaults, set to initial value
     private func fetchSettings(from defaults: UserDefaults = .standard) {
         DispatchQueue.global(qos: .background).async {
             self.temporarilyIgnoreChangeNotifications = true
@@ -149,8 +152,6 @@ final class SettingManager {
                 dictionary[key] = initialValue
                 defaults.set(initialValue, forKey: key)
                 defaultsWritten = true
-                
-                print("Setting", initialValue, "for", key)
             }
         }
         
