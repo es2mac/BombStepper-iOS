@@ -9,9 +9,6 @@
 import SpriteKit
 
 
-private let swipeSpeedThreshold = 1250.0    // TODO: Take this from preference
-
-
 /**
  Buttons layout:
  0 1        6  7
@@ -55,9 +52,13 @@ final class ControllerNode: SKNode {
 
     fileprivate let buttons: [SKShapeNode]
     private let settingManager: SettingManager
-    private var settings = SettingManager.Settings.initial
+    private var settings = SettingManager.Settings.initial {
+        didSet { TouchData.swipeDownThreshold = settings.swipeDownThreshold }
+    }
 
     final private class TouchData {
+        static var swipeDownThreshold = 1250.0
+
         let node: SKShapeNode
         var speeds: [Double] = []
         var lastTime: TimeInterval
@@ -79,7 +80,7 @@ final class ControllerNode: SKNode {
 
         func touchIsSwipingDown() -> Bool {
             guard speeds.count >= 4 else { return false }
-            return speeds.reduce(0, +) / Double(speeds.count) < -swipeSpeedThreshold
+            return speeds.reduce(0, +) / Double(speeds.count) < -TouchData.swipeDownThreshold
         }
     }
 
