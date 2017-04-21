@@ -60,6 +60,7 @@ final class ControllerNode: SKNode {
     private let settingManager: SettingManager
     private var settings: SettingManager.Settings {
         didSet {
+            TouchData.swipeDropEnabled = settings.swipeDropEnabled
             TouchData.swipeDownThreshold = settings.swipeDownThreshold
             buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
         }
@@ -67,6 +68,7 @@ final class ControllerNode: SKNode {
 
 
     final private class TouchData {
+        static var swipeDropEnabled = true
         static var swipeDownThreshold = 1000.0
 
         let node: SKShapeNode
@@ -81,6 +83,8 @@ final class ControllerNode: SKNode {
         }
 
         func recordSpeed(time: TimeInterval, y: CGFloat) {
+            guard TouchData.swipeDropEnabled else { return }
+
             let speed = Double(y - lastY) / (time - lastTime)
             lastTime = time
             lastY = y

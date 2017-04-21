@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>StringsTable</key>
+	<string>Controls</string>
+	<key>PreferenceSpecifiers</key>
+	<array>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Left Button Group</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Upper Left</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>hardDrop</string>
+			<key>Key</key>
+			<string>button00</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Upper Right</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>hardDrop</string>
+			<key>Key</key>
+			<string>button01</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Middle Left</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>moveLeft</string>
+			<key>Key</key>
+			<string>button02</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Middle Right</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>moveRight</string>
+			<key>Key</key>
+			<string>button03</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Bottom Left</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>softDrop</string>
+			<key>Key</key>
+			<string>button04</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Bottom Right</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>softDrop</string>
+			<key>Key</key>
+			<string>button05</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Right Button Group</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Upper Left</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>hold</string>
+			<key>Key</key>
+			<string>button06</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Upper Right</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>hold</string>
+			<key>Key</key>
+			<string>button07</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Middle Left</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>rotateLeft</string>
+			<key>Key</key>
+			<string>button08</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Middle Right</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>rotateRight</string>
+			<key>Key</key>
+			<string>button09</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Bottom Left</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>none</string>
+			<key>Key</key>
+			<string>button10</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Bottom Right</string>
+			<key>Values</key>
+			<array>
+				<string>moveLeft</string>
+				<string>moveRight</string>
+				<string>hardDrop</string>
+				<string>softDrop</string>
+				<string>hold</string>
+				<string>rotateLeft</string>
+				<string>rotateRight</string>
+				<string>none</string>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Move Left</string>
+				<string>Move Right</string>
+				<string>Hard Drop</string>
+				<string>Soft Drop</string>
+				<string>Hold</string>
+				<string>Rotate Left</string>
+				<string>Rotate Right</string>
+				<string>None</string>
+			</array>
+			<key>DefaultValue</key>
+			<string>none</string>
+			<key>Key</key>
+			<string>button11</string>
+		</dict>
+	</array>
+</dict>
+</plist>
