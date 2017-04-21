@@ -56,7 +56,7 @@ final class GameScene: SKScene {
         let node = PlayfieldNode(sceneSize: size)
         node.alpha = 0
         addChild(node)
-        node.run(.fadeIn(withDuration: 1))
+        node.fadeIn()
         playfieldNode = node
     }
 

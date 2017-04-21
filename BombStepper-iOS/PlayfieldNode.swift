@@ -18,8 +18,8 @@ final class PlayfieldNode: SKNode {
     let sceneSize: CGSize
 
     let tileMapNode: SKTileMapNode
-    private let outerFrameNode: SKShapeNode
-    private let innerFrameNode: SKShapeNode
+    let outerFrameNode: SKShapeNode
+    let innerFrameNode: SKShapeNode
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
@@ -48,6 +48,16 @@ final class PlayfieldNode: SKNode {
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+
+    func fadeIn() {
+        [outerFrameNode, innerFrameNode, tileMapNode].forEach { $0.alpha = 0 }
+        self.alpha = 1
+        tileMapNode.run(.fadeIn(withDuration: 1))
+        innerFrameNode.run(.sequence([.wait(forDuration: 0.5),
+                                      .fadeIn(withDuration: 1)]))
+        outerFrameNode.run(.sequence([.wait(forDuration: 1),
+                                      .fadeIn(withDuration: 1)]))
     }
 
 }
