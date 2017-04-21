@@ -9,6 +9,9 @@
 import SpriteKit
 
 
+typealias ButtonMap = [SKShapeNode : Button]
+
+
 /**
  Buttons layout:
  0 1        6  7
@@ -18,16 +21,18 @@ import SpriteKit
 final class ControllerNode: SKNode {
 
     let sceneSize: CGSize
+    private let buttonDown: (Button, _ isDown: Bool) -> Void
 
-    convenience override init() {
-        self.init(sceneSize: .zero)
-    }
 
-    init(sceneSize: CGSize) {
+    init(sceneSize: CGSize, buttonDown: @escaping (Button, _ isDown: Bool) -> Void) {
         self.sceneSize = sceneSize
+        self.buttonDown = buttonDown
+
         let buttonWidth = Int(sceneSize.height / 8) * 2     // Quarter height, rounded down to even number
-        buttons = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
         settingManager = SettingManager()
+        buttons = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
+        settings = SettingManager.Settings.initial
+        buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
 
         super.init()
 
@@ -51,10 +56,15 @@ final class ControllerNode: SKNode {
     }
 
     fileprivate let buttons: [SKShapeNode]
+    private var buttonMap: ButtonMap
     private let settingManager: SettingManager
-    private var settings = SettingManager.Settings.initial {
-        didSet { TouchData.swipeDownThreshold = settings.swipeDownThreshold }
+    private var settings: SettingManager.Settings {
+        didSet {
+            TouchData.swipeDownThreshold = settings.swipeDownThreshold
+            buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
+        }
     }
+
 
     final private class TouchData {
         static var swipeDownThreshold = 1250.0
@@ -92,6 +102,7 @@ final class ControllerNode: SKNode {
         if let node = nodes(at: location).first as? SKShapeNode {
             touchesData[touch] = TouchData(node: node, time: touch.timestamp, y: location.y)
             node.alpha = Alpha.pressedButton
+            buttonDown(buttonMap[node]!, true)
         }
     }
 
@@ -99,9 +110,9 @@ final class ControllerNode: SKNode {
         if let data = touchesData[touch] {
             data.recordSpeed(time: touch.timestamp, y: touch.location(in: self).y)
             if data.touchIsSwipingDown() {
-                // TODO: pass swipe down action
-                print("Swiping down", data.node.name!)
                 touchUp(touch)
+                buttonDown(.hardDrop, true)
+                buttonDown(.hardDrop, false)
             }
         }
     }
@@ -109,6 +120,7 @@ final class ControllerNode: SKNode {
     private func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
             node.alpha = Alpha.releasedButton
+            buttonDown(buttonMap[node]!, false)
         }
     }
 
@@ -144,6 +156,21 @@ fileprivate extension ControllerNode {
         node.alpha = Alpha.releasedButton
         node.lineWidth = 0
         return node
+    }
+
+    class func buildButtonMap(withButtons buttons: [SKShapeNode], settings: SettingManager.Settings) -> ButtonMap {
+        return [ buttons[0] : settings.button00,
+                 buttons[1] : settings.button01,
+                 buttons[2] : settings.button02,
+                 buttons[3] : settings.button03,
+                 buttons[4] : settings.button04,
+                 buttons[5] : settings.button05,
+                 buttons[6] : settings.button06,
+                 buttons[7] : settings.button07,
+                 buttons[8] : settings.button08,
+                 buttons[9] : settings.button09,
+                 buttons[10] : settings.button10,
+                 buttons[11] : settings.button11 ]
     }
 
     func layoutButtons(for sceneSize: CGSize) {

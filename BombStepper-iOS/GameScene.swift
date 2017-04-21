@@ -23,19 +23,37 @@ final class GameScene: SKScene {
         dasManager.update()
     }
 
+    private func buttonDown(_ button: Button, isDown: Bool) {
+        
+        print(button, isDown ? "down" : "up")
+
+        let dasManagerCall = isDown ? dasManager.inputBegan : dasManager.inputEnded
+        
+        switch button {
+        case .moveLeft: dasManagerCall(.left)
+        case .moveRight: dasManagerCall(.right)
+        default: return
+        }
+    }
+
     // Create or (if size changed) recreate the controller node
     private func setupControllerNode() {
         guard controllerNode?.sceneSize != size else { return }
         controllerNode?.removeFromParent()
-        controllerNode = ControllerNode(sceneSize: size)
-        controllerNode?.alpha = 0
-        controllerNode?.zPosition = ZPosition.controls
-        addChild(controllerNode!)
-        controllerNode?.run(.fadeIn(withDuration: 1))
+        let node = ControllerNode(sceneSize: size, buttonDown: { [unowned self] (button, isDown) in
+            self.buttonDown(button, isDown: isDown)
+        })
+        node.alpha = 0
+        node.zPosition = ZPosition.controls
+        addChild(node)
+        node.run(.fadeIn(withDuration: 1))
+        controllerNode = node
     }
 
     private func setupDASManager() {
-        dasManager = DASManager(das: 8, performDAS: { _ in })
+        dasManager = DASManager(das: 8, performDAS: { direction in
+            print("DAS", direction)
+        })
     }
 }
 
