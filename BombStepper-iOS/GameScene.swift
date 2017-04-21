@@ -25,14 +25,33 @@ final class GameScene: SKScene {
         dasManager.update()
     }
 
+    var mino = (0, 0) {
+        didSet {
+            let tetromino = Tetromino(rawValue: (mino.0 + mino.1) % 7 + 1)!
+            playfieldNode?.update(placements: [
+                (tetromino: tetromino, column: mino.0, row: mino.1),
+                (tetromino: .blank, column: oldValue.0, row: oldValue.1)])
+        }
+    }
+
     private func buttonDown(_ button: Button, isDown: Bool) {
         
         let dasManagerCall = isDown ? dasManager.inputBegan : dasManager.inputEnded
+
         
         switch button {
-        case .moveLeft: dasManagerCall(.left)
-        case .moveRight: dasManagerCall(.right)
-        default: return
+        case .moveLeft:
+            dasManagerCall(.left)
+            if isDown { mino.0 -= 1 }
+        case .moveRight:
+            dasManagerCall(.right)
+            if isDown { mino.0 += 1 }
+        case .hardDrop:
+            if isDown { mino.1 += 1 }
+        case .softDrop:
+            if isDown { mino.1 -= 1 }
+        default:
+            return
         }
     }
 

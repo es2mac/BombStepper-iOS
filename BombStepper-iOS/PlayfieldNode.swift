@@ -9,6 +9,9 @@
 import SpriteKit
 
 
+typealias BlockPlacement = (tetromino: Tetromino, column: Int, row: Int)
+
+
 private let outerFrameWidth = 4
 private let innerFrameWidth = 1
 
@@ -17,9 +20,10 @@ final class PlayfieldNode: SKNode {
 
     let sceneSize: CGSize
 
-    let tileMapNode: SKTileMapNode
-    let outerFrameNode: SKShapeNode
-    let innerFrameNode: SKShapeNode
+    private let tileMapNode: SKTileMapNode
+    private let outerFrameNode: SKShapeNode
+    private let innerFrameNode: SKShapeNode
+    private let tetrominoTileGroupMap: [Tetromino : SKTileGroup]
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
@@ -39,7 +43,11 @@ final class PlayfieldNode: SKNode {
         outerFrameNode.lineWidth = 0
         outerFrameNode.zPosition = -2
 
-        tileMapNode = PlayfieldNode.makeTileMapNode(tileWidth: CGFloat(blockHeight))
+        tetrominoTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: CGFloat(blockHeight))
+
+        let tileSet = SKTileSet(tileGroups: Array(tetrominoTileGroupMap.values))
+        let tileSize = CGSize(width: blockHeight, height: blockHeight)
+        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 20, tileSize: tileSize, fillWith: tetrominoTileGroupMap[.blank]!)
 
         super.init()
 
@@ -60,31 +68,42 @@ final class PlayfieldNode: SKNode {
                                       .fadeIn(withDuration: 1)]))
     }
 
+    func clearField() {
+        tileMapNode.fill(with: tileGroup(for: .blank))
+    }
+
+    func update(placements: [BlockPlacement])  {
+        DispatchQueue.main.async {
+            placements.forEach {
+                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.tetromino), forColumn: $0.column, row: $0.row)
+            }
+        }
+        
+    }
+
+    private func tileGroup(for t: Tetromino) -> SKTileGroup {
+        return tetrominoTileGroupMap[t]!
+    }
+
 }
 
 
 private extension PlayfieldNode {
-    
-    class func makeTileMapNode(tileWidth: CGFloat) -> SKTileMapNode {
 
-        // TODO: extract tile groups to be referred to when changing tiles
+    class func makeTileGroupMap(tileWidth: CGFloat) -> [Tetromino : SKTileGroup] {
 
-        // [.I, .J, .L, .O, .S, .Z, .T, .blank]
-        let tileGroups = Tetromino.allCases
-            .map { $0.minoImage(side: tileWidth) }    // add border
-            .map(SKTexture.init)
-            .map(SKTileDefinition.init)
-            .map(SKTileGroup.init)
-
-        for (group, name) in zip(tileGroups, ["I", "J", "L", "O", "S", "Z", "T", "blank"]) {
-            group.name = name
+        var map = [Tetromino : SKTileGroup]()
+        
+        for (tetromino, name) in zip(Tetromino.allCases, ["blank", "I", "J", "L", "O", "S", "T", "Z"]) {
+            let image = tetromino.minoImage(side: tileWidth)
+            let texture = SKTexture(image: image)
+            let tileDefinition = SKTileDefinition(texture: texture)
+            let tileGroup = SKTileGroup(tileDefinition: tileDefinition)
+            tileGroup.name = name
+            map[tetromino] = tileGroup
         }
 
-        let tileSet = SKTileSet(tileGroups: tileGroups)
-        let tileSize = CGSize(width: tileWidth, height: tileWidth)
-        let tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 20, tileSize: tileSize, fillWith: tileGroups.last!)
-
-        return tileMapNode
+        return map
     }
 
 }
