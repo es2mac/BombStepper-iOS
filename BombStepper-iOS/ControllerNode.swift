@@ -21,12 +21,12 @@ typealias ButtonMap = [SKShapeNode : Button]
 final class ControllerNode: SKNode {
 
     let sceneSize: CGSize
-    private let buttonDown: (Button, _ isDown: Bool) -> Void
+    private let buttonDownAction: (Button, _ isDown: Bool) -> Void
 
 
-    init(sceneSize: CGSize, buttonDown: @escaping (Button, _ isDown: Bool) -> Void) {
+    init(sceneSize: CGSize, buttonDownAction: @escaping (Button, _ isDown: Bool) -> Void) {
         self.sceneSize = sceneSize
-        self.buttonDown = buttonDown
+        self.buttonDownAction = buttonDownAction
 
         let buttonWidth = Int(sceneSize.height / 8) * 2     // Quarter height, rounded down to even number
         settingManager = SettingManager()
@@ -102,7 +102,7 @@ final class ControllerNode: SKNode {
         if let node = nodes(at: location).first as? SKShapeNode {
             touchesData[touch] = TouchData(node: node, time: touch.timestamp, y: location.y)
             node.alpha = Alpha.pressedButton
-            buttonDown(buttonMap[node]!, true)
+            buttonDownAction(buttonMap[node]!, true)
         }
     }
 
@@ -111,8 +111,8 @@ final class ControllerNode: SKNode {
             data.recordSpeed(time: touch.timestamp, y: touch.location(in: self).y)
             if data.touchIsSwipingDown() {
                 touchUp(touch)
-                buttonDown(.hardDrop, true)
-                buttonDown(.hardDrop, false)
+                buttonDownAction(.hardDrop, true)
+                buttonDownAction(.hardDrop, false)
             }
         }
     }
@@ -120,7 +120,7 @@ final class ControllerNode: SKNode {
     private func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
             node.alpha = Alpha.releasedButton
-            buttonDown(buttonMap[node]!, false)
+            buttonDownAction(buttonMap[node]!, false)
         }
     }
 

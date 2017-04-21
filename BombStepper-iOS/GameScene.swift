@@ -13,9 +13,11 @@ final class GameScene: SKScene {
 
     private var dasManager: DASManager!
     private var controllerNode: ControllerNode?
+    private var playfieldNode: PlayfieldNode?
 
     override func didMove(to view: SKView) {
         setupControllerNode()
+        setupPlayfieldNode()
         setupDASManager()
     }
     
@@ -25,8 +27,6 @@ final class GameScene: SKScene {
 
     private func buttonDown(_ button: Button, isDown: Bool) {
         
-        print(button, isDown ? "down" : "up")
-
         let dasManagerCall = isDown ? dasManager.inputBegan : dasManager.inputEnded
         
         switch button {
@@ -40,7 +40,7 @@ final class GameScene: SKScene {
     private func setupControllerNode() {
         guard controllerNode?.sceneSize != size else { return }
         controllerNode?.removeFromParent()
-        let node = ControllerNode(sceneSize: size, buttonDown: { [unowned self] (button, isDown) in
+        let node = ControllerNode(sceneSize: size, buttonDownAction: { [unowned self] (button, isDown) in
             self.buttonDown(button, isDown: isDown)
         })
         node.alpha = 0
@@ -50,9 +50,20 @@ final class GameScene: SKScene {
         controllerNode = node
     }
 
+    private func setupPlayfieldNode() {
+        guard playfieldNode?.sceneSize != size else { return }
+        playfieldNode?.removeFromParent()
+        let node = PlayfieldNode(sceneSize: size)
+        node.alpha = 0
+        addChild(node)
+        node.run(.fadeIn(withDuration: 1))
+        playfieldNode = node
+    }
+
+
     private func setupDASManager() {
         dasManager = DASManager(performDAS: { direction in
-            print("DAS", direction)
+
         })
     }
 }

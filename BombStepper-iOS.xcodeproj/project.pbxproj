@@ -24,6 +24,7 @@
 		DA4D29061EA4F6C5008F3BDF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29041EA4F6C5008F3BDF /* LaunchScreen.storyboard */; };
 		DA4D29111EA4F6C5008F3BDF /* BombStepper_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */; };
 		DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8324A91EA7F3060076AF4E /* DASManager.swift */; };
+		DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */; };
 		DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD280A61EA8C1930064CB4D /* ControllerNode.swift */; };
 		DAFBC5751EA8BBF200B21F7C /* UserInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAFBC5741EA8BBF200B21F7C /* UserInput.swift */; };
 /* End PBXBuildFile section */
@@ -60,6 +61,7 @@
 		DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombStepper_iOSTests.swift; sourceTree = "<group>"; };
 		DA4D29121EA4F6C5008F3BDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		DA8324A91EA7F3060076AF4E /* DASManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DASManager.swift; sourceTree = "<group>"; };
+		DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayfieldNode.swift; sourceTree = "<group>"; };
 		DAD280A61EA8C1930064CB4D /* ControllerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerNode.swift; sourceTree = "<group>"; };
 		DAFBC5741EA8BBF200B21F7C /* UserInput.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInput.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -108,6 +110,7 @@
 				DA4D28F91EA4F6C5008F3BDF /* Actions.sks */,
 				DA4D28FB1EA4F6C5008F3BDF /* GameScene.swift */,
 				DAD280A61EA8C1930064CB4D /* ControllerNode.swift */,
+				DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */,
 				DA10B4411EA9D8E800C2C805 /* SettingManager.swift */,
 				DA4D28FD1EA4F6C5008F3BDF /* GameViewController.swift */,
 				DA0ED92D1EA7AA11008F3C61 /* MenuViewController.swift */,
@@ -245,6 +248,7 @@
 			files = (
 				DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */,
 				DAFBC5751EA8BBF200B21F7C /* UserInput.swift in Sources */,
+				DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */,
 				DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */,
 				DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */,
 				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,

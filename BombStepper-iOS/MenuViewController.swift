@@ -17,14 +17,6 @@ class MenuViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.blank.pixelImage()))
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.I.pixelImage()))
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.J.pixelImage()))
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.L.pixelImage()))
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.O.pixelImage()))
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.S.pixelImage()))
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.Z.pixelImage()))
-        stackView.addArrangedSubview(UIImageView(image: Tetromino.T.pixelImage()))
     }
 
     @IBAction func linkToSettings(_ sender: UIButton) {
