@@ -21,5 +21,14 @@ extension UIColor {
 }
 
 
+enum ZPosition {
+    static let controls: CGFloat = 10
+}
+
+enum Alpha {
+    static let pressedButton: CGFloat = 0.1
+    static let releasedButton: CGFloat = 0.03
+}
+
 
 

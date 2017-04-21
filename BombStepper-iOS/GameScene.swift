@@ -9,14 +9,14 @@
 import SpriteKit
 import GameplayKit
 
-class GameScene: SKScene {
+final class GameScene: SKScene {
 
     private var dasManager: DASManager!
     private var controllerNode: ControllerNode?
 
     override func didMove(to view: SKView) {
-        createControllerNode()
-        dasManager = DASManager(das: 8, performDAS: { _ in })
+        setupControllerNode()
+        setupDASManager()
     }
     
     override func update(_ currentTime: TimeInterval) {
@@ -24,13 +24,18 @@ class GameScene: SKScene {
     }
 
     // Create or (if size changed) recreate the controller node
-    private func createControllerNode() {
+    private func setupControllerNode() {
         guard controllerNode?.sceneSize != size else { return }
         controllerNode?.removeFromParent()
         controllerNode = ControllerNode(sceneSize: size)
         controllerNode?.alpha = 0
+        controllerNode?.zPosition = ZPosition.controls
         addChild(controllerNode!)
         controllerNode?.run(.fadeIn(withDuration: 1))
+    }
+
+    private func setupDASManager() {
+        dasManager = DASManager(das: 8, performDAS: { _ in })
     }
 }
 

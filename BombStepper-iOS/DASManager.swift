@@ -9,6 +9,7 @@
 import Foundation
 
 
+/// The DAS Manager relies on being updated each frame for timing
 final class DASManager {
 
     enum Direction {
@@ -118,22 +119,8 @@ private func msToAbs(_ ms: Double) -> MachAbsTime {
     return nanos * UInt64(info.denom) / UInt64(info.numer)
 }
 
+
 // 60Hz single frame absolute time
 private let singleFrameTime: MachAbsTime = msToAbs(1 * 1000 / 60)
 
-
-/*
- // Debug timing
- let now = mach_absolute_time()
-
- guard now >= fireTime else {
- let timeEarly = absToMs(fireTime - now)
- print("BeginDAS fired EARLY by", timeEarly, "ms")
- return
- }
-
- let latency = absToMs(now - fireTime)
-
- print("Latency:", latency)
- */
 

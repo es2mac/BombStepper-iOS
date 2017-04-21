@@ -9,9 +9,7 @@
 import SpriteKit
 
 
-private let pressedAlpha: CGFloat = 0.15
-private let releasedAlpha: CGFloat = 0.04
-private let swipeSpeedThreshold = 700.0    // TODO: Make this a preference
+private let swipeSpeedThreshold = 1250.0    // TODO: Take this from preference
 
 
 /**
@@ -20,9 +18,8 @@ private let swipeSpeedThreshold = 700.0    // TODO: Make this a preference
  2 3        8  9
  4 5       10 11
  */
-class ControllerNode: SKNode {
+final class ControllerNode: SKNode {
 
-    let buttons: [SKShapeNode]
     let sceneSize: CGSize
 
     convenience override init() {
@@ -33,18 +30,23 @@ class ControllerNode: SKNode {
         self.sceneSize = sceneSize
         let buttonWidth = Int(sceneSize.height / 8) * 2     // Quarter height, rounded down to even number
         buttons = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
+        settingManager = SettingManager()
 
         super.init()
 
         isUserInteractionEnabled = true
         buttons.forEach(addChild)
         layoutButtons(for: sceneSize)
+
+        settingManager.updateSettingsAction = { print($0) }
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
+    fileprivate let buttons: [SKShapeNode]
+    private let settingManager: SettingManager
 
     final private class TouchData {
         let node: SKShapeNode
@@ -79,7 +81,7 @@ class ControllerNode: SKNode {
         let location = touch.location(in: self)
         if let node = nodes(at: location).first as? SKShapeNode {
             touchesData[touch] = TouchData(node: node, time: touch.timestamp, y: location.y)
-            node.alpha = pressedAlpha
+            node.alpha = Alpha.pressedButton
         }
     }
 
@@ -87,7 +89,8 @@ class ControllerNode: SKNode {
         if let data = touchesData[touch] {
             data.recordSpeed(time: touch.timestamp, y: touch.location(in: self).y)
             if data.touchIsSwipingDown() {
-                print("Report swiping down", data.node.name!)
+                // TODO: pass swipe down action
+                print("Swiping down", data.node.name!)
                 touchUp(touch)
             }
         }
@@ -95,7 +98,7 @@ class ControllerNode: SKNode {
 
     private func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
-            node.alpha = releasedAlpha
+            node.alpha = Alpha.releasedButton
         }
     }
 
@@ -124,7 +127,7 @@ fileprivate extension ControllerNode {
         let node = SKShapeNode(rect: CGRect(x: -width/2, y: -width/2, width: width, height: width), cornerRadius: 4)
         node.name = name
         node.fillColor = .white
-        node.alpha = releasedAlpha
+        node.alpha = Alpha.releasedButton
         node.lineWidth = 0
         return node
     }
@@ -143,9 +146,9 @@ fileprivate extension ControllerNode {
         var p = [CGPoint](repeating: .zero, count: 12)
         p[5] = origin
         p[4] = p[5] - u - u
-        p[3] = p[5] - shift + v + v
+        p[3] = p[5] + v + v - shift
         p[2] = p[3] - u - u
-        p[1] = p[3] - shift + v + v
+        p[1] = p[3] + v + v - shift
         p[0] = p[1] - u - u
         for (i, j) in zip([0, 1, 2, 3, 4, 5], [7, 6, 9, 8, 11, 10]) {
             p[j] = CGPoint(x: -p[i].x, y: p[i].y)
