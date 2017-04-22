@@ -44,7 +44,7 @@ extension Tetromino {
     var color: UIColor {
         switch self {
         case .I: return #colorLiteral(red: 0.2389388382, green: 0.5892125368, blue: 0.8818323016, alpha: 1)
-        case .J: return #colorLiteral(red: 0.3169852495, green: 0.3903964162, blue: 0.6502153277, alpha: 1)
+        case .J: return #colorLiteral(red: 0.1642007241, green: 0.2981680014, blue: 0.7744358637, alpha: 1)
         case .L: return #colorLiteral(red: 0.8879843354, green: 0.5014117956, blue: 0, alpha: 1)
         case .O: return #colorLiteral(red: 0.9925034642, green: 0.8121734858, blue: 0, alpha: 1)
         case .S: return #colorLiteral(red: 0.262835294, green: 0.8022480607, blue: 0.3886030316, alpha: 1)
@@ -57,7 +57,7 @@ extension Tetromino {
 
         switch self {
         case .I: return #colorLiteral(red: 0.1951910259, green: 0.4890178243, blue: 0.7345129925, alpha: 1)
-        case .J: return #colorLiteral(red: 0.2253215105, green: 0.2783082841, blue: 0.4640846382, alpha: 1)
+        case .J: return #colorLiteral(red: 0.1282293577, green: 0.2328484939, blue: 0.6047806057, alpha: 1)
         case .L: return #colorLiteral(red: 0.6602754359, green: 0.3731460931, blue: 0.001209538981, alpha: 1)
         case .O: return #colorLiteral(red: 0.7639135355, green: 0.6259482935, blue: 0.002231495134, alpha: 1)
         case .S: return #colorLiteral(red: 0.1901697925, green: 0.5817678467, blue: 0.2838678132, alpha: 1)

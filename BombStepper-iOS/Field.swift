@@ -28,7 +28,7 @@ final class Field {
     enum StartPieceResult {
         case success
         case stillHasActivePiece
-        case obstructed
+        case toppedOut
     }
 
 
@@ -63,19 +63,21 @@ extension Field {
     /// Top out is reported here
     @discardableResult
     func startPiece(type: Tetromino) -> StartPieceResult {
-//        guard activePiece == nil else { return .stillHasActivePiece }
+        guard activePiece == nil else { return .stillHasActivePiece }
 
-//        activePiece = Piece(type: type, x: 4, y: 20, orientation: .up)
+        let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
+        // check if piece obstructed, if it is then we topped out
+
+        activePiece = piece
         
-        activePiece = Piece(type: type, x: 4, y: 10, orientation: .up)
         reportChanges()
-
-
         
         return .success
     }
 
     func process(input: Button) {
+        guard activePiece != nil else { return }
+
         switch input {
         case .moveLeft:
             activePiece?.x -= 1
@@ -88,13 +90,19 @@ extension Field {
         case .hold:
             break
         case .rotateLeft:
-            activePiece?.y += 1
+            activePiece = activePiece?.kickCandidatesForRotatingLeft()[0]
         case .rotateRight:
-            activePiece?.y += 1
+            activePiece = activePiece?.kickCandidatesForRotatingRight()[0]
         case .none:
             break
         }
+
         reportChanges()
+    }
+
+    func process(das: DASManager.Direction) {
+
+        // TODO
     }
 
 }

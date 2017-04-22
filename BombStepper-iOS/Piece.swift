@@ -61,7 +61,15 @@ private extension Piece.Orientation {
 
 extension Piece {
 
-    func kickCandidates(to toOrientation: Orientation) -> [Piece] {
+    func kickCandidatesForRotatingRight() -> [Piece] {
+        return kickCandidates(to: orientation.rotatedRight())
+    }
+
+    func kickCandidatesForRotatingLeft() -> [Piece] {
+        return kickCandidates(to: orientation.rotatedLeft())
+    }
+
+    private func kickCandidates(to toOrientation: Orientation) -> [Piece] {
 
         let kickOffsets = type.kickOffsets(from: orientation, to: toOrientation)
 
@@ -88,22 +96,21 @@ extension Piece: Equatable {
 
 
 private extension Tetromino {
-
+    
     func blockOffsets(for orientation: Piece.Orientation) -> [Offset] {
         let neutralBlockOffsets = blockOffsets
-        let pieceOffset = offsets(for: orientation)[0]
         let rotationMatrix: (Int, Int, Int, Int)
-
+        
         switch orientation {
         case .up: return neutralBlockOffsets
         case .right: rotationMatrix = (0, 1, -1, 0)
         case .down: rotationMatrix = (-1, 0, 0, -1)
         case .left: rotationMatrix = (0, -1, 1, 0)
         }
-
+        
         return neutralBlockOffsets.map { blockOffset in
-            (x: pieceOffset.x + (rotationMatrix.0 * blockOffset.x + rotationMatrix.2 * blockOffset.y),
-             y: pieceOffset.y + (rotationMatrix.1 * blockOffset.x + rotationMatrix.3 * blockOffset.y))
+            (x: rotationMatrix.0 * blockOffset.x + rotationMatrix.1 * blockOffset.y,
+             y: rotationMatrix.2 * blockOffset.x + rotationMatrix.3 * blockOffset.y)
         }
     }
 }
