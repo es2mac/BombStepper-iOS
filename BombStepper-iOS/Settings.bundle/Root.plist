@@ -93,6 +93,24 @@
 			<string>swipeDownThreshold</string>
 		</dict>
 		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>When a button is tapped down and the finger moves outside of the button, the button will stay pressed. LR Swipe makes an exception for moving from a Move Left button to a Move Right button and vice versa, and treat the move like a new tap.</string>
+			<key>Title</key>
+			<string>LR Swipe</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enabled</string>
+			<key>Key</key>
+			<string>lrSwipeEnabled</string>
+			<key>DefaultValue</key>
+			<true/>
+		</dict>
+		<dict>
 			<key>FooterText</key>
 			<string>Any number of buttons may be set to the same function, or no function at all.</string>
 			<key>Type</key>

@@ -56,7 +56,7 @@ final class Field {
 
 extension Field {
 
-    // TODO: handle inputs
+    // TODO: rotation
     // TODO: piece lock, lock timing
     // TODO: line clear
 
@@ -66,7 +66,8 @@ extension Field {
     func startPiece(type: Tetromino) -> StartPieceResult {
         guard activePiece == nil else { return .stillHasActivePiece }
 
-        let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
+//        let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
+        let piece = Piece(type: type, x: 4, y: 10, orientation: .up)
         // check if piece obstructed, if it is then we topped out
 
         activePiece = piece
@@ -80,22 +81,14 @@ extension Field {
         guard activePiece != nil else { return }
 
         switch input {
-        case .moveLeft:
-            moveActivePiece((x: -1, y: 0))
-        case .moveRight:
-            moveActivePiece((x: 1, y: 0))
-        case .hardDrop:
-            activePiece = nil
-        case .softDrop:
-            moveActivePiece((x: 0, y: -1))
-        case .hold:
-            break
-        case .rotateLeft:
-            activePiece = activePiece?.kickCandidatesForRotatingLeft()[0]   // TODO: kicking and stuff
-        case .rotateRight:
-            activePiece = activePiece?.kickCandidatesForRotatingRight()[0]
-        case .none:
-            break
+        case .moveLeft: moveActivePiece((x: -1, y: 0))
+        case .moveRight: moveActivePiece((x: 1, y: 0))
+        case .hardDrop: hardDrop()
+        case .softDrop: softDrop()
+        case .hold: break
+        case .rotateLeft: activePiece = activePiece?.kickCandidatesForRotatingLeft()[0]   // TODO: kicking and stuff
+        case .rotateRight: activePiece = activePiece?.kickCandidatesForRotatingRight()[0]
+        case .none: break
         }
 
         reportChanges()
@@ -122,6 +115,21 @@ extension Field {
 
 
 private extension Field {
+
+    func softDrop()  {
+        while moveActivePiece((x: 0, y: -1)) { }
+    }
+
+    func hardDrop() {
+        softDrop()
+        lockDown()
+    }
+    
+    func lockDown() {
+        guard let piece = activePiece else { return }
+        activePiece = nil
+        piece.blocks.forEach(setBlock)
+    }
 
     // Returns whether move was successful
     // Remember to manually reportChanges()

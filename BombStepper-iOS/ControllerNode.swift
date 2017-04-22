@@ -99,6 +99,7 @@ final class ControllerNode: SKNode {
     }
 
 
+    // Stores touches that correspond to buttons to calculate swipe speed
     private var touchesData = [UITouch : TouchData]()
 
     private func touchDown(_ touch: UITouch) {
@@ -111,14 +112,35 @@ final class ControllerNode: SKNode {
     }
 
     private func touchMoved(_ touch: UITouch) {
-        if let data = touchesData[touch] {
-            data.recordSpeed(time: touch.timestamp, y: touch.location(in: self).y)
-            if data.touchIsSwipingDown() {
-                touchUp(touch)
-                buttonDownAction(.hardDrop, true)
-                buttonDownAction(.hardDrop, false)
-            }
+        guard let data = touchesData[touch] else { return }
+
+        // Swipe down test
+        data.recordSpeed(time: touch.timestamp, y: touch.location(in: self).y)
+        if data.touchIsSwipingDown() {
+            touchUp(touch)
+            buttonDownAction(.hardDrop, true)
+            buttonDownAction(.hardDrop, false)
         }
+        
+        // LR swipe test
+        guard settings.lrSwipeEnabled else { return }
+        
+        let button = buttonMap[data.node]!
+        let oppositeButton: Button
+        switch button {
+        case .moveLeft: oppositeButton = .moveRight
+        case .moveRight: oppositeButton = .moveLeft
+        default: return
+        }
+
+        let location = touch.location(in: self)
+        if let node = nodes(at: location).first as? SKShapeNode,
+            node != data.node,
+            buttonMap[node]! == oppositeButton {
+            touchUp(touch)
+            touchDown(touch)
+        }
+
     }
 
     private func touchUp(_ touch: UITouch) {
