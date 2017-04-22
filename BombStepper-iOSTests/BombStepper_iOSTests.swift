@@ -20,7 +20,8 @@ class FieldModelPieceTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
         super.tearDown()
     }
-    
+
+    /*
     func testRotatedLeft() {
         let piece = Piece(type: .T, x: 5, y: 8, orientation: .left)
         let leftRotatedPiece = Piece(type: .T, x: 5, y: 8, orientation: .down)
@@ -49,6 +50,7 @@ class FieldModelPieceTests: XCTestCase {
 
         XCTAssertEqual(count, 5)
     }
+ */
 
     func testPerformanceExample() {
         // This is an example of a performance test case.

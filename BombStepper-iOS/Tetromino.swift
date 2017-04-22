@@ -10,15 +10,39 @@ import UIKit
 
 
 
-// TODO: Here tetrominos should be only the 7 kinds, otherwise it's confused with Block
-// TODO: Tetromino doesn't need to be Int
+/**
+ Tetromino defines the drawing color and shape in the initial (0) orientation
+ for the 7 tetromino types.
+ */
 enum Tetromino: Int {
-    case blank = 0
     case I, J, L, O, S, T, Z
+
+    static let allCases: [Tetromino] = [.I, .J, .L, .O, .S, .T, .Z]
+}
+
+
+extension Tetromino {
+
+    /// This defines the shape of the tetromino in its initial orientation,
+    /// by specifying its four minos in terms of their offsets from the center mino
+    var blockOffsets: [Offset] {
+        switch self {
+        case .I: return [(0, 0), (-1, 0), ( 1, 0), (2, 0)]
+        case .J: return [(0, 0), (-1, 1), (-1, 0), (1, 0)]
+        case .L: return [(0, 0), (-1, 0), ( 1, 0), (1, 1)]
+        case .O: return [(0, 0), ( 0, 1), ( 1, 1), (1, 0)]
+        case .S: return [(0, 0), (-1, 0), ( 0, 1), (1, 1)]
+        case .T: return [(0, 0), (-1, 0), ( 1, 0), (0, 1)]
+        case .Z: return [(0, 0), (-1, 1), ( 0, 1), (1, 0)]
+        }
+    }
+}
+
+
+extension Tetromino {
 
     var color: UIColor {
         switch self {
-        case .blank: return #colorLiteral(red: 0.1686089337, green: 0.1686392725, blue: 0.1686022878, alpha: 1)
         case .I: return #colorLiteral(red: 0.2389388382, green: 0.5892125368, blue: 0.8818323016, alpha: 1)
         case .J: return #colorLiteral(red: 0.3169852495, green: 0.3903964162, blue: 0.6502153277, alpha: 1)
         case .L: return #colorLiteral(red: 0.8879843354, green: 0.5014117956, blue: 0, alpha: 1)
@@ -32,7 +56,6 @@ enum Tetromino: Int {
     var edgeColor: UIColor {
 
         switch self {
-        case .blank: return .playfieldBorder
         case .I: return #colorLiteral(red: 0.1951910259, green: 0.4890178243, blue: 0.7345129925, alpha: 1)
         case .J: return #colorLiteral(red: 0.2253215105, green: 0.2783082841, blue: 0.4640846382, alpha: 1)
         case .L: return #colorLiteral(red: 0.6602754359, green: 0.3731460931, blue: 0.001209538981, alpha: 1)
@@ -43,33 +66,6 @@ enum Tetromino: Int {
         }
     }
 
-    static let allCases: [Tetromino] = [.blank, .I, .J, .L, .O, .S, .T, .Z]
-
 }
 
-extension Tetromino: Hashable { }
 
-
-extension Tetromino {
-
-    /// This gives an image to be used on the playfield.  It's a rounded rect
-    /// that's offset by 1 point from each edge, giving it a border
-    func minoImage(side: CGFloat) -> UIImage {
-        let rect = CGRect(x: 0, y: 0, width: side, height: side)
-
-        UIGraphicsBeginImageContext(rect.size)
-        defer { UIGraphicsEndImageContext() }
-
-        let context = UIGraphicsGetCurrentContext()!
-
-        edgeColor.setFill()
-        context.fill(rect)
-
-        let roundedRect = UIBezierPath(roundedRect: rect.insetBy(dx: 1, dy: 1), cornerRadius: 2)
-        color.setFill()
-        context.addPath(roundedRect.cgPath)
-        context.fillPath()
-
-        return UIGraphicsGetImageFromCurrentImageContext()!
-    }
-}

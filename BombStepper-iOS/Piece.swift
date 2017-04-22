@@ -9,6 +9,12 @@
 import Foundation
 
 
+/**
+ A piece is a tetromino and generally it refers to the active playing piece.
+ In addition to the tetromino type, it retains information of a position on
+ the field, orientation, and kicked candidates if rotating to a new orientation.
+ For how Guideline SRS works / is implemented see https://harddrop.com/wiki/SRS
+ */
 struct Piece {
 
     enum Orientation {
@@ -23,7 +29,7 @@ struct Piece {
     var blocks: [Block] {
         let blockOffsets = type.blockOffsets(for: orientation)
         return blockOffsets.map { offset in
-            Block(mino: type, x: x + offset.x, y: y + offset.y)
+            Block(type: .tetromino(type), x: x + offset.x, y: y + offset.y)
         }
     }
 
@@ -55,7 +61,7 @@ private extension Piece.Orientation {
 
 extension Piece {
 
-    func kickStates(to toOrientation: Orientation) -> [Piece] {
+    func kickCandidates(to toOrientation: Orientation) -> [Piece] {
 
         let kickOffsets = type.kickOffsets(from: orientation, to: toOrientation)
 
@@ -100,23 +106,9 @@ private extension Tetromino {
              y: pieceOffset.y + (rotationMatrix.1 * blockOffset.x + rotationMatrix.3 * blockOffset.y))
         }
     }
-    
-    private var blockOffsets: [Offset] {
-        switch self {
-        case .I: return [(0, 0), (-1, 0), ( 1, 0), (2, 0)]
-        case .J: return [(0, 0), (-1, 1), (-1, 0), (1, 0)]
-        case .L: return [(0, 0), (-1, 0), ( 1, 0), (1, 1)]
-        case .O: return [(0, 0), ( 0, 1), ( 1, 1), (1, 0)]
-        case .S: return [(0, 0), (-1, 0), ( 0, 1), (1, 1)]
-        case .T: return [(0, 0), (-1, 0), ( 1, 0), (0, 1)]
-        case .Z: return [(0, 0), (-1, 1), ( 0, 1), (1, 0)]
-        default: return []
-        }
-    }
 }
 
 
-// https://harddrop.com/wiki/SRS
 private extension Tetromino {
 
     func offsets(for orientation: Piece.Orientation) -> [Offset] {
@@ -143,8 +135,6 @@ private extension Tetromino {
             case .down:  return [(-1, -1)]
             case .left:  return [(-1,  0)]
             }                  
-        default:
-            return [(x: 0, y: 0)]
         }
     }
 

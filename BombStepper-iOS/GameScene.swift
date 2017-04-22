@@ -26,26 +26,6 @@ final class GameScene: SKScene {
         dasManager.update()
     }
 
-    var ttype = 1 {
-        didSet {
-            let tetromino = Tetromino(rawValue: ttype + 1)!
-            playfieldNode?.place(blocks: [Block(mino: tetromino, x: mino.0, y: mino.1)])
-        }
-    }
-
-    var mino = (0, 0) {
-        didSet {
-            guard (0 ..< 10 ~= mino.0) && (0 ..< 20 ~= mino.1) else {
-                mino = oldValue
-                return
-            }
-            let tetromino = Tetromino(rawValue: ttype + 1)!
-            playfieldNode?.place(blocks: [
-                Block(mino: .blank, x: oldValue.0, y: oldValue.1),
-                Block(mino: tetromino, x: mino.0, y: mino.1) ])
-        }
-    }
-
     private func buttonDown(_ button: Button, isDown: Bool) {
         
         let dasManagerCall = isDown ? dasManager.inputBegan : dasManager.inputEnded
@@ -54,18 +34,18 @@ final class GameScene: SKScene {
         switch button {
         case .moveLeft:
             dasManagerCall(.left)
-            if isDown { mino.0 -= 1 }
         case .moveRight:
             dasManagerCall(.right)
-            if isDown { mino.0 += 1 }
+            break
         case .hardDrop:
-            if isDown { mino.1 += 1 }
+//            if isDown { mino.0 -= 1 }
+            break
         case .softDrop:
-            if isDown { mino.1 -= 1 }
+            break
         case .rotateLeft:
-            if isDown { ttype = (ttype + 6) % 7 }
+            break
         case .rotateRight:
-            if isDown { ttype = (ttype + 1) % 7 }
+            break
         default:
             return
         }
@@ -97,12 +77,12 @@ final class GameScene: SKScene {
 
 
     private func setupDASManager() {
-        dasManager = DASManager(performDAS: { [weak self] direction in
+        dasManager = DASManager(performDAS: { direction in
             switch direction {
             case .left:
-                self?.mino.0 = 0
+                break
             case .right:
-                self?.mino.0 = 9
+                break
             }
         })
     }

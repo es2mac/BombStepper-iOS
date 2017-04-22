@@ -26,7 +26,10 @@ extension UIColor {
 
 enum ZPosition {
     static let controls: CGFloat = 10
+    static let playfieldInnerFrame: CGFloat = -1
+    static let playfieldOuterFrame: CGFloat = -2
 }
+
 
 enum Alpha {
     static let pressedButton: CGFloat = 0.1

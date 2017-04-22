@@ -13,6 +13,9 @@ private let outerFrameWidth = 4
 private let innerFrameWidth = 1
 
 
+private typealias BlockTileGroupMap = [Block.BlockType : SKTileGroup]
+
+
 final class PlayfieldNode: SKNode {
 
     let sceneSize: CGSize
@@ -20,7 +23,7 @@ final class PlayfieldNode: SKNode {
     private let tileMapNode: SKTileMapNode
     private let outerFrameNode: SKShapeNode
     private let innerFrameNode: SKShapeNode
-    private let tetrominoTileGroupMap: [Tetromino : SKTileGroup]
+    private let blockTileGroupMap: BlockTileGroupMap
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
@@ -33,18 +36,18 @@ final class PlayfieldNode: SKNode {
         innerFrameNode = SKShapeNode(rect: innerFrameRect, cornerRadius: 2)
         innerFrameNode.fillColor = .playfieldBorder
         innerFrameNode.lineWidth = 0
-        innerFrameNode.zPosition = -1
+        innerFrameNode.zPosition = ZPosition.playfieldInnerFrame
 
         outerFrameNode = SKShapeNode(rect: outerFrameRect, cornerRadius: 4)
         outerFrameNode.fillColor = .playfieldOuterFrame
         outerFrameNode.lineWidth = 0
-        outerFrameNode.zPosition = -2
+        outerFrameNode.zPosition = ZPosition.playfieldOuterFrame
 
-        tetrominoTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: CGFloat(blockHeight))
+        blockTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: CGFloat(blockHeight))
 
-        let tileSet = SKTileSet(tileGroups: Array(tetrominoTileGroupMap.values))
+        let tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
         let tileSize = CGSize(width: blockHeight, height: blockHeight)
-        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 20, tileSize: tileSize, fillWith: tetrominoTileGroupMap[.blank]!)
+        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 20, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
 
         super.init()
 
@@ -72,14 +75,14 @@ final class PlayfieldNode: SKNode {
     func place(blocks: [Block])  {
         DispatchQueue.main.async {
             blocks.forEach {
-                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.mino), forColumn: $0.x, row: $0.y)
+                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x, row: $0.y)
             }
         }
         
     }
 
-    private func tileGroup(for t: Tetromino) -> SKTileGroup {
-        return tetrominoTileGroupMap[t]!
+    private func tileGroup(for t: Block.BlockType) -> SKTileGroup {
+        return blockTileGroupMap[t]!
     }
 
 }
@@ -87,17 +90,18 @@ final class PlayfieldNode: SKNode {
 
 private extension PlayfieldNode {
 
-    class func makeTileGroupMap(tileWidth: CGFloat) -> [Tetromino : SKTileGroup] {
+    class func makeTileGroupMap(tileWidth: CGFloat) -> BlockTileGroupMap {
 
-        var map = [Tetromino : SKTileGroup]()
-        
-        for (tetromino, name) in zip(Tetromino.allCases, ["blank", "I", "J", "L", "O", "S", "T", "Z"]) {
-            let image = tetromino.minoImage(side: tileWidth)
+        var map = BlockTileGroupMap()
+
+        let blockTypes: [Block.BlockType] = [.blank] + Tetromino.allCases.map { Block.BlockType.tetromino($0) }
+        for (type, name) in zip(blockTypes, ["blank", "I", "J", "L", "O", "S", "T", "Z"]) {
+            let image = type.squareImage(side: tileWidth)
             let texture = SKTexture(image: image)
             let tileDefinition = SKTileDefinition(texture: texture)
             let tileGroup = SKTileGroup(tileDefinition: tileDefinition)
             tileGroup.name = name
-            map[tetromino] = tileGroup
+            map[type] = tileGroup
         }
 
         return map
