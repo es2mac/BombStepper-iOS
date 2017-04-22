@@ -42,9 +42,9 @@ class FieldModelPieceTests: XCTestCase {
                       Piece(type: .T, x: 4, y: 5, orientation: .right)]
 
         var count = 0
-        for (i, p) in piece.kickStates.enumerated() {
+        for (i, p) in piece.type.offsets(for: piece.orientation).enumerated() {
             count += 1
-            XCTAssertEqual(p, states[i])
+            XCTAssertEqual(piece.offsetBy(p), states[i])
         }
 
         XCTAssertEqual(count, 5)

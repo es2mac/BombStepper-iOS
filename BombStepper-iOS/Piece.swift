@@ -12,82 +12,62 @@ import Foundation
 struct Piece {
 
     enum Orientation {
-
         case up, right, down, left
+    }
 
-        func rotatedRight() -> Orientation {
-            switch self {
-            case .up: return .right
-            case .right: return .down
-            case .down: return .left
-            case .left: return .up
-            }
-        }
+    let type: Tetromino
+    var x: Int
+    var y: Int
+    var orientation: Orientation
 
-        func rotatedLeft() -> Orientation {
-            switch self {
-            case .up: return .left
-            case .left: return .down
-            case .down: return .right
-            case .right: return .up
-            }
+    var blocks: [Block] {
+        let blockOffsets = type.blockOffsets(for: orientation)
+        return blockOffsets.map { offset in
+            Block(mino: type, x: x + offset.x, y: y + offset.y)
         }
     }
 
+}
 
-    let type: Tetromino
-    let x: Int
-    let y: Int
-    let orientation: Orientation
 
+private extension Piece.Orientation {
+
+    func rotatedRight() -> Piece.Orientation {
+        switch self {
+        case .up: return .right
+        case .right: return .down
+        case .down: return .left
+        case .left: return .up
+        }
+    }
+
+    func rotatedLeft() -> Piece.Orientation {
+        switch self {
+        case .up: return .left
+        case .left: return .down
+        case .down: return .right
+        case .right: return .up
+        }
+    }
+    
 }
 
 
 extension Piece {
 
-    struct KickStates: Sequence, IteratorProtocol {
-        var offsetsIterator: Array<(x: Int, y: Int)>.Iterator
-        let piece: Piece
-        mutating func next() -> Piece? {
-            return offsetsIterator.next().map { piece.offsetBy($0) }
+    func kickStates(to toOrientation: Orientation) -> [Piece] {
+
+        let kickOffsets = type.kickOffsets(from: orientation, to: toOrientation)
+
+        return kickOffsets.map { offset in
+            var piece = self
+            piece.x += offset.x
+            piece.y += offset.y
+            piece.orientation = toOrientation
+            return piece
         }
-
-        init(piece: Piece) {
-            self.piece = piece
-            offsetsIterator = kickOffsets[piece.type]![piece.orientation]!.makeIterator()
-        }
     }
-
-    func rotatedRight() -> Piece {
-        return Piece(type: type, x: x, y: y, orientation: orientation.rotatedRight())
-    }
-
-    func rotatedLeft() -> Piece {
-        return Piece(type: type, x: x, y: y, orientation: orientation.rotatedLeft())
-    }
-
-    func offsetBy(_ offset: (x: Int, y: Int)) -> Piece {
-        return Piece(type: type, x: x + offset.x, y: y + offset.y, orientation: orientation)
-    }
-
-    var kickStates: KickStates {
-        return KickStates(piece: self)
-    }
-
-    var blocks: [Block] {
-        // TODO: bring in table
-
-        return []
-    }
-
-    static func startingPiece(type: Tetromino) -> Piece {
-        return Piece(type: type, x: 4, y: 20, orientation: .up)
-    }
-
 }
-
-
-extension Piece.Orientation: Hashable { }
 
 
 extension Piece: Equatable {
@@ -101,40 +81,84 @@ extension Piece: Equatable {
 }
 
 
-private let kickOffsets: [Tetromino : [Piece.Orientation : [(x: Int, y: Int)]]] = [
-    .I : [ .up:    [( 0,  0), (-1,  0), ( 2,  0), (-1,  0), ( 2,  0)],
-           .right: [(-1,  0), ( 0,  0), ( 0,  0), ( 0,  1), ( 0, -2)],
-           .down:  [(-1,  1), ( 1,  1), (-2,  1), ( 1,  0), (-2,  0)],
-           .left:  [( 0,  1), ( 0,  1), ( 0,  1), ( 0, -1), ( 0,  2)]],
+private extension Tetromino {
 
-    .J : [ .up:    [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .right: [( 0,  0), ( 1,  0), ( 1, -1), ( 0,  2), ( 1,  2)],
-           .down:  [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .left:  [( 0,  0), (-1,  0), (-1, -1), ( 0,  2), (-1,  2)]],
+    func blockOffsets(for orientation: Piece.Orientation) -> [Offset] {
+        let neutralBlockOffsets = blockOffsets
+        let pieceOffset = offsets(for: orientation)[0]
+        let rotationMatrix: (Int, Int, Int, Int)
 
-    .L : [ .up:    [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .right: [( 0,  0), ( 1,  0), ( 1, -1), ( 0,  2), ( 1,  2)],
-           .down:  [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .left:  [( 0,  0), (-1,  0), (-1, -1), ( 0,  2), (-1,  2)]],
+        switch orientation {
+        case .up: return neutralBlockOffsets
+        case .right: rotationMatrix = (0, 1, -1, 0)
+        case .down: rotationMatrix = (-1, 0, 0, -1)
+        case .left: rotationMatrix = (0, -1, 1, 0)
+        }
 
-    .O : [ .up:    [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .right: [( 0, -1), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .down:  [(-1, -1), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .left:  [(-1,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)]],
+        return neutralBlockOffsets.map { blockOffset in
+            (x: pieceOffset.x + (rotationMatrix.0 * blockOffset.x + rotationMatrix.2 * blockOffset.y),
+             y: pieceOffset.y + (rotationMatrix.1 * blockOffset.x + rotationMatrix.3 * blockOffset.y))
+        }
+    }
+    
+    private var blockOffsets: [Offset] {
+        switch self {
+        case .I: return [(0, 0), (-1, 0), ( 1, 0), (2, 0)]
+        case .J: return [(0, 0), (-1, 1), (-1, 0), (1, 0)]
+        case .L: return [(0, 0), (-1, 0), ( 1, 0), (1, 1)]
+        case .O: return [(0, 0), ( 0, 1), ( 1, 1), (1, 0)]
+        case .S: return [(0, 0), (-1, 0), ( 0, 1), (1, 1)]
+        case .T: return [(0, 0), (-1, 0), ( 1, 0), (0, 1)]
+        case .Z: return [(0, 0), (-1, 1), ( 0, 1), (1, 0)]
+        default: return []
+        }
+    }
+}
 
-    .S : [ .up:    [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .right: [( 0,  0), ( 1,  0), ( 1, -1), ( 0,  2), ( 1,  2)],
-           .down:  [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .left:  [( 0,  0), (-1,  0), (-1, -1), ( 0,  2), (-1,  2)]],
 
-    .T : [ .up:    [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .right: [( 0,  0), ( 1,  0), ( 1, -1), ( 0,  2), ( 1,  2)],
-           .down:  [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .left:  [( 0,  0), (-1,  0), (-1, -1), ( 0,  2), (-1,  2)]],
+// https://harddrop.com/wiki/SRS
+private extension Tetromino {
 
-    .Z : [ .up:    [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .right: [( 0,  0), ( 1,  0), ( 1, -1), ( 0,  2), ( 1,  2)],
-           .down:  [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)],
-           .left:  [( 0,  0), (-1,  0), (-1, -1), ( 0,  2), (-1,  2)]]]
+    func offsets(for orientation: Piece.Orientation) -> [Offset] {
+        switch self {
+        case .I:
+            switch orientation {
+            case .up:    return [( 0,  0), (-1,  0), ( 2,  0), (-1,  0), ( 2,  0)]
+            case .right: return [(-1,  0), ( 0,  0), ( 0,  0), ( 0,  1), ( 0, -2)] 
+            case .down:  return [(-1,  1), ( 1,  1), (-2,  1), ( 1,  0), (-2,  0)] 
+            case .left:  return [( 0,  1), ( 0,  1), ( 0,  1), ( 0, -1), ( 0,  2)]
+            }
+            
+        case .J, .L, .S, .T, .Z:
+            switch orientation {
+            case .up:    return [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)]
+            case .right: return [( 0,  0), ( 1,  0), ( 1, -1), ( 0,  2), ( 1,  2)]
+            case .down:  return [( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0), ( 0,  0)]
+            case .left:  return [( 0,  0), (-1,  0), (-1, -1), ( 0,  2), (-1,  2)]
+            }
+        case .O:
+            switch orientation {
+            case .up:    return [( 0,  0)]
+            case .right: return [( 0, -1)]
+            case .down:  return [(-1, -1)]
+            case .left:  return [(-1,  0)]
+            }                  
+        default:
+            return [(x: 0, y: 0)]
+        }
+    }
+
+    func kickOffsets(from fromOrientation: Piece.Orientation, to toOrientation: Piece.Orientation) -> [Offset] {
+        let fromOffsets = offsets(for: fromOrientation)
+        let toOffsets = offsets(for: toOrientation)
+        return zip(fromOffsets, toOffsets).map(-)
+    }
+}
+
+private func -(lhs: Offset, rhs: Offset) -> Offset {
+        return (x: lhs.x - rhs.x, y: lhs.y - rhs.y)
+}
+
+
 
 

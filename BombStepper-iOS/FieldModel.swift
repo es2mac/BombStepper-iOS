@@ -12,11 +12,10 @@ import Foundation
 final class FieldModel {
 
 
-
     enum StartPieceResult {
         case success
-        case atPlay
-        case blocked
+        case stillHasActivePiece
+        case obstructed
     }
 
 
@@ -26,6 +25,7 @@ final class FieldModel {
         didSet {
             oldValue?.blocks.forEach(setBlock)
             activePiece?.blocks.forEach(setBlock)
+            reportChanges()
         }
     }
 
@@ -35,9 +35,9 @@ final class FieldModel {
     }
 
     func startPiece(type: Tetromino) -> StartPieceResult {
-        guard activePiece == nil else { return .atPlay }
+//        guard activePiece == nil else { return .stillHasActivePiece }
 
-        activePiece = Piece.startingPiece(type: type)
+        activePiece = Piece(type: type, x: 4, y: 20, orientation: .up)
 
 
         
@@ -58,10 +58,12 @@ final class FieldModel {
         }
     }
 
+    private func reportChanges() {
+        updateBlocks(Array(unreportedChanges.values))
+        unreportedChanges.removeAll(keepingCapacity: true)
+    }
+
 }
-
-
-//private extension FieldModel.Piece {
 
 
 

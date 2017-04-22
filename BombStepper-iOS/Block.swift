@@ -9,9 +9,20 @@
 import Foundation
 
 
+typealias Offset = (x: Int, y: Int)
+
+
 struct Block {
     let mino: Tetromino
-    let x: Int
-    let y: Int
+    var x: Int
+    var y: Int
 }
+
+func +(lhs: Block, rhs: Offset) -> Block {
+    var block = lhs
+    block.x += rhs.x
+    block.y += rhs.y
+    return block
+}
+
 

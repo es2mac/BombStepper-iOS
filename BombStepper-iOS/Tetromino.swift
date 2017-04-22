@@ -9,6 +9,9 @@
 import UIKit
 
 
+
+// TODO: Here tetrominos should be only the 7 kinds, otherwise it's confused with Block
+// TODO: Tetromino doesn't need to be Int
 enum Tetromino: Int {
     case blank = 0
     case I, J, L, O, S, T, Z
