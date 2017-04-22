@@ -56,9 +56,9 @@ final class Field {
 
 extension Field {
 
-    // TODO: rotation
-    // TODO: piece lock, lock timing
+    // TODO: timed gravity drop
     // TODO: line clear
+    // TODO: lock timing
 
     
     /// Top out is reported here
@@ -67,8 +67,9 @@ extension Field {
         guard activePiece == nil else { return .stillHasActivePiece }
 
 //        let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
-        let piece = Piece(type: type, x: 4, y: 10, orientation: .up)
-        // check if piece obstructed, if it is then we topped out
+        let piece = Piece(type: type, x: 4, y: 18, orientation: .up)
+
+        if pieceIsObstructed(piece) { return .toppedOut }
 
         activePiece = piece
         
@@ -86,8 +87,8 @@ extension Field {
         case .hardDrop: hardDrop()
         case .softDrop: softDrop()
         case .hold: break
-        case .rotateLeft: activePiece = activePiece?.kickCandidatesForRotatingLeft()[0]   // TODO: kicking and stuff
-        case .rotateRight: activePiece = activePiece?.kickCandidatesForRotatingRight()[0]
+        case .rotateLeft: rotateLeft()
+        case .rotateRight: rotateRight()
         case .none: break
         }
 
@@ -108,7 +109,7 @@ extension Field {
 
     func update() {
 
-        // TODO: soft drop
+        // TODO: gravity drop & timing stuff
     }
 
 }
@@ -141,6 +142,20 @@ private extension Field {
         let canMove = !pieceIsObstructed(piece)
         if canMove { activePiece = piece }
         return canMove
+    }
+
+    func rotateRight() {
+        activePiece.map { rotateToFirstAvailablePosition(in: $0.kickCandidatesForRotatingRight()) }
+    }
+
+    func rotateLeft() {
+        activePiece.map { rotateToFirstAvailablePosition(in: $0.kickCandidatesForRotatingLeft()) }
+    }
+
+    private func rotateToFirstAvailablePosition(in candidates: [Piece]) {
+        if let piece = candidates.first(where: { !pieceIsObstructed($0) }) {
+            activePiece = piece
+        }
     }
 
     // Rules for free space: within 10 x 40, either blank or is active piece's space
