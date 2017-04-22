@@ -12,13 +12,15 @@ import GameplayKit
 
 final class GameScene: SKScene {
 
-    private var dasManager: DASManager!
     private var controllerNode: ControllerNode?
     private var playfieldNode: PlayfieldNode?
 
+    private var dasManager: DASManager!
+    private var field: Field!
+
     override func didMove(to view: SKView) {
         setupControllerNode()
-        setupPlayfieldNode()
+        setupPlayfield()
         setupDASManager()
     }
     
@@ -26,10 +28,19 @@ final class GameScene: SKScene {
         dasManager.update()
     }
 
+    var tetro = 0
+
     private func buttonDown(_ button: Button, isDown: Bool) {
+
+        
+        if isDown {
+            tetro = (tetro + 1) % 7
+            let mino = Tetromino(rawValue: tetro)!
+            field.startPiece(type: mino)
+        }
+
         
         let dasManagerCall = isDown ? dasManager.inputBegan : dasManager.inputEnded
-
         
         switch button {
         case .moveLeft:
@@ -65,7 +76,7 @@ final class GameScene: SKScene {
         controllerNode = node
     }
 
-    private func setupPlayfieldNode() {
+    private func setupPlayfield() {
         guard playfieldNode?.sceneSize != size else { return }
         playfieldNode?.removeFromParent()
         let node = PlayfieldNode(sceneSize: size)
@@ -73,8 +84,12 @@ final class GameScene: SKScene {
         addChild(node)
         node.fadeIn()
         playfieldNode = node
-    }
 
+        guard field == nil else { return }
+        field = Field(updateBlocks: { [weak self] blocks in
+            self?.playfieldNode?.place(blocks: blocks)
+        })
+    }
 
     private func setupDASManager() {
         dasManager = DASManager(performDAS: { direction in

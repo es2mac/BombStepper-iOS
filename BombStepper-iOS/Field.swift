@@ -34,7 +34,7 @@ final class Field {
 
     fileprivate var activePiece: Piece? {
         didSet {
-            oldValue?.blocks.forEach(setBlock)
+            oldValue?.blocks.forEach(clearBlock)
             activePiece?.blocks.forEach(setBlock)
             reportChanges()
         }
@@ -48,12 +48,14 @@ final class Field {
 }
 
 
-private extension Field {
+extension Field {
 
+    @discardableResult
     func startPiece(type: Tetromino) -> StartPieceResult {
 //        guard activePiece == nil else { return .stillHasActivePiece }
 
-        activePiece = Piece(type: type, x: 4, y: 20, orientation: .up)
+//        activePiece = Piece(type: type, x: 4, y: 20, orientation: .up)
+        activePiece = Piece(type: type, x: 4, y: 10, orientation: .up)
 
 
         
@@ -69,10 +71,22 @@ private extension Field {
 private extension Field {
 
     func setBlock(_ block: Block) {
+        setBlock(block, clear: false)
+    }
+
+    func clearBlock(_ block: Block) {
+        setBlock(block, clear: true)
+    }
+
+    private func setBlock(_ block: Block, clear: Bool) {
+        let type = clear ? .blank : block.type
+        let newBlock = clear ? Block(type: .blank, x: block.x, y: block.y) : block
         let i = block.x + block.y * 10
-        if blockTypes[i] != block.type {
-            blockTypes[i] = block.type
-            unreportedChanges[i] = block
+        if blockTypes[i] != type {
+            blockTypes[i] = type
+            if i < 10 * 20 {
+                unreportedChanges[i] = newBlock
+            }
         }
     }
 
