@@ -21,7 +21,21 @@ typealias ButtonMap = [SKShapeNode : Button]
 final class ControllerNode: SKNode {
 
     let sceneSize: CGSize
-    private let buttonDownAction: (Button, _ isDown: Bool) -> Void
+    fileprivate let buttonDownAction: (Button, _ isDown: Bool) -> Void
+
+    fileprivate let buttons: [SKShapeNode]
+    fileprivate var buttonMap: ButtonMap
+    private let settingManager: SettingManager
+    fileprivate var settings: SettingManager.Settings {
+        didSet {
+            TouchData.swipeDropEnabled = settings.swipeDropEnabled
+            TouchData.swipeDownThreshold = settings.swipeDownThreshold
+            buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
+        }
+    }
+
+    // Stores touches that correspond to buttons to calculate swipe speed
+    fileprivate var touchesData = [UITouch : TouchData]()
 
 
     init(sceneSize: CGSize, buttonDownAction: @escaping (Button, _ isDown: Bool) -> Void) {
@@ -55,19 +69,27 @@ final class ControllerNode: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    fileprivate let buttons: [SKShapeNode]
-    private var buttonMap: ButtonMap
-    private let settingManager: SettingManager
-    private var settings: SettingManager.Settings {
-        didSet {
-            TouchData.swipeDropEnabled = settings.swipeDropEnabled
-            TouchData.swipeDownThreshold = settings.swipeDownThreshold
-            buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
-        }
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchDown)
     }
 
+    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchMoved)
+    }
 
-    final private class TouchData {
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchUp)
+    }
+
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        touches.forEach(touchUp)
+    }
+
+}
+
+private extension ControllerNode {
+
+    final class TouchData {
         static var swipeDropEnabled = true
         static var swipeDownThreshold = 1000.0
 
@@ -98,11 +120,7 @@ final class ControllerNode: SKNode {
         }
     }
 
-
-    // Stores touches that correspond to buttons to calculate swipe speed
-    private var touchesData = [UITouch : TouchData]()
-
-    private func touchDown(_ touch: UITouch) {
+    func touchDown(_ touch: UITouch) {
         let location = touch.location(in: self)
         if let node = nodes(at: location).first as? SKShapeNode {
             touchesData[touch] = TouchData(node: node, time: touch.timestamp, y: location.y)
@@ -111,7 +129,7 @@ final class ControllerNode: SKNode {
         }
     }
 
-    private func touchMoved(_ touch: UITouch) {
+    func touchMoved(_ touch: UITouch) {
         guard let data = touchesData[touch] else { return }
 
         // Swipe down test
@@ -143,31 +161,15 @@ final class ControllerNode: SKNode {
 
     }
 
-    private func touchUp(_ touch: UITouch) {
+    func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
             node.alpha = Alpha.releasedButton
             buttonDownAction(buttonMap[node]!, false)
         }
     }
 
-    private func stopAllTouches() {
+    func stopAllTouches() {
         Array(touchesData.keys).forEach(touchUp)
-    }
-
-    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(touchDown)
-    }
-
-    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(touchMoved)
-    }
-
-    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(touchUp)
-    }
-
-    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(touchUp)
     }
 }
 

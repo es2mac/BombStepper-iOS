@@ -46,9 +46,20 @@ final class Field {
         }
     }
 
+    fileprivate var dasFrameCount = 0
+
+    private let settingManager: SettingManager
+    fileprivate var settings: SettingManager.Settings
+
     init(delegate: FieldDelegate?) {
         self.delegate = delegate
         allTypes = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
+        settingManager = SettingManager()
+        settings = SettingManager.Settings.initial
+
+        defer {
+            settingManager.updateSettingsAction = { [weak self] in self?.settings = $0 }
+        }
     }
 
 }
@@ -96,6 +107,10 @@ extension Field {
     }
 
     func process(das: DASManager.Direction) {
+        dasFrameCount += 1
+        guard dasFrameCount >= settings.dasFrames else { return }
+        dasFrameCount = 0
+
         let offset: Offset
         switch das {
         case .left:
@@ -103,7 +118,11 @@ extension Field {
         case .right:
             offset = (x: 1, y: 0)
         }
-        while moveActivePiece(offset) { }
+
+        if moveActivePiece(offset), settings.dasFrames == 0 {
+            while moveActivePiece(offset) { }
+        }
+        
         reportChanges()
     }
 

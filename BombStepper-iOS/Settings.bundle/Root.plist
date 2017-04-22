@@ -8,7 +8,7 @@
 	<array>
 		<dict>
 			<key>FooterText</key>
-			<string>Move a piece quickly by holding the left or right button. DAS is the amount of time (measured in frames, typically 1/60 second) one needs to hold down a button before autorepeat kicks in.</string>
+			<string>Move a piece quickly by holding the left or right button. Delay is the amount of time (measured in frames, typically 1/60 second) one needs to hold down a button before autorepeat kicks in, and Shiftign Speed is how fast the piece will move on autorepeat.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
@@ -18,7 +18,7 @@
 			<key>Type</key>
 			<string>PSMultiValueSpecifier</string>
 			<key>Title</key>
-			<string>DAS</string>
+			<string>Delay</string>
 			<key>Values</key>
 			<array>
 				<integer>6</integer>
@@ -43,6 +43,32 @@
 			<integer>9</integer>
 			<key>Key</key>
 			<string>dasValue</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Shifting Speed</string>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>4</integer>
+				<integer>10</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Instant</string>
+				<string>100%</string>
+				<string>50%</string>
+				<string>25%</string>
+				<string>10%</string>
+			</array>
+			<key>DefaultValue</key>
+			<integer>1</integer>
+			<key>Key</key>
+			<string>dasFrames</string>
 		</dict>
 		<dict>
 			<key>Type</key>
