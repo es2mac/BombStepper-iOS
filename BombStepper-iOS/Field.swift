@@ -35,7 +35,7 @@ final class Field {
 
     fileprivate weak var delegate: FieldDelegate?
     // Data for the whole 40 x 10 field
-    fileprivate var allTypes: [Block.BlockType]
+    fileprivate var allBlocks: [Block.BlockType]
     // Changes are keyed by their index, so multiple changes on same place is overridden
     fileprivate var unreportedChanges: [Int : (newBlock: Block, oldType:Block.BlockType)] = [:]
 
@@ -54,7 +54,7 @@ final class Field {
 
     init(delegate: FieldDelegate?) {
         self.delegate = delegate
-        allTypes = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
+        allBlocks = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
         settingManager = SettingManager()
         settings = SettingManager.Settings.initial
 
@@ -141,14 +141,14 @@ private extension Field {
         softDropFrameCount += 1
         guard softDropFrameCount >= settings.softDropFrames else { return }
         softDropFrameCount = 0
-        
+
         if moveActivePiece((x: 0, y: -1)), settings.softDropFrames == 0 {
             while moveActivePiece((x: 0, y: -1)) { }
         }
     }
 
     func hardDrop() {
-        softDrop()
+        while moveActivePiece((x: 0, y: -1)) { }
         lockDown()
     }
     
@@ -156,6 +156,27 @@ private extension Field {
         guard let piece = activePiece else { return }
         activePiece = nil
         piece.blocks.forEach(setBlock)
+
+        clearCompletedLines()
+
+        delegate?.fieldActivePieceDidLock()
+    }
+
+    // Temporary.  May be more complicated
+    func clearCompletedLines() {
+        var clearedLinesCount = 0
+        for y in 0 ..< 24 {
+            let currentLine = allBlocks[(y * 10) ..< ((y + 1) * 10)]
+            if !currentLine.contains(.blank) {
+                clearedLinesCount += 1
+            }
+            else if clearedLinesCount > 0 { // Shift this incomplete line down by the number of lines cleared so far
+                for (index, type) in currentLine.enumerated() {
+                    let block = Block(type: type, x: index % 10, y: y - clearedLinesCount)
+                    setBlock(block)
+                }
+            }
+        }
     }
 
     // Returns whether move was successful
@@ -191,7 +212,7 @@ private extension Field {
         for block in piece.blocks {
             if !(0 ..< 10 ~= block.x) { return true }
             if !(0 ..< 40 ~= block.y) { return true }
-            if allTypes[block.x + block.y * 10] != .blank,
+            if allBlocks[block.x + block.y * 10] != .blank,
                 !activePieceBlocks.contains(where: { $0.x == block.x && $0.y == block.y }) {
                 return true
             }
@@ -215,9 +236,9 @@ private extension Field {
         let i = block.x + block.y * 10
         let type = clear ? .blank : block.type
 
-        guard allTypes[i] != type else { return }
-        let previousType = allTypes[i]
-        allTypes[i] = type
+        guard allBlocks[i] != type else { return }
+        let previousType = allBlocks[i]
+        allBlocks[i] = type
 
         guard i < 10 * 20 else { return }
 

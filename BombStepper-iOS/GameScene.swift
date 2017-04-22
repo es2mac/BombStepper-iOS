@@ -13,14 +13,18 @@ import GameplayKit
 final class GameScene: SKScene {
 
     private var controllerNode: ControllerNode?
+
     fileprivate var playfieldNode: PlayfieldNode?
 
+    fileprivate var field: Field!
+    fileprivate var tetrominoRandomizer: TetrominoRandomizer!
+    
     private var dasManager: DASManager!
-    private var field: Field!
 
     override func didMove(to view: SKView) {
         setupControllerNode()
-        setupPlayfield()
+        setupPlayfieldNode()
+        setupTetrisSystem()
         setupDASManager()
     }
     
@@ -30,16 +34,12 @@ final class GameScene: SKScene {
         controllerNode?.update()
     }
 
-    var tetro = 0
-
     private func buttonDown(_ button: Button, isDown: Bool) {
 
 
         // debug
         if case .hold = button, isDown == true {
-            let mino = Tetromino(rawValue: tetro)!
-            field.startPiece(type: mino)
-            tetro = (tetro + 1) % 7
+            field.startPiece(type: tetrominoRandomizer.popNext())
         }
 
 
@@ -73,7 +73,7 @@ final class GameScene: SKScene {
         controllerNode = node
     }
 
-    private func setupPlayfield() {
+    private func setupPlayfieldNode() {
         guard playfieldNode?.sceneSize != size else { return }
         playfieldNode?.removeFromParent()
         let node = PlayfieldNode(sceneSize: size)
@@ -81,9 +81,12 @@ final class GameScene: SKScene {
         addChild(node)
         node.fadeIn()
         playfieldNode = node
+    }
 
+    private func setupTetrisSystem() {
         guard field == nil else { return }
         field = Field(delegate: self)
+        tetrominoRandomizer = TetrominoRandomizer()
     }
 
     private func setupDASManager() {
@@ -102,6 +105,8 @@ extension GameScene: FieldDelegate {
 
     func fieldActivePieceDidLock() {
         // TODO
+        
+        field.startPiece(type: tetrominoRandomizer.popNext())
     }
 }
 
