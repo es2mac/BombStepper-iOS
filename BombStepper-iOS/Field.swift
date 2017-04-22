@@ -119,20 +119,34 @@ private extension Field {
     }
 
     private func setBlock(_ block: Block, clear: Bool) {
-        let type = clear ? .blank : block.type
-        let newBlock = clear ? Block(type: .blank, x: block.x, y: block.y) : block
         let i = block.x + block.y * 10
-        if blockTypes[i] != type {
-            blockTypes[i] = type
-            if i < 10 * 20 {
-                unreportedChanges[i] = newBlock
+        let type = clear ? .blank : block.type
+
+        guard blockTypes[i] != type else { return }
+        let previousType = blockTypes[i]
+        blockTypes[i] = type
+
+        guard i < 10 * 20 else { return }
+
+        // Change changeset as smartly as possible
+        let newBlock = clear ? Block(type: .blank, x: block.x, y: block.y) : block
+
+        if let (_, oldType) = unreportedChanges[i] {
+            if type == oldType {
+                unreportedChanges.removeValue(forKey: i)
             }
+            else {
+                unreportedChanges[i] = (newBlock: newBlock, oldType: oldType)
+            }
+        }
+        else {
+            unreportedChanges[i] = (newBlock: newBlock, oldType: previousType)
         }
     }
 
     func reportChanges() {
         guard !unreportedChanges.isEmpty else { return }
-        delegate?.updateField(blocks: Array(unreportedChanges.values))
+        delegate?.updateField(blocks: unreportedChanges.map { $0.value.newBlock })
         unreportedChanges.removeAll(keepingCapacity: true)
     }
 
