@@ -9,11 +9,18 @@
 import Foundation
 
 
+protocol FieldDelegate: class {
+    func updateField(blocks: [Block])
+    func fieldActivePieceDidLock()
+}
+
+
 /**
  A field is a model of what is presently on the playfield.  It handles the logic
  of how the playing piece behave on the field, reports how field changes at the
- individual blocks level, and handles piece locking / line clears.  The field
- size is 40 x 10, of which the lower half is visible (and change is reported).
+ individual blocks level, and handles things like piece locking, line clears, 
+ and top out. The field size is 40 x 10, twice as high as the visible part.
+ Only changes in the visible half is reported.
  */
 final class Field {
 
@@ -25,24 +32,22 @@ final class Field {
     }
 
 
-    // 
+    fileprivate weak var delegate: FieldDelegate?
+    // Data for the whole 40 x 10 field
     fileprivate var blockTypes: [Block.BlockType]
     // Changes are keyed by their index, so multiple changes on same place is overridden
     fileprivate var unreportedChanges: [Int : Block] = [:]
-
-    fileprivate let updateBlocks: ([Block]) -> Void
 
     fileprivate var activePiece: Piece? {
         didSet {
             oldValue?.blocks.forEach(clearBlock)
             activePiece?.blocks.forEach(setBlock)
-            reportChanges()
         }
     }
 
-    init(updateBlocks: @escaping ([Block]) -> Void) {
+    init(delegate: FieldDelegate?) {
+        self.delegate = delegate
         blockTypes = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
-        self.updateBlocks = updateBlocks
     }
 
 }
@@ -50,19 +55,46 @@ final class Field {
 
 extension Field {
 
+    // TODO: handle inputs
+    // TODO: piece lock, lock timing
+    // TODO: line clear
+
+    
+    /// Top out is reported here
     @discardableResult
     func startPiece(type: Tetromino) -> StartPieceResult {
 //        guard activePiece == nil else { return .stillHasActivePiece }
 
 //        activePiece = Piece(type: type, x: 4, y: 20, orientation: .up)
+        
         activePiece = Piece(type: type, x: 4, y: 10, orientation: .up)
+        reportChanges()
 
 
         
-
-        // TODO: Top-out logic
-
         return .success
+    }
+
+    func process(input: Button) {
+        switch input {
+        case .moveLeft:
+            activePiece?.x -= 1
+        case .moveRight:
+            activePiece?.x += 1
+        case .hardDrop:
+            activePiece = nil
+        case .softDrop:
+            activePiece?.y -= 1
+        case .hold:
+            break
+        case .rotateLeft:
+            activePiece?.y += 1
+        case .rotateRight:
+            activePiece?.y += 1
+        case .none:
+            break
+        }
+        reportChanges()
     }
 
 }
@@ -91,7 +123,8 @@ private extension Field {
     }
 
     func reportChanges() {
-        updateBlocks(Array(unreportedChanges.values))
+        guard !unreportedChanges.isEmpty else { return }
+        delegate?.updateField(blocks: Array(unreportedChanges.values))
         unreportedChanges.removeAll(keepingCapacity: true)
     }
 

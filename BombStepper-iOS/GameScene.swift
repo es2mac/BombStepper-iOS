@@ -13,7 +13,7 @@ import GameplayKit
 final class GameScene: SKScene {
 
     private var controllerNode: ControllerNode?
-    private var playfieldNode: PlayfieldNode?
+    fileprivate var playfieldNode: PlayfieldNode?
 
     private var dasManager: DASManager!
     private var field: Field!
@@ -32,14 +32,19 @@ final class GameScene: SKScene {
 
     private func buttonDown(_ button: Button, isDown: Bool) {
 
-        
-        if isDown {
-            tetro = (tetro + 1) % 7
+
+        // debug
+        if case .hold = button, isDown == true {
             let mino = Tetromino(rawValue: tetro)!
             field.startPiece(type: mino)
+            tetro = (tetro + 1) % 7
         }
 
-        
+
+        if isDown {
+            field.process(input: button)
+        }
+
         let dasManagerCall = isDown ? dasManager.inputBegan : dasManager.inputEnded
         
         switch button {
@@ -47,16 +52,6 @@ final class GameScene: SKScene {
             dasManagerCall(.left)
         case .moveRight:
             dasManagerCall(.right)
-            break
-        case .hardDrop:
-//            if isDown { mino.0 -= 1 }
-            break
-        case .softDrop:
-            break
-        case .rotateLeft:
-            break
-        case .rotateRight:
-            break
         default:
             return
         }
@@ -86,9 +81,7 @@ final class GameScene: SKScene {
         playfieldNode = node
 
         guard field == nil else { return }
-        field = Field(updateBlocks: { [weak self] blocks in
-            self?.playfieldNode?.place(blocks: blocks)
-        })
+        field = Field(delegate: self)
     }
 
     private func setupDASManager() {
@@ -100,6 +93,18 @@ final class GameScene: SKScene {
                 break
             }
         })
+    }
+}
+
+
+extension GameScene: FieldDelegate {
+
+    func updateField(blocks: [Block]) {
+        self.playfieldNode?.place(blocks: blocks)
+    }
+
+    func fieldActivePieceDidLock() {
+        // TODO
     }
 }
 
