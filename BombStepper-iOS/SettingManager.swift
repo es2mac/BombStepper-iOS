@@ -27,6 +27,7 @@ final class SettingManager {
 
         private enum SettingKey: String {
             case dasValue, dasFrames
+            case softDropFrames
             case swipeDropEnabled   
             case swipeDownThreshold
             case lrSwipeEnabled
@@ -38,6 +39,7 @@ final class SettingManager {
         fileprivate static let initialValuesDictionary: [String : Any] =
             [ SettingKey.dasValue.rawValue : 9,
               SettingKey.dasFrames.rawValue : 1,
+              SettingKey.softDropFrames.rawValue : 1,
               SettingKey.swipeDropEnabled.rawValue : true,
               SettingKey.swipeDownThreshold.rawValue : 1000.0,
               SettingKey.lrSwipeEnabled.rawValue : true,
@@ -57,6 +59,7 @@ final class SettingManager {
 
         let dasValue: Int
         let dasFrames: Int
+        let softDropFrames: Int
         let swipeDropEnabled: Bool
         let swipeDownThreshold: Double
         let lrSwipeEnabled: Bool
@@ -80,6 +83,7 @@ final class SettingManager {
         init(dictionary: [String : Any]) {
             dasValue           = dictionary[SettingKey.dasValue.rawValue] as! Int
             dasFrames          = dictionary[SettingKey.dasFrames.rawValue] as! Int
+            softDropFrames     = dictionary[SettingKey.softDropFrames.rawValue] as! Int
             swipeDropEnabled   = dictionary[SettingKey.swipeDropEnabled.rawValue] as! Bool
             swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold.rawValue] as! Double
             lrSwipeEnabled     = dictionary[SettingKey.lrSwipeEnabled.rawValue] as! Bool

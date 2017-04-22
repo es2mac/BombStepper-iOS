@@ -85,6 +85,13 @@ final class ControllerNode: SKNode {
         touches.forEach(touchUp)
     }
 
+    // Let soft drop be continuously-firing
+    func update() {
+        if touchesData.values.contains(where: { $0.button == .softDrop }) {
+            buttonDownAction(.softDrop, true)
+        }
+    }
+
 }
 
 private extension ControllerNode {
@@ -94,12 +101,14 @@ private extension ControllerNode {
         static var swipeDownThreshold = 1000.0
 
         let node: SKShapeNode
+        let button: Button
         var speeds: [Double] = []
         var lastTime: TimeInterval
         var lastY: CGFloat
 
-        init(node: SKShapeNode, time: TimeInterval, y: CGFloat) {
+        init(node: SKShapeNode, button: Button, time: TimeInterval, y: CGFloat) {
             self.node = node
+            self.button = button
             self.lastTime = time
             self.lastY = y
         }
@@ -122,10 +131,11 @@ private extension ControllerNode {
 
     func touchDown(_ touch: UITouch) {
         let location = touch.location(in: self)
-        if let node = nodes(at: location).first as? SKShapeNode {
-            touchesData[touch] = TouchData(node: node, time: touch.timestamp, y: location.y)
+        if let node = nodes(at: location).first as? SKShapeNode,
+            let button = buttonMap[node] {
+            touchesData[touch] = TouchData(node: node, button: button, time: touch.timestamp, y: location.y)
             node.alpha = Alpha.pressedButton
-            buttonDownAction(buttonMap[node]!, true)
+            buttonDownAction(button, true)
         }
     }
 
@@ -143,7 +153,7 @@ private extension ControllerNode {
         // LR swipe test
         guard settings.lrSwipeEnabled else { return }
         
-        let button = buttonMap[data.node]!
+        let button = data.button
         let oppositeButton: Button
         switch button {
         case .moveLeft: oppositeButton = .moveRight

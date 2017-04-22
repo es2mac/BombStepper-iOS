@@ -47,6 +47,7 @@ final class Field {
     }
 
     fileprivate var dasFrameCount = 0
+    fileprivate var softDropFrameCount = 0
 
     private let settingManager: SettingManager
     fileprivate var settings: SettingManager.Settings
@@ -122,7 +123,7 @@ extension Field {
         if moveActivePiece(offset), settings.dasFrames == 0 {
             while moveActivePiece(offset) { }
         }
-        
+
         reportChanges()
     }
 
@@ -137,7 +138,13 @@ extension Field {
 private extension Field {
 
     func softDrop()  {
-        while moveActivePiece((x: 0, y: -1)) { }
+        softDropFrameCount += 1
+        guard softDropFrameCount >= settings.softDropFrames else { return }
+        softDropFrameCount = 0
+        
+        if moveActivePiece((x: 0, y: -1)), settings.softDropFrames == 0 {
+            while moveActivePiece((x: 0, y: -1)) { }
+        }
     }
 
     func hardDrop() {

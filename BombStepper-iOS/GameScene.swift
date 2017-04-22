@@ -27,6 +27,7 @@ final class GameScene: SKScene {
     override func update(_ currentTime: TimeInterval) {
         dasManager.update()
         field.update()
+        controllerNode?.update()
     }
 
     var tetro = 0

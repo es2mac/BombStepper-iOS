@@ -73,6 +73,38 @@
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Soft Drop Speed</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSMultiValueSpecifier</string>
+			<key>Title</key>
+			<string>Speed</string>
+			<key>Values</key>
+			<array>
+				<integer>0</integer>
+				<integer>1</integer>
+				<integer>2</integer>
+				<integer>4</integer>
+				<integer>10</integer>
+			</array>
+			<key>Titles</key>
+			<array>
+				<string>Instant</string>
+				<string>100%</string>
+				<string>50%</string>
+				<string>25%</string>
+				<string>10%</string>
+			</array>
+			<key>DefaultValue</key>
+			<integer>1</integer>
+			<key>Key</key>
+			<string>softDropFrames</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
 			<string>After tapping down on a button, swipe down quickly to perform a hard drop. Setting a lower minimum speed makes it easier to trigger.</string>
 			<key>Title</key>
