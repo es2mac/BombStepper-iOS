@@ -26,6 +26,7 @@ final class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         dasManager.update()
+        field.update()
     }
 
     var tetro = 0
@@ -85,13 +86,8 @@ final class GameScene: SKScene {
     }
 
     private func setupDASManager() {
-        dasManager = DASManager(performDAS: { direction in
-            switch direction {
-            case .left:
-                break
-            case .right:
-                break
-            }
+        dasManager = DASManager(performDAS: { [weak self] direction in
+            self?.field.process(das: direction)
         })
     }
 }

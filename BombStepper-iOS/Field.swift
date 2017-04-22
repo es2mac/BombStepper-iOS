@@ -20,7 +20,8 @@ protocol FieldDelegate: class {
  of how the playing piece behave on the field, reports how field changes at the
  individual blocks level, and handles things like piece locking, line clears, 
  and top out. The field size is 40 x 10, twice as high as the visible part.
- Only changes in the visible half is reported.
+ Only changes in the visible half is reported.  For soft drop lock timing,
+ call update for each scene tick.
  */
 final class Field {
 
@@ -34,9 +35,9 @@ final class Field {
 
     fileprivate weak var delegate: FieldDelegate?
     // Data for the whole 40 x 10 field
-    fileprivate var blockTypes: [Block.BlockType]
+    fileprivate var allTypes: [Block.BlockType]
     // Changes are keyed by their index, so multiple changes on same place is overridden
-    fileprivate var unreportedChanges: [Int : Block] = [:]
+    fileprivate var unreportedChanges: [Int : (newBlock: Block, oldType:Block.BlockType)] = [:]
 
     fileprivate var activePiece: Piece? {
         didSet {
@@ -47,7 +48,7 @@ final class Field {
 
     init(delegate: FieldDelegate?) {
         self.delegate = delegate
-        blockTypes = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
+        allTypes = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
     }
 
 }
@@ -80,17 +81,17 @@ extension Field {
 
         switch input {
         case .moveLeft:
-            activePiece?.x -= 1
+            moveActivePiece((x: -1, y: 0))
         case .moveRight:
-            activePiece?.x += 1
+            moveActivePiece((x: 1, y: 0))
         case .hardDrop:
             activePiece = nil
         case .softDrop:
-            activePiece?.y -= 1
+            moveActivePiece((x: 0, y: -1))
         case .hold:
             break
         case .rotateLeft:
-            activePiece = activePiece?.kickCandidatesForRotatingLeft()[0]
+            activePiece = activePiece?.kickCandidatesForRotatingLeft()[0]   // TODO: kicking and stuff
         case .rotateRight:
             activePiece = activePiece?.kickCandidatesForRotatingRight()[0]
         case .none:
@@ -101,10 +102,53 @@ extension Field {
     }
 
     func process(das: DASManager.Direction) {
-
-        // TODO
+        let offset: Offset
+        switch das {
+        case .left:
+            offset = (x: -1, y: 0)
+        case .right:
+            offset = (x: 1, y: 0)
+        }
+        while moveActivePiece(offset) { }
+        reportChanges()
     }
 
+    func update() {
+
+        // TODO: soft drop
+    }
+
+}
+
+
+private extension Field {
+
+    // Returns whether move was successful
+    // Remember to manually reportChanges()
+    @discardableResult
+    func moveActivePiece(_ offset: Offset) -> Bool {
+        guard var piece = activePiece else { return false }
+        piece.x += offset.x
+        piece.y += offset.y
+        let canMove = !pieceIsObstructed(piece)
+        if canMove { activePiece = piece }
+        return canMove
+    }
+
+    // Rules for free space: within 10 x 40, either blank or is active piece's space
+    // because this is used to check if active piece can move
+    func pieceIsObstructed(_ piece: Piece) -> Bool {
+        let activePieceBlocks = activePiece?.blocks ?? []
+        for block in piece.blocks {
+            if !(0 ..< 10 ~= block.x) { return true }
+            if !(0 ..< 40 ~= block.y) { return true }
+            if allTypes[block.x + block.y * 10] != .blank,
+                !activePieceBlocks.contains(where: { $0.x == block.x && $0.y == block.y }) {
+                return true
+            }
+        }
+        return false
+    }
 }
 
 
@@ -122,9 +166,9 @@ private extension Field {
         let i = block.x + block.y * 10
         let type = clear ? .blank : block.type
 
-        guard blockTypes[i] != type else { return }
-        let previousType = blockTypes[i]
-        blockTypes[i] = type
+        guard allTypes[i] != type else { return }
+        let previousType = allTypes[i]
+        allTypes[i] = type
 
         guard i < 10 * 20 else { return }
 
