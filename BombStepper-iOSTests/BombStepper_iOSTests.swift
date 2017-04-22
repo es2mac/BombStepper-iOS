@@ -22,24 +22,24 @@ class FieldModelPieceTests: XCTestCase {
     }
     
     func testRotatedLeft() {
-        let piece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .left)
-        let leftRotatedPiece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .down)
+        let piece = Piece(type: .T, x: 5, y: 8, orientation: .left)
+        let leftRotatedPiece = Piece(type: .T, x: 5, y: 8, orientation: .down)
         XCTAssert(piece.rotatedLeft() == leftRotatedPiece)
     }
     
     func testRotatedRight() {
-        let piece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .up)
-        let rightRotatedPiece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .right)
+        let piece = Piece(type: .T, x: 5, y: 8, orientation: .up)
+        let rightRotatedPiece = Piece(type: .T, x: 5, y: 8, orientation: .right)
         XCTAssert(piece.rotatedRight() == rightRotatedPiece)
     }
 
     func testKickStates() {
-        let piece = FieldModel.Piece(type: .T, x: 3, y: 3, orientation: .right)
+        let piece = Piece(type: .T, x: 3, y: 3, orientation: .right)
         let states = [piece,
-                      FieldModel.Piece(type: .T, x: 4, y: 3, orientation: .right),
-                      FieldModel.Piece(type: .T, x: 4, y: 2, orientation: .right),
-                      FieldModel.Piece(type: .T, x: 3, y: 5, orientation: .right),
-                      FieldModel.Piece(type: .T, x: 4, y: 5, orientation: .right)]
+                      Piece(type: .T, x: 4, y: 3, orientation: .right),
+                      Piece(type: .T, x: 4, y: 2, orientation: .right),
+                      Piece(type: .T, x: 3, y: 5, orientation: .right),
+                      Piece(type: .T, x: 4, y: 5, orientation: .right)]
 
         var count = 0
         for (i, p) in piece.kickStates.enumerated() {
@@ -59,12 +59,3 @@ class FieldModelPieceTests: XCTestCase {
     
 }
 
-extension FieldModel.Piece: Equatable {
-    static public func ==(lhs: FieldModel.Piece, rhs: FieldModel.Piece) -> Bool {
-        if lhs.type == rhs.type,
-            lhs.x == rhs.x,
-            lhs.y == rhs.y,
-            lhs.orientation == rhs.orientation { return true }
-        else { return false }
-    }
-}
