@@ -7,9 +7,9 @@
 //
 
 import XCTest
-@testable import BombStepper_iOS
+@testable import BombStepper
 
-class BombStepper_iOSTests: XCTestCase {
+class FieldModelPieceTests: XCTestCase {
     
     override func setUp() {
         super.setUp()
@@ -21,11 +21,35 @@ class BombStepper_iOSTests: XCTestCase {
         super.tearDown()
     }
     
-    func testExample() {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testRotatedLeft() {
+        let piece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .left)
+        let leftRotatedPiece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .down)
+        XCTAssert(piece.rotatedLeft() == leftRotatedPiece)
     }
     
+    func testRotatedRight() {
+        let piece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .up)
+        let rightRotatedPiece = FieldModel.Piece(type: .T, x: 5, y: 8, orientation: .right)
+        XCTAssert(piece.rotatedRight() == rightRotatedPiece)
+    }
+
+    func testKickStates() {
+        let piece = FieldModel.Piece(type: .T, x: 3, y: 3, orientation: .right)
+        let states = [piece,
+                      FieldModel.Piece(type: .T, x: 4, y: 3, orientation: .right),
+                      FieldModel.Piece(type: .T, x: 4, y: 2, orientation: .right),
+                      FieldModel.Piece(type: .T, x: 3, y: 5, orientation: .right),
+                      FieldModel.Piece(type: .T, x: 4, y: 5, orientation: .right)]
+
+        var count = 0
+        for (i, p) in piece.kickStates.enumerated() {
+            count += 1
+            XCTAssertEqual(p, states[i])
+        }
+
+        XCTAssertEqual(count, 5)
+    }
+
     func testPerformanceExample() {
         // This is an example of a performance test case.
         self.measure {
@@ -33,4 +57,14 @@ class BombStepper_iOSTests: XCTestCase {
         }
     }
     
+}
+
+extension FieldModel.Piece: Equatable {
+    static public func ==(lhs: FieldModel.Piece, rhs: FieldModel.Piece) -> Bool {
+        if lhs.type == rhs.type,
+            lhs.x == rhs.x,
+            lhs.y == rhs.y,
+            lhs.orientation == rhs.orientation { return true }
+        else { return false }
+    }
 }

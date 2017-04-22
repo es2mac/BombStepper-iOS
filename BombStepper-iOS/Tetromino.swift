@@ -50,7 +50,7 @@ extension Tetromino: Hashable { }
 extension Tetromino {
 
     /// This gives an image to be used on the playfield.  It's a rounded rect
-    /// that's offset by 1 point on the top and right edge, giving it a border
+    /// that's offset by 1 point from each edge, giving it a border
     func minoImage(side: CGFloat) -> UIImage {
         let rect = CGRect(x: 0, y: 0, width: side, height: side)
 

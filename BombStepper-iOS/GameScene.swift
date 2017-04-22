@@ -25,12 +25,23 @@ final class GameScene: SKScene {
         dasManager.update()
     }
 
+    var ttype = 1 {
+        didSet {
+            let tetromino = Tetromino(rawValue: ttype + 1)!
+            playfieldNode?.place(blocks: [Block(mino: tetromino, x: mino.0, y: mino.1)])
+        }
+    }
+
     var mino = (0, 0) {
         didSet {
-            let tetromino = Tetromino(rawValue: (mino.0 + mino.1) % 7 + 1)!
-            playfieldNode?.update(placements: [
-                (tetromino: tetromino, column: mino.0, row: mino.1),
-                (tetromino: .blank, column: oldValue.0, row: oldValue.1)])
+            guard (0 ..< 10 ~= mino.0) && (0 ..< 20 ~= mino.1) else {
+                mino = oldValue
+                return
+            }
+            let tetromino = Tetromino(rawValue: ttype + 1)!
+            playfieldNode?.place(blocks: [
+                Block(mino: .blank, x: oldValue.0, y: oldValue.1),
+                Block(mino: tetromino, x: mino.0, y: mino.1) ])
         }
     }
 
@@ -50,6 +61,10 @@ final class GameScene: SKScene {
             if isDown { mino.1 += 1 }
         case .softDrop:
             if isDown { mino.1 -= 1 }
+        case .rotateLeft:
+            if isDown { ttype = (ttype + 6) % 7 }
+        case .rotateRight:
+            if isDown { ttype = (ttype + 1) % 7 }
         default:
             return
         }
@@ -81,8 +96,13 @@ final class GameScene: SKScene {
 
 
     private func setupDASManager() {
-        dasManager = DASManager(performDAS: { direction in
-
+        dasManager = DASManager(performDAS: { [weak self] direction in
+            switch direction {
+            case .left:
+                self?.mino.0 = 0
+            case .right:
+                self?.mino.0 = 9
+            }
         })
     }
 }

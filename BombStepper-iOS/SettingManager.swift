@@ -10,14 +10,14 @@ import Foundation
 
 
 enum Button: String {
-    case moveLeft    = "moveLeft"
-    case moveRight   = "moveRight"
-    case hardDrop    = "hardDrop"
-    case softDrop    = "softDrop"
-    case hold        = "hold"
-    case rotateLeft  = "rotateLeft"
-    case rotateRight = "rotateRight"
-    case none        = "none"
+    case moveLeft
+    case moveRight
+    case hardDrop
+    case softDrop
+    case hold
+    case rotateLeft
+    case rotateRight
+    case none
 }
 
 
@@ -25,40 +25,31 @@ final class SettingManager {
 
     struct Settings {
 
-        private enum SettingKey {
-            static let dasValue           = "dasValue"
-            static let swipeDropEnabled   = "swipeDropEnabled"
-            static let swipeDownThreshold = "swipeDownThreshold"
-            static let button00           = "button00"
-            static let button01           = "button01"
-            static let button02           = "button02"
-            static let button03           = "button03"
-            static let button04           = "button04"
-            static let button05           = "button05"
-            static let button06           = "button06"
-            static let button07           = "button07"
-            static let button08           = "button08"
-            static let button09           = "button09"
-            static let button10           = "button10"
-            static let button11           = "button11"
+        private enum SettingKey: String {
+            case dasValue
+            case swipeDropEnabled   
+            case swipeDownThreshold 
+            case button00, button01, button02, button03
+            case button04, button05, button06, button07
+            case button08, button09, button10, button11
         }
 
         fileprivate static let initialValuesDictionary: [String : Any] =
-            [ SettingKey.dasValue : 9,
-              SettingKey.swipeDropEnabled : true,
-              SettingKey.swipeDownThreshold : 1000.0,
-              SettingKey.button00 : Button.hardDrop.rawValue,
-              SettingKey.button01 : Button.hardDrop.rawValue,
-              SettingKey.button02 : Button.moveLeft.rawValue,
-              SettingKey.button03 : Button.moveRight.rawValue,
-              SettingKey.button04 : Button.softDrop.rawValue,
-              SettingKey.button05 : Button.softDrop.rawValue,
-              SettingKey.button06 : Button.hold.rawValue,
-              SettingKey.button07 : Button.hold.rawValue,
-              SettingKey.button08 : Button.rotateLeft.rawValue,
-              SettingKey.button09 : Button.rotateRight.rawValue,
-              SettingKey.button10 : Button.none.rawValue,
-              SettingKey.button11 : Button.none.rawValue ]
+            [ SettingKey.dasValue.rawValue : 9,
+              SettingKey.swipeDropEnabled.rawValue : true,
+              SettingKey.swipeDownThreshold.rawValue : 1000.0,
+              SettingKey.button00.rawValue : Button.hardDrop.rawValue,
+              SettingKey.button01.rawValue : Button.hardDrop.rawValue,
+              SettingKey.button02.rawValue : Button.moveLeft.rawValue,
+              SettingKey.button03.rawValue : Button.moveRight.rawValue,
+              SettingKey.button04.rawValue : Button.softDrop.rawValue,
+              SettingKey.button05.rawValue : Button.softDrop.rawValue,
+              SettingKey.button06.rawValue : Button.hold.rawValue,
+              SettingKey.button07.rawValue : Button.hold.rawValue,
+              SettingKey.button08.rawValue : Button.rotateLeft.rawValue,
+              SettingKey.button09.rawValue : Button.rotateRight.rawValue,
+              SettingKey.button10.rawValue : Button.none.rawValue,
+              SettingKey.button11.rawValue : Button.none.rawValue ]
         
 
         let dasValue: Int
@@ -82,21 +73,21 @@ final class SettingManager {
 
 
         init(dictionary: [String : Any]) {
-            dasValue = dictionary[SettingKey.dasValue] as! Int
-            swipeDropEnabled = dictionary[SettingKey.swipeDropEnabled] as! Bool
-            swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold] as! Double
-            button00 = Button(rawValue: dictionary[SettingKey.button00] as! String)!
-            button01 = Button(rawValue: dictionary[SettingKey.button01] as! String)!
-            button02 = Button(rawValue: dictionary[SettingKey.button02] as! String)!
-            button03 = Button(rawValue: dictionary[SettingKey.button03] as! String)!
-            button04 = Button(rawValue: dictionary[SettingKey.button04] as! String)!
-            button05 = Button(rawValue: dictionary[SettingKey.button05] as! String)!
-            button06 = Button(rawValue: dictionary[SettingKey.button06] as! String)!
-            button07 = Button(rawValue: dictionary[SettingKey.button07] as! String)!
-            button08 = Button(rawValue: dictionary[SettingKey.button08] as! String)!
-            button09 = Button(rawValue: dictionary[SettingKey.button09] as! String)!
-            button10 = Button(rawValue: dictionary[SettingKey.button10] as! String)!
-            button11 = Button(rawValue: dictionary[SettingKey.button11] as! String)!
+            dasValue           = dictionary[SettingKey.dasValue.rawValue] as! Int
+            swipeDropEnabled   = dictionary[SettingKey.swipeDropEnabled.rawValue] as! Bool
+            swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold.rawValue] as! Double
+            button00 = Button(rawValue: dictionary[SettingKey.button00.rawValue] as! String)!
+            button01 = Button(rawValue: dictionary[SettingKey.button01.rawValue] as! String)!
+            button02 = Button(rawValue: dictionary[SettingKey.button02.rawValue] as! String)!
+            button03 = Button(rawValue: dictionary[SettingKey.button03.rawValue] as! String)!
+            button04 = Button(rawValue: dictionary[SettingKey.button04.rawValue] as! String)!
+            button05 = Button(rawValue: dictionary[SettingKey.button05.rawValue] as! String)!
+            button06 = Button(rawValue: dictionary[SettingKey.button06.rawValue] as! String)!
+            button07 = Button(rawValue: dictionary[SettingKey.button07.rawValue] as! String)!
+            button08 = Button(rawValue: dictionary[SettingKey.button08.rawValue] as! String)!
+            button09 = Button(rawValue: dictionary[SettingKey.button09.rawValue] as! String)!
+            button10 = Button(rawValue: dictionary[SettingKey.button10.rawValue] as! String)!
+            button11 = Button(rawValue: dictionary[SettingKey.button11.rawValue] as! String)!
         }
     }
 

@@ -9,9 +9,6 @@
 import SpriteKit
 
 
-typealias BlockPlacement = (tetromino: Tetromino, column: Int, row: Int)
-
-
 private let outerFrameWidth = 4
 private let innerFrameWidth = 1
 
@@ -72,10 +69,10 @@ final class PlayfieldNode: SKNode {
         tileMapNode.fill(with: tileGroup(for: .blank))
     }
 
-    func update(placements: [BlockPlacement])  {
+    func place(blocks: [Block])  {
         DispatchQueue.main.async {
-            placements.forEach {
-                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.tetromino), forColumn: $0.column, row: $0.row)
+            blocks.forEach {
+                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.mino), forColumn: $0.x, row: $0.y)
             }
         }
         
