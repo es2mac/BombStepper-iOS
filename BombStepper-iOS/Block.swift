@@ -103,7 +103,7 @@ extension Block.BlockType {
             return UIImage.borderedSquare(side: side, color: .black, edgeColor: .black, adjacency: adjacency)
         }
         guard alpha > 0.05 else { return Block.BlockType.blank.defaultImage(side: side) }
-        let blankImage = Block.BlockType.blank.defaultImage(side: side, adjacency: adjacency)
+        let blankImage = Block.BlockType.blank.defaultImage(side: side)
         let activeImage = Block.BlockType.active(t).defaultImage(side: side, adjacency: adjacency)
         return activeImage.layeredOnTop(of: blankImage, alpha: alpha)
     }
@@ -122,35 +122,42 @@ private extension UIImage {
 
         let context = UIGraphicsGetCurrentContext()!
 
-        // Fill background with edge color
-        edgeColor.setFill()
-        context.fill(CGRect(origin: .zero, size: drawSize))
+        // Fill background with background edge color first
+        let fullRect = CGRect(origin: .zero, size: drawSize)
+        UIColor.playfieldBorder.setFill()
+        context.fill(fullRect)
 
+        // Fill background with edge color
+        context.addPath(UIBezierPath(roundedRect: fullRect, cornerRadius: 2).cgPath)
+        edgeColor.setFill()
+        context.fillPath()
+        
         // Appropriately inset & round corners to draw the main color
         var inset: (up: CGFloat, down: CGFloat, left: CGFloat, right: CGFloat) = (0, 0, 0, 0)
-        var corners: UIRectCorner = []
-
+        
         if !adjacency.contains(.adjacencyUp)    { inset.up = 1 }
         if !adjacency.contains(.adjacencyDown)  { inset.down = 1 }
         if !adjacency.contains(.adjacencyLeft)  { inset.left = 1 }
         if !adjacency.contains(.adjacencyRight) { inset.right = 1 }
-
-        switch (adjacency.contains(.adjacencyUp), adjacency.contains(.adjacencyRight),
-                adjacency.contains(.adjacencyDown), adjacency.contains(.adjacencyLeft)) {
-            //  Top  Right   Down   Left
-        case (false, false,     _,     _): corners.insert(.topRight)
-        case (    _, false, false,     _): corners.insert(.bottomRight)
-        case (    _,     _, false, false): corners.insert(.bottomLeft)
-        case (false,     _,     _, false): corners.insert(.topLeft)
-        default: break
-        }
-
+        /*
+         switch (adjacency.contains(.adjacencyUp), adjacency.contains(.adjacencyRight),
+         adjacency.contains(.adjacencyDown), adjacency.contains(.adjacencyLeft)) {
+         //  Top  Right   Down   Left
+         case (false, false,     _,     _): corners.insert(.topRight)
+         case (    _, false, false,     _): corners.insert(.bottomRight)
+         case (    _,     _, false, false): corners.insert(.bottomLeft)
+         case (false,     _,     _, false): corners.insert(.topLeft)
+         default: break
+         }
+         */
         let rect = CGRect(x: inset.left,
                           y: inset.up,
                           width: side - inset.left - inset.right,
                           height: side - inset.up - inset.down)
-
-        let roundedRect = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: 2, height: 2))
+        /*
+         let roundedRect = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: 2, height: 2))
+         */
+        let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 2)
 
         context.addPath(roundedRect.cgPath)
         color.setFill()
