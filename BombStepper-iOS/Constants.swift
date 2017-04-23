@@ -34,7 +34,7 @@ enum ZPosition {
 enum Alpha {
     static let pressedButton: CGFloat = 0.1
     static let releasedButton: CGFloat = 0.03
-    static let ghost: CGFloat = 0.25
+    static let ghostDefault: CGFloat = 0.25
 }
 
 

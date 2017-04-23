@@ -74,22 +74,29 @@ extension Block.BlockType: Hashable, Equatable {
 extension Block.BlockType {
 
     /// This gives an image to be used on the playfield.  It's a rounded rect
-    /// that's offset by 1 point from each edge, giving it a border
-    func squareImage(side: CGFloat) -> UIImage {
+    /// that's offset by 1 point from each edge, giving it a border.
+    ///
+    func defaultImage(side: CGFloat) -> UIImage {
         switch self {
         case .blank:
-            return UIImage.borderedSquare(side: side,
-                                          color: .blankTile,
-                                          edgeColor: .playfieldBorder)
+            return UIImage.borderedSquare(side: side, color: .blankTile, edgeColor: .playfieldBorder)
         case .active(let t), .locked(let t):
-            return UIImage.borderedSquare(side: side,
-                                          color: t.color,
-                                          edgeColor: t.edgeColor)
+            return UIImage.borderedSquare(side: side, color: t.color, edgeColor: t.edgeColor)
         case .ghost(let t):
-            let blankImage = Block.BlockType.blank.squareImage(side: side)
-            let activeImage = Block.BlockType.active(t).squareImage(side: side)
-            return activeImage.layeredOnTop(of: blankImage, alpha: Alpha.ghost)
+            assertionFailure("You should use ghostImage() with user-specified alpha")
+            return ghostImage(side: side, tetromino: t, alpha: Alpha.ghostDefault)
         }
+    }
+
+    /// Specialized drawing for ghost pieces.  If self is not a ghost piece,
+    /// you get a black image.
+    func ghostImage(side: CGFloat, tetromino t: Tetromino, alpha: CGFloat) -> UIImage {
+        guard case .ghost = self else {
+            return UIImage.borderedSquare(side: side, color: .black, edgeColor: .black)
+        }
+        let blankImage = Block.BlockType.blank.defaultImage(side: side)
+        let activeImage = Block.BlockType.active(t).defaultImage(side: side)
+        return activeImage.layeredOnTop(of: blankImage, alpha: alpha)
     }
 
 }

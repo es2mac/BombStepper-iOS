@@ -24,7 +24,7 @@ final class PlayfieldNode: SKNode {
     private let tileMapNode: SKTileMapNode
     private let outerFrameNode: SKShapeNode
     private let innerFrameNode: SKShapeNode
-    private let blockTileGroupMap: BlockTileGroupMap
+    private var blockTileGroupMap: BlockTileGroupMap
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
@@ -96,7 +96,13 @@ private extension PlayfieldNode {
         var map = BlockTileGroupMap()
 
         Block.BlockType.allCases.forEach { type in
-            let image = type.squareImage(side: tileWidth)
+            let image: UIImage
+            switch type {
+            case .ghost(let t):
+                image = type.ghostImage(side: tileWidth, tetromino: t, alpha: 0.1)
+            default:
+                image = type.defaultImage(side: tileWidth)
+            }
             let texture = SKTexture(image: image)
             let tileDefinition = SKTileDefinition(texture: texture)
             let tileGroup = SKTileGroup(tileDefinition: tileDefinition)
