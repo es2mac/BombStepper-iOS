@@ -37,9 +37,9 @@ final class PlayfieldNode: SKNode {
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
-        blockWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
-        let fieldRect = CGRect(x: -blockWidth * 5, y: -blockWidth * 10,
-                               width: blockWidth * 10, height: blockWidth * 20)
+        blockWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/60)
+        let fieldRect = CGRect(x: -blockWidth * 5 * 3, y: -blockWidth * 10 * 3,
+                               width: blockWidth * 10 * 3, height: blockWidth * 20 * 3)
         let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(innerFrameWidth), dy: -CGFloat(innerFrameWidth))
         let outerFrameRect = fieldRect.insetBy(dx: -CGFloat(outerFrameWidth), dy: -CGFloat(outerFrameWidth))
 
@@ -57,8 +57,9 @@ final class PlayfieldNode: SKNode {
 
         let tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
         let tileSize = CGSize(width: blockWidth, height: blockWidth)
-        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 24, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
+        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10 * 3, rows: 24 * 3, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
 
+        // Each mino in the tile map is 3x3, for tile map adjacency placement magic.
         // The tile map has 4 extra rows on top for auxiliary rendering, and is masked out.
         // Normal field update should happen in the lower 20 rows only.
         let maskNode = SKShapeNode(rect: fieldRect)
@@ -66,7 +67,7 @@ final class PlayfieldNode: SKNode {
         maskNode.lineWidth = 0
         cropNode = SKCropNode()
         cropNode.maskNode = maskNode
-        tileMapNode.position.y += blockWidth * 2
+        tileMapNode.position.y += blockWidth * 2 * 3
 
         settingManager = SettingManager()
         ghostOpacity = Alpha.ghostDefault
@@ -102,7 +103,11 @@ final class PlayfieldNode: SKNode {
     func place(blocks: [Block])  {
         DispatchQueue.main.async {
             blocks.forEach {
-                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x, row: $0.y)
+                for x in 0 ..< 3 {
+                    for y in 0 ..< 3 {
+                        self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x * 3 + x, row: $0.y * 3 + y)
+                    }
+                }
             }
         }
         
