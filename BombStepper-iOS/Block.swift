@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import SpriteKit
 
 
 typealias Offset = (x: Int, y: Int)
@@ -44,22 +45,29 @@ extension Block.BlockType {
 
 /// Allow BlockType to be used as keys in a SKTileGroup lookup table
 extension Block.BlockType: Hashable, Equatable {
+
     var hashValue: Int {
         switch self {
-        case .blank:
-            return 0
-        case .active(let t):
-            return 1 + 1 * 7 + t.rawValue
-        case .ghost(let t):
-            return 1 + 2 * 7 + t.rawValue
-        case .locked(let t):
-            return 1 + 3 * 7 + t.rawValue
+        case .blank: return 0
+        case .active(let t): return 1 + 1 * 7 + t.rawValue
+        case .ghost(let t):  return 1 + 2 * 7 + t.rawValue
+        case .locked(let t): return 1 + 3 * 7 + t.rawValue
+        }
+    }
+
+    var name: String {
+        switch self {
+        case .blank:         return "blank"
+        case .active(let t): return "active \(t.name)"
+        case .ghost(let t):  return "ghost \(t.name)"
+        case .locked(let t): return "locked \(t.name)"
         }
     }
 
     public static func ==(lhs: Block.BlockType, rhs: Block.BlockType) -> Bool {
         switch (lhs, rhs) {
-        case (.blank, blank): return true
+        case (.blank, blank):
+            return true
         case (.active(let t1), .active(let t2)),
              (.ghost(let t1),  .ghost(let t2)),
              (.locked(let t1), .locked(let t2)):
@@ -76,26 +84,27 @@ extension Block.BlockType {
     /// This gives an image to be used on the playfield.  It's a rounded rect
     /// that's offset by 1 point from each edge, giving it a border.
     ///
-    func defaultImage(side: CGFloat) -> UIImage {
+    func defaultImage(side: CGFloat, adjacency: SKTileAdjacencyMask = []) -> UIImage {
         switch self {
         case .blank:
             return UIImage.borderedSquare(side: side, color: .blankTile, edgeColor: .playfieldBorder)
         case .active(let t), .locked(let t):
-            return UIImage.borderedSquare(side: side, color: t.color, edgeColor: t.edgeColor)
+            return UIImage.borderedSquare(side: side, color: t.color, edgeColor: t.edgeColor, adjacency: adjacency)
         case .ghost(let t):
             assertionFailure("You should use ghostImage() with user-specified alpha")
-            return ghostImage(side: side, tetromino: t, alpha: Alpha.ghostDefault)
+            return ghostImage(side: side, tetromino: t, alpha: Alpha.ghostDefault, adjacency: adjacency)
         }
     }
 
     /// Specialized drawing for ghost pieces.  If self is not a ghost piece,
     /// you get a black image.
-    func ghostImage(side: CGFloat, tetromino t: Tetromino, alpha: CGFloat) -> UIImage {
+    func ghostImage(side: CGFloat, tetromino t: Tetromino, alpha: CGFloat, adjacency: SKTileAdjacencyMask = []) -> UIImage {
         guard case .ghost = self else {
-            return UIImage.borderedSquare(side: side, color: .black, edgeColor: .black)
+            return UIImage.borderedSquare(side: side, color: .black, edgeColor: .black, adjacency: adjacency)
         }
-        let blankImage = Block.BlockType.blank.defaultImage(side: side)
-        let activeImage = Block.BlockType.active(t).defaultImage(side: side)
+        guard alpha > 0.05 else { return Block.BlockType.blank.defaultImage(side: side) }
+        let blankImage = Block.BlockType.blank.defaultImage(side: side, adjacency: adjacency)
+        let activeImage = Block.BlockType.active(t).defaultImage(side: side, adjacency: adjacency)
         return activeImage.layeredOnTop(of: blankImage, alpha: alpha)
     }
 
@@ -104,22 +113,47 @@ extension Block.BlockType {
 
 private extension UIImage {
 
-    static func borderedSquare(side: CGFloat, color: UIColor, edgeColor: UIColor) -> UIImage {
-        let rect = CGRect(x: 0, y: 0, width: side, height: side)
+    static func borderedSquare(side: CGFloat, color: UIColor, edgeColor: UIColor, adjacency: SKTileAdjacencyMask = []) -> UIImage {
 
-        //    [source drawInRect:rect blendMode:kCGBlendModeNormal alpha:0.18];
+        let drawSize = CGSize(width: side, height: side)
 
-        UIGraphicsBeginImageContextWithOptions(rect.size, true, UIScreen.main.scale)
+        UIGraphicsBeginImageContextWithOptions(drawSize, true, UIScreen.main.scale)
         defer { UIGraphicsEndImageContext() }
 
         let context = UIGraphicsGetCurrentContext()!
 
+        // Fill background with edge color
         edgeColor.setFill()
-        context.fill(rect)
+        context.fill(CGRect(origin: .zero, size: drawSize))
 
-        let roundedRect = UIBezierPath(roundedRect: rect.insetBy(dx: 1, dy: 1), cornerRadius: 2)
-        color.setFill()
+        // Appropriately inset & round corners to draw the main color
+        var inset: (up: CGFloat, down: CGFloat, left: CGFloat, right: CGFloat) = (0, 0, 0, 0)
+        var corners: UIRectCorner = []
+
+        if !adjacency.contains(.adjacencyUp)    { inset.up = 1 }
+        if !adjacency.contains(.adjacencyDown)  { inset.down = 1 }
+        if !adjacency.contains(.adjacencyLeft)  { inset.left = 1 }
+        if !adjacency.contains(.adjacencyRight) { inset.right = 1 }
+
+        switch (adjacency.contains(.adjacencyUp), adjacency.contains(.adjacencyRight),
+                adjacency.contains(.adjacencyDown), adjacency.contains(.adjacencyLeft)) {
+            //  Top  Right   Down   Left
+        case (false, false,     _,     _): corners.insert(.topRight)
+        case (    _, false, false,     _): corners.insert(.bottomRight)
+        case (    _,     _, false, false): corners.insert(.bottomLeft)
+        case (false,     _,     _, false): corners.insert(.topLeft)
+        default: break
+        }
+
+        let rect = CGRect(x: inset.left,
+                          y: inset.up,
+                          width: side - inset.left - inset.right,
+                          height: side - inset.up - inset.down)
+
+        let roundedRect = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: 2, height: 2))
+
         context.addPath(roundedRect.cgPath)
+        color.setFill()
         context.fillPath()
 
         return UIGraphicsGetImageFromCurrentImageContext()!
@@ -137,6 +171,7 @@ private extension UIImage {
         return UIGraphicsGetImageFromCurrentImageContext()!
     }
 }
+
 
 
 

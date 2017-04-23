@@ -19,18 +19,26 @@ private typealias BlockTileGroupMap = [Block.BlockType : SKTileGroup]
 final class PlayfieldNode: SKNode {
 
     let sceneSize: CGSize
-    private let blockHeight: CGFloat
+    private let blockWidth: CGFloat
 
     private let tileMapNode: SKTileMapNode
     private let outerFrameNode: SKShapeNode
     private let innerFrameNode: SKShapeNode
     private var blockTileGroupMap: BlockTileGroupMap
+    private let settingManager: SettingManager
+    private var ghostOpacity: CGFloat {
+        didSet {
+            guard ghostOpacity != oldValue else { return }
+            updateTileSet(ghostOpacity: ghostOpacity)
+        }
+    }
+
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
-        blockHeight = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
-        let fieldRect = CGRect(x: -blockHeight * 5, y: -blockHeight * 10,
-                               width: blockHeight * 10, height: blockHeight * 20)
+        blockWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
+        let fieldRect = CGRect(x: -blockWidth * 5, y: -blockWidth * 10,
+                               width: blockWidth * 10, height: blockWidth * 20)
         let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(innerFrameWidth), dy: -CGFloat(innerFrameWidth))
         let outerFrameRect = fieldRect.insetBy(dx: -CGFloat(outerFrameWidth), dy: -CGFloat(outerFrameWidth))
 
@@ -44,15 +52,22 @@ final class PlayfieldNode: SKNode {
         outerFrameNode.lineWidth = 0
         outerFrameNode.zPosition = ZPosition.playfieldOuterFrame
 
-        blockTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: CGFloat(blockHeight))
+        blockTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: CGFloat(blockWidth), ghostOpacity: Alpha.ghostDefault)
 
         let tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
-        let tileSize = CGSize(width: blockHeight, height: blockHeight)
+        let tileSize = CGSize(width: blockWidth, height: blockWidth)
         tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 20, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
+
+        settingManager = SettingManager()
+        ghostOpacity = Alpha.ghostDefault
 
         super.init()
 
         [outerFrameNode, innerFrameNode, tileMapNode].forEach(addChild)
+
+        settingManager.updateSettingsAction = { [weak self] in
+            self?.ghostOpacity = CGFloat($0.ghostOpacity)
+        }
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -86,32 +101,113 @@ final class PlayfieldNode: SKNode {
         return blockTileGroupMap[t]!
     }
 
+    private func updateTileSet(ghostOpacity: CGFloat) {
+        // Note: I don't know why changing the tile set causes it to behave correctly,
+        // i.e. immediately re-render with the new set without a place() call
+        // Seems magical esp. the ghost piece now has a new image, but maybe it
+        // has a way of identifying the tile groups as being the same?
+        // To help it does that I'll set group names
+        blockTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: blockWidth, ghostOpacity: ghostOpacity)
+        tileMapNode.tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
+    }
+
 }
 
 
 private extension PlayfieldNode {
 
-    class func makeTileGroupMap(tileWidth: CGFloat) -> BlockTileGroupMap {
+    class func makeTileGroupMap(tileWidth: CGFloat, ghostOpacity: CGFloat) -> BlockTileGroupMap {
 
         var map = BlockTileGroupMap()
 
+        let allAdjacencies = allAdjacencyOptionSets()
+
+        Block.BlockType.allCases.forEach { type in
+            let tileGroup: SKTileGroup
+            switch type {
+            case .blank:
+                let image = type.defaultImage(side: tileWidth, adjacency: .adjacencyAll)
+                let texture = SKTexture(image: image)
+                let tileDefinition = SKTileDefinition(texture: texture)
+                tileGroup = SKTileGroup(tileDefinition: tileDefinition)
+            case .active, .locked:
+                let rules: [SKTileGroupRule] = allAdjacencies.map { adjacency in
+                    let image = type.defaultImage(side: tileWidth, adjacency: adjacency)
+                    let texture = SKTexture(image: image)
+                    let definition = SKTileDefinition(texture: texture)
+
+
+                    definition.userData = ["adjacency" : adjacency]
+
+
+                    return SKTileGroupRule(adjacency: adjacency, tileDefinitions: [definition])
+                }
+                tileGroup = SKTileGroup(rules: rules)
+            case .ghost(let t):
+                let rules: [SKTileGroupRule] = allAdjacencies.map { adjacency in
+                    let image = type.ghostImage(side: tileWidth, tetromino: t, alpha: ghostOpacity, adjacency: adjacency)
+                    let texture = SKTexture(image: image)
+                    let definition = SKTileDefinition(texture: texture)
+                    return SKTileGroupRule(adjacency: adjacency, tileDefinitions: [definition])
+                }
+                tileGroup = SKTileGroup(rules: rules)
+            }
+            tileGroup.name = type.name
+            map[type] = tileGroup
+        }
+
+
+
+        
+
+        /*
         Block.BlockType.allCases.forEach { type in
             let image: UIImage
             switch type {
             case .ghost(let t):
-                image = type.ghostImage(side: tileWidth, tetromino: t, alpha: 0.1)
+                image = type.ghostImage(side: tileWidth, tetromino: t, alpha: ghostOpacity)
             default:
                 image = type.defaultImage(side: tileWidth)
             }
             let texture = SKTexture(image: image)
             let tileDefinition = SKTileDefinition(texture: texture)
+//            SKTileGroupRule(adjacency: ., tileDefinitions: <#T##[SKTileDefinition]#>)
+//            SKTileGroup(rules: [])
             let tileGroup = SKTileGroup(tileDefinition: tileDefinition)
+            tileGroup.name = type.name
             map[type] = tileGroup
         }
+        */
         
         return map
     }
 
+
+}
+
+
+private func allAdjacencyOptionSets() -> [SKTileAdjacencyMask] {
+    let none: SKTileAdjacencyMask = []
+    var sets = [none]
+
+    for adjacency in [SKTileAdjacencyMask.adjacencyUp, .adjacencyDown, .adjacencyLeft, .adjacencyRight] {
+        sets = sets + sets.map {
+            var new = $0
+            new.insert(adjacency)
+            return new
+        }
+    }
+
+//    sets = sets.map {
+//        var s = $0
+//        s.insert(.adjacencyUpperRight)
+//        s.insert(.adjacencyUpperLeft)
+//        s.insert(.adjacencyLowerRight)
+//        s.insert(.adjacencyLowerRight)
+//        return s
+//    }
+
+    return sets
 }
 
 
