@@ -139,7 +139,12 @@ private extension PlayfieldNode {
             let tileGroup: SKTileGroup
             switch type {
             case .blank:
-                let image = type.defaultImage(side: tileWidth, adjacency: .adjacencyAll)
+                let image = type.defaultImage(side: tileWidth)
+                let texture = SKTexture(image: image)
+                let tileDefinition = SKTileDefinition(texture: texture)
+                tileGroup = SKTileGroup(tileDefinition: tileDefinition)
+            case .ghost(let t):
+                let image = type.ghostImage(side: tileWidth, tetromino: t, alpha: ghostOpacity)
                 let texture = SKTexture(image: image)
                 let tileDefinition = SKTileDefinition(texture: texture)
                 tileGroup = SKTileGroup(tileDefinition: tileDefinition)
@@ -148,19 +153,8 @@ private extension PlayfieldNode {
                     let image = type.defaultImage(side: tileWidth, adjacency: adjacency)
                     let texture = SKTexture(image: image)
                     let definition = SKTileDefinition(texture: texture)
-
-
-                    definition.userData = ["adjacency" : adjacency]
-
-
-                    return SKTileGroupRule(adjacency: adjacency, tileDefinitions: [definition])
-                }
-                tileGroup = SKTileGroup(rules: rules)
-            case .ghost(let t):
-                let rules: [SKTileGroupRule] = allAdjacencies.map { adjacency in
-                    let image = type.ghostImage(side: tileWidth, tetromino: t, alpha: ghostOpacity, adjacency: adjacency)
-                    let texture = SKTexture(image: image)
-                    let definition = SKTileDefinition(texture: texture)
+//                    definition.userData = ["adjacency" : adjacency]
+                    
                     return SKTileGroupRule(adjacency: adjacency, tileDefinitions: [definition])
                 }
                 tileGroup = SKTileGroup(rules: rules)
@@ -187,15 +181,6 @@ private func allAdjacencyOptionSets() -> [SKTileAdjacencyMask] {
             return new
         }
     }
-
-//    sets = sets.map {
-//        var s = $0
-//        s.insert(.adjacencyUpperRight)
-//        s.insert(.adjacencyUpperLeft)
-//        s.insert(.adjacencyLowerRight)
-//        s.insert(.adjacencyLowerRight)
-//        return s
-//    }
 
     return sets
 }
