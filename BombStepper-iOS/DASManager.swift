@@ -37,9 +37,8 @@ final class DASManager {
 
     private var dasStatus: Status
     private var dasDelay: MachAbsTime
-    // High priority queue with possible mach_wait for precision DAS firing
-    private let dasPendingQueue: DispatchQueue
-
+    // High priority queue for mach_wait for precision DAS firing
+    private let dasPendingQueue = DispatchQueue(label: "dasManager", qos: .userInteractive)
     private let performDAS: (Direction) -> Void
 
 
@@ -47,7 +46,6 @@ final class DASManager {
     init(performDAS: @escaping (Direction) -> Void) {
         dasDelay = msToAbs(8 * 1000 / 60)   // Updates on settings manager callback
         dasStatus = Status.none
-        dasPendingQueue = DispatchQueue.global(qos: .userInteractive)
         self.performDAS = performDAS
         settingManager = SettingManager()
         settingManager.updateSettingsAction = { [weak self] in

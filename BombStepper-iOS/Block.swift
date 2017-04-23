@@ -21,6 +21,9 @@ struct Block {
     enum BlockType {
         case blank
         case tetromino(Tetromino)
+
+        // TODO: Separate types with different drawing methods
+//        case ghost, active, locked
     }
 
     let type: BlockType
@@ -71,7 +74,9 @@ extension Block.BlockType {
     private func borderedSquare(side: CGFloat, color: UIColor, edgeColor: UIColor) -> UIImage {
         let rect = CGRect(x: 0, y: 0, width: side, height: side)
 
-        UIGraphicsBeginImageContext(rect.size)
+        //    [source drawInRect:rect blendMode:kCGBlendModeNormal alpha:0.18];
+
+        UIGraphicsBeginImageContextWithOptions(rect.size, true, UIScreen.main.scale)
         defer { UIGraphicsEndImageContext() }
 
         let context = UIGraphicsGetCurrentContext()!

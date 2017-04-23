@@ -102,6 +102,8 @@ final class SettingManager {
         }
     }
 
+    private let queue = DispatchQueue.global(qos: .background)
+
     // Provide current settings, called on first set and whenever settings update
     // Called on background queue because I don't know how heavy the defaults operations are
     var updateSettingsAction: ((Settings) -> Void)? {
@@ -132,7 +134,7 @@ final class SettingManager {
 
     // Fetch settings, and if missing defaults, set to initial value
     private func fetchSettings(from defaults: UserDefaults = .standard) {
-        DispatchQueue.global(qos: .background).async {
+        queue.async {
             self.temporarilyIgnoreChangeNotifications = true
             self.fetchSettingsAsynchronously(from: defaults)
             self.temporarilyIgnoreChangeNotifications = false

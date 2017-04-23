@@ -24,6 +24,8 @@ final class GameScene: SKScene {
     override func didMove(to view: SKView) {
         setupControllerNode()
         setupPlayfieldNode()
+
+        // TODO: a "tetris system" class that composes of field, hold, preview, randomizer/generator
         setupTetrisSystem()
         setupDASManager()
     }

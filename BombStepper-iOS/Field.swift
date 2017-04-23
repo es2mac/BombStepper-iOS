@@ -38,6 +38,9 @@ final class Field {
     fileprivate var allBlocks: [Block.BlockType]
     // Changes are keyed by their index, so multiple changes on same place is overridden
     fileprivate var unreportedChanges: [Int : (newBlock: Block, oldType:Block.BlockType)] = [:]
+    // Put most operations on a serial queue to make access on the two properties above atomic
+    // Delegate calls should be back on main queue to avoid potential lockdown
+    fileprivate let queue = DispatchQueue(label: "field")
 
     fileprivate var activePiece: Piece? {
         didSet {
@@ -68,31 +71,58 @@ final class Field {
 
 extension Field {
 
+    // TODO: ghost piece
     // TODO: timed gravity drop
-    // TODO: line clear
     // TODO: lock timing
+    // TODO: gravity setting
 
     
     /// Top out is reported here
     @discardableResult
     func startPiece(type: Tetromino) -> StartPieceResult {
-        guard activePiece == nil else { return .stillHasActivePiece }
+        var result: StartPieceResult = .success
+        queue.sync {
+            guard activePiece == nil else {
+                result = .stillHasActivePiece
+                return
+            }
 
-//        let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
-        let piece = Piece(type: type, x: 4, y: 18, orientation: .up)
+//            let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
+            let piece = Piece(type: type, x: 4, y: 18, orientation: .up)
+            
+            guard !pieceIsObstructed(piece) else {
+                result = .toppedOut
+                return
+            }
 
-        if pieceIsObstructed(piece) { return .toppedOut }
-
-        activePiece = piece
-        
-        reportChanges()
-        
-        return .success
+            defer {
+                self.activePiece = piece
+                reportChanges()
+            }
+        }
+        return result
     }
 
     func process(input: Button) {
-        guard activePiece != nil else { return }
+        queue.async { self.processAsync(input: input) }
+    }
 
+    func process(das: DASManager.Direction) {
+        queue.async { self.processAsync(das: das) }
+    }
+
+    func update() {
+
+        // TODO: gravity drop & timing stuff
+    }
+
+}
+
+
+private extension Field {
+
+    func processAsync(input: Button) {
+        guard activePiece != nil else { return }
         switch input {
         case .moveLeft: moveActivePiece((x: -1, y: 0))
         case .moveRight: moveActivePiece((x: 1, y: 0))
@@ -103,11 +133,10 @@ extension Field {
         case .rotateRight: rotateRight()
         case .none: break
         }
-
         reportChanges()
     }
 
-    func process(das: DASManager.Direction) {
+    func processAsync(das: DASManager.Direction) {
         dasFrameCount += 1
         guard dasFrameCount >= settings.dasFrames else { return }
         dasFrameCount = 0
@@ -125,11 +154,6 @@ extension Field {
         }
 
         reportChanges()
-    }
-
-    func update() {
-
-        // TODO: gravity drop & timing stuff
     }
 
 }
@@ -159,7 +183,9 @@ private extension Field {
 
         clearCompletedLines()
 
-        delegate?.fieldActivePieceDidLock()
+        DispatchQueue.main.async {
+            self.delegate?.fieldActivePieceDidLock()
+        }
     }
 
     // Temporary.  May be more complicated
@@ -260,8 +286,13 @@ private extension Field {
 
     func reportChanges() {
         guard !unreportedChanges.isEmpty else { return }
-        delegate?.updateField(blocks: unreportedChanges.map { $0.value.newBlock })
+
+        let blocks = unreportedChanges.map { $0.value.newBlock }
         unreportedChanges.removeAll(keepingCapacity: true)
+
+        DispatchQueue.main.async {
+            self.delegate?.updateField(blocks: blocks)
+        }
     }
 
 }
