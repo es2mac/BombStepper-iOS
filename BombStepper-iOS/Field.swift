@@ -45,10 +45,22 @@ final class Field {
     fileprivate var activePiece: Piece? {
         didSet {
             oldValue?.blocks.forEach(clearBlock)
+            ghostPiece?.blocks.forEach(clearBlock)
+            ghostPiece = activePiece.map {
+                var ghost = $0.ghost
+                while !pieceIsObstructed(ghost) { ghost.y -= 1 }
+                ghost.y += 1
+                return ghost
+            }
+            
+            ghostPiece?.blocks.forEach(setBlock)
             activePiece?.blocks.forEach(setBlock)
         }
     }
 
+    private var ghostPiece: Piece?
+
+    
     fileprivate var dasFrameCount = 0
     fileprivate var softDropFrameCount = 0
 
@@ -71,7 +83,7 @@ final class Field {
 
 extension Field {
 
-    // TODO: ghost piece
+    // TODO: ghost piece color
     // TODO: timed gravity drop
     // TODO: lock timing
     // TODO: gravity setting
@@ -179,7 +191,11 @@ private extension Field {
     func lockDown() {
         guard let piece = activePiece else { return }
         activePiece = nil
-        piece.blocks.forEach(setBlock)
+        piece.blocks.forEach { block in
+            guard case .active(let t) = block.type else { return }
+            let lockedBlock = Block(type: .locked(t), x: block.x, y: block.y)
+            setBlock(lockedBlock)
+        }
 
         clearCompletedLines()
 
@@ -193,7 +209,10 @@ private extension Field {
         var clearedLinesCount = 0
         for y in 0 ..< 24 {
             let currentLine = allBlocks[(y * 10) ..< ((y + 1) * 10)]
-            if !currentLine.contains(.blank) {
+            if !currentLine.contains(where: { type in
+                if case .locked = type { return false }
+                return true
+            }) {
                 clearedLinesCount += 1
             }
             else if clearedLinesCount > 0 { // Shift this incomplete line down by the number of lines cleared so far
@@ -234,14 +253,10 @@ private extension Field {
     // Rules for free space: within 10 x 40, either blank or is active piece's space
     // because this is used to check if active piece can move
     func pieceIsObstructed(_ piece: Piece) -> Bool {
-        let activePieceBlocks = activePiece?.blocks ?? []
         for block in piece.blocks {
             if !(0 ..< 10 ~= block.x) { return true }
             if !(0 ..< 40 ~= block.y) { return true }
-            if allBlocks[block.x + block.y * 10] != .blank,
-                !activePieceBlocks.contains(where: { $0.x == block.x && $0.y == block.y }) {
-                return true
-            }
+            if case .locked = allBlocks[block.x + block.y * 10] { return true }
         }
         return false
     }

@@ -78,22 +78,26 @@ extension Block.BlockType {
     func squareImage(side: CGFloat) -> UIImage {
         switch self {
         case .blank:
-            return borderedSquare(side: side,
-                                  color: .blankTile,
-                                  edgeColor: .playfieldBorder)
-        case .active(let t),
-             .locked(let t):
-            return borderedSquare(side: side,
-                                  color: t.color,
-                                  edgeColor: t.edgeColor)
+            return UIImage.borderedSquare(side: side,
+                                          color: .blankTile,
+                                          edgeColor: .playfieldBorder)
+        case .active(let t), .locked(let t):
+            return UIImage.borderedSquare(side: side,
+                                          color: t.color,
+                                          edgeColor: t.edgeColor)
         case .ghost(let t):
-            return borderedSquare(side: side,
-                                  color: t.color.withAlphaComponent(0.5),
-                                  edgeColor: t.edgeColor.withAlphaComponent(0.5))
+            let blankImage = Block.BlockType.blank.squareImage(side: side)
+            let activeImage = Block.BlockType.active(t).squareImage(side: side)
+            return activeImage.layeredOnTop(of: blankImage, alpha: Alpha.ghost)
         }
     }
 
-    private func borderedSquare(side: CGFloat, color: UIColor, edgeColor: UIColor) -> UIImage {
+}
+
+
+private extension UIImage {
+
+    static func borderedSquare(side: CGFloat, color: UIColor, edgeColor: UIColor) -> UIImage {
         let rect = CGRect(x: 0, y: 0, width: side, height: side)
 
         //    [source drawInRect:rect blendMode:kCGBlendModeNormal alpha:0.18];
@@ -110,6 +114,18 @@ extension Block.BlockType {
         color.setFill()
         context.addPath(roundedRect.cgPath)
         context.fillPath()
+
+        return UIGraphicsGetImageFromCurrentImageContext()!
+    }
+
+    func layeredOnTop(of image: UIImage, alpha: CGFloat) -> UIImage {
+        let rect = CGRect(origin: .zero, size: size)
+
+        UIGraphicsBeginImageContextWithOptions(size, true, UIScreen.main.scale)
+        defer { UIGraphicsEndImageContext() }
+
+        image.draw(in: rect)
+        self.draw(in: rect, blendMode: .normal, alpha: alpha)
 
         return UIGraphicsGetImageFromCurrentImageContext()!
     }

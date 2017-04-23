@@ -31,6 +31,7 @@ final class SettingManager {
             case swipeDropEnabled   
             case swipeDownThreshold
             case lrSwipeEnabled
+            case ghostOpacity
             case button00, button01, button02, button03
             case button04, button05, button06, button07
             case button08, button09, button10, button11
@@ -43,6 +44,7 @@ final class SettingManager {
               SettingKey.swipeDropEnabled.rawValue : true,
               SettingKey.swipeDownThreshold.rawValue : 1000.0,
               SettingKey.lrSwipeEnabled.rawValue : true,
+              SettingKey.ghostOpacity.rawValue : 0.25,
               SettingKey.button00.rawValue : Button.hardDrop.rawValue,
               SettingKey.button01.rawValue : Button.hardDrop.rawValue,
               SettingKey.button02.rawValue : Button.moveLeft.rawValue,
@@ -63,6 +65,7 @@ final class SettingManager {
         let swipeDropEnabled: Bool
         let swipeDownThreshold: Double
         let lrSwipeEnabled: Bool
+        let ghostOpacity: Double
         let button00: Button
         let button01: Button
         let button02: Button
@@ -87,6 +90,7 @@ final class SettingManager {
             swipeDropEnabled   = dictionary[SettingKey.swipeDropEnabled.rawValue] as! Bool
             swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold.rawValue] as! Double
             lrSwipeEnabled     = dictionary[SettingKey.lrSwipeEnabled.rawValue] as! Bool
+            ghostOpacity       = dictionary[SettingKey.ghostOpacity.rawValue] as! Double
             button00 = Button(rawValue: dictionary[SettingKey.button00.rawValue] as! String)!
             button01 = Button(rawValue: dictionary[SettingKey.button01.rawValue] as! String)!
             button02 = Button(rawValue: dictionary[SettingKey.button02.rawValue] as! String)!

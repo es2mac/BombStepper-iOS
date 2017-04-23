@@ -184,6 +184,26 @@
 			<key>File</key>
 			<string>Controls</string>
 		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>The ghost piece shows you where the piece will land by hard dropping.  It can have an opacity of between 0 and 50% of the original piece.</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Ghost Opacity</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>ghostOpacity</string>
+			<key>DefaultValue</key>
+			<real>0.25</real>
+			<key>MinimumValue</key>
+			<integer>0</integer>
+			<key>MaximumValue</key>
+			<real>0.5</real>
+		</dict>
 	</array>
 </dict>
 </plist>

@@ -19,6 +19,7 @@ private typealias BlockTileGroupMap = [Block.BlockType : SKTileGroup]
 final class PlayfieldNode: SKNode {
 
     let sceneSize: CGSize
+    private let blockHeight: CGFloat
 
     private let tileMapNode: SKTileMapNode
     private let outerFrameNode: SKShapeNode
@@ -27,7 +28,7 @@ final class PlayfieldNode: SKNode {
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
-        let blockHeight = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
+        blockHeight = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
         let fieldRect = CGRect(x: -blockHeight * 5, y: -blockHeight * 10,
                                width: blockHeight * 10, height: blockHeight * 20)
         let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(innerFrameWidth), dy: -CGFloat(innerFrameWidth))
