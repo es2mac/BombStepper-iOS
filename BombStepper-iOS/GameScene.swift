@@ -106,7 +106,7 @@ extension GameScene: FieldDelegate {
     }
 
     func fieldActivePieceDidLock() {
-        // TODO
+        // TODO: pass to actual game logic component
         
         field.startPiece(type: tetrominoRandomizer.popNext())
     }

@@ -104,27 +104,32 @@ private extension ControllerNode {
         let button: Button
         var speeds: [Double] = []
         var lastTime: TimeInterval
-        var lastY: CGFloat
+        var lastLocation: CGPoint
 
-        init(node: SKShapeNode, button: Button, time: TimeInterval, y: CGFloat) {
+        init(node: SKShapeNode, button: Button, time: TimeInterval, location: CGPoint) {
             self.node = node
             self.button = button
             self.lastTime = time
-            self.lastY = y
+            self.lastLocation = location
         }
 
-        func recordSpeed(time: TimeInterval, y: CGFloat) {
+        func recordSpeed(time: TimeInterval, location: CGPoint) {
             guard TouchData.swipeDropEnabled else { return }
 
-            let speed = Double(y - lastY) / (time - lastTime)
+
+            // TODO: Calculate speed by taking account to slanted directions
+            // to avoid conflict with LR swipe (side-swipe should not trigger a drop)
+
+
+            let speed = Double(location.y - lastLocation.y) / (time - lastTime)
             lastTime = time
-            lastY = y
-            if speeds.count >= 4 { speeds.removeFirst() }
+            lastLocation = location
+            if speeds.count >= 3 { speeds.removeFirst() }
             speeds.append(speed)
         }
 
         func touchIsSwipingDown() -> Bool {
-            guard speeds.count >= 4 else { return false }
+            guard speeds.count >= 3 else { return false }
             return speeds.reduce(0, +) / Double(speeds.count) < -TouchData.swipeDownThreshold
         }
     }
@@ -133,7 +138,7 @@ private extension ControllerNode {
         let location = touch.location(in: self)
         if let node = nodes(at: location).first as? SKShapeNode,
             let button = buttonMap[node] {
-            touchesData[touch] = TouchData(node: node, button: button, time: touch.timestamp, y: location.y)
+            touchesData[touch] = TouchData(node: node, button: button, time: touch.timestamp, location: location)
             node.alpha = Alpha.pressedButton
             buttonDownAction(button, true)
         }
@@ -143,7 +148,7 @@ private extension ControllerNode {
         guard let data = touchesData[touch] else { return }
 
         // Swipe down test
-        data.recordSpeed(time: touch.timestamp, y: touch.location(in: self).y)
+        data.recordSpeed(time: touch.timestamp, location: touch.location(in: self))
         if data.touchIsSwipingDown() {
             touchUp(touch)
             buttonDownAction(.hardDrop, true)

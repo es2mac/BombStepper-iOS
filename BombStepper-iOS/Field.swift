@@ -83,7 +83,6 @@ final class Field {
 
 extension Field {
 
-    // TODO: ghost piece color
     // TODO: timed gravity drop
     // TODO: lock timing
     // TODO: gravity setting

@@ -41,6 +41,18 @@ extension Tetromino {
 
 extension Tetromino {
 
+    var name: String {
+        switch self {
+        case .I: return "I"
+        case .J: return "J"
+        case .L: return "L"
+        case .O: return "O"
+        case .S: return "S"
+        case .T: return "T"
+        case .Z: return "Z"
+        }       
+    }
+
     var color: UIColor {
         switch self {
         case .I: return #colorLiteral(red: 0.2389388382, green: 0.5892125368, blue: 0.8818323016, alpha: 1)
