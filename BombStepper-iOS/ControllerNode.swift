@@ -102,26 +102,34 @@ private extension ControllerNode {
 
         let node: SKShapeNode
         let button: Button
-        var speeds: [Double] = []
         var lastTime: TimeInterval
         var lastLocation: CGPoint
+        let isLeft: Bool
+
+        var speeds: [Double] = []
 
         init(node: SKShapeNode, button: Button, time: TimeInterval, location: CGPoint) {
             self.node = node
             self.button = button
             self.lastTime = time
             self.lastLocation = location
+            self.isLeft = location.x < 0
         }
 
         func recordSpeed(time: TimeInterval, location: CGPoint) {
             guard TouchData.swipeDropEnabled else { return }
 
-
-            // TODO: Calculate speed by taking account to slanted directions
+            // Calculate speed by taking account to slanted directions
             // to avoid conflict with LR swipe (side-swipe should not trigger a drop)
 
+            let c = cos(Double.pi / 8)
+            let s = sin(Double.pi / 8)
+            let rotation = isLeft ? (c, -s, s, c) : (c, s, -s, c) 
+            let delta = (Double(location.x - lastLocation.x),
+                         Double(location.y - lastLocation.y))
+            let rotatedY = delta.0 * rotation.2 + delta.1 * rotation.3
 
-            let speed = Double(location.y - lastLocation.y) / (time - lastTime)
+            let speed = rotatedY / (time - lastTime)
             lastTime = time
             lastLocation = location
             if speeds.count >= 3 { speeds.removeFirst() }

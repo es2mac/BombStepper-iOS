@@ -139,24 +139,26 @@ private extension UIImage {
         if !adjacency.contains(.adjacencyDown)  { inset.down = 1 }
         if !adjacency.contains(.adjacencyLeft)  { inset.left = 1 }
         if !adjacency.contains(.adjacencyRight) { inset.right = 1 }
+
         /*
-         switch (adjacency.contains(.adjacencyUp), adjacency.contains(.adjacencyRight),
-         adjacency.contains(.adjacencyDown), adjacency.contains(.adjacencyLeft)) {
-         //  Top  Right   Down   Left
-         case (false, false,     _,     _): corners.insert(.topRight)
-         case (    _, false, false,     _): corners.insert(.bottomRight)
-         case (    _,     _, false, false): corners.insert(.bottomLeft)
-         case (false,     _,     _, false): corners.insert(.topLeft)
-         default: break
-         }
+        let corners: UIRectCorner = []
+        switch (adjacency.contains(.adjacencyUp), adjacency.contains(.adjacencyRight),
+                adjacency.contains(.adjacencyDown), adjacency.contains(.adjacencyLeft)) {
+        //      Top  Right   Down   Left
+        case (false, false,     _,     _): corners.insert(.topRight)
+        case (    _, false, false,     _): corners.insert(.bottomRight)
+        case (    _,     _, false, false): corners.insert(.bottomLeft)
+        case (false,     _,     _, false): corners.insert(.topLeft)
+        default: break
+        }
+        let roundedRect = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: 2, height: 2))
          */
+
         let rect = CGRect(x: inset.left,
                           y: inset.up,
                           width: side - inset.left - inset.right,
                           height: side - inset.up - inset.down)
-        /*
-         let roundedRect = UIBezierPath(roundedRect: rect, byRoundingCorners: corners, cornerRadii: CGSize(width: 2, height: 2))
-         */
+        
         let roundedRect = UIBezierPath(roundedRect: rect, cornerRadius: 2)
 
         context.addPath(roundedRect.cgPath)
