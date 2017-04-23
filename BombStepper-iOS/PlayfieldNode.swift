@@ -22,6 +22,7 @@ final class PlayfieldNode: SKNode {
     private let blockWidth: CGFloat
 
     private let tileMapNode: SKTileMapNode
+    private let cropNode: SKCropNode
     private let outerFrameNode: SKShapeNode
     private let innerFrameNode: SKShapeNode
     private var blockTileGroupMap: BlockTileGroupMap
@@ -56,14 +57,24 @@ final class PlayfieldNode: SKNode {
 
         let tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
         let tileSize = CGSize(width: blockWidth, height: blockWidth)
-        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 20, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
+        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 24, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
+
+        // The tile map has 4 extra rows on top for auxiliary rendering, and is masked out.
+        // Normal field update should happen in the lower 20 rows only.
+        let maskNode = SKShapeNode(rect: fieldRect)
+        maskNode.fillColor = #colorLiteral(red: 0.168627451, green: 0.168627451, blue: 0.168627451, alpha: 1)
+        maskNode.lineWidth = 0
+        cropNode = SKCropNode()
+        cropNode.maskNode = maskNode
+        tileMapNode.position.y += blockWidth * 2
 
         settingManager = SettingManager()
         ghostOpacity = Alpha.ghostDefault
 
         super.init()
 
-        [outerFrameNode, innerFrameNode, tileMapNode].forEach(addChild)
+        cropNode.addChild(tileMapNode)
+        [outerFrameNode, innerFrameNode, cropNode].forEach(addChild)
 
         settingManager.updateSettingsAction = { [weak self] in
             self?.ghostOpacity = CGFloat($0.ghostOpacity)
