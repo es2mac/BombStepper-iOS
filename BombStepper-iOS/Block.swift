@@ -20,15 +20,25 @@ struct Block {
 
     enum BlockType {
         case blank
-        case tetromino(Tetromino)
-
-        // TODO: Separate types with different drawing methods
-//        case ghost, active, locked
+        case active(Tetromino)
+        case ghost(Tetromino)
+        case locked(Tetromino)
+        // case bomb
     }
 
     let type: BlockType
     var x: Int
     var y: Int
+}
+
+
+extension Block.BlockType {
+    static var allCases: [Block.BlockType] {
+        return [.blank]
+            + Tetromino.allCases.map { Block.BlockType.active($0) }
+            + Tetromino.allCases.map { Block.BlockType.ghost($0) }
+            + Tetromino.allCases.map { Block.BlockType.locked($0) }
+    }
 }
 
 
@@ -38,15 +48,22 @@ extension Block.BlockType: Hashable, Equatable {
         switch self {
         case .blank:
             return 0
-        case .tetromino(let t):
-            return 1 + t.rawValue
+        case .active(let t):
+            return 1 + 1 * 7 + t.rawValue
+        case .ghost(let t):
+            return 1 + 2 * 7 + t.rawValue
+        case .locked(let t):
+            return 1 + 3 * 7 + t.rawValue
         }
     }
 
     public static func ==(lhs: Block.BlockType, rhs: Block.BlockType) -> Bool {
         switch (lhs, rhs) {
         case (.blank, blank): return true
-        case (.tetromino(let t1), .tetromino(let t2)): return t1 == t2
+        case (.active(let t1), .active(let t2)),
+             (.ghost(let t1),  .ghost(let t2)),
+             (.locked(let t1), .locked(let t2)):
+            return t1 == t2
         default:
             return false
         }
@@ -64,10 +81,15 @@ extension Block.BlockType {
             return borderedSquare(side: side,
                                   color: .blankTile,
                                   edgeColor: .playfieldBorder)
-        case .tetromino(let t):
+        case .active(let t),
+             .locked(let t):
             return borderedSquare(side: side,
                                   color: t.color,
                                   edgeColor: t.edgeColor)
+        case .ghost(let t):
+            return borderedSquare(side: side,
+                                  color: t.color.withAlphaComponent(0.5),
+                                  edgeColor: t.edgeColor.withAlphaComponent(0.5))
         }
     }
 

@@ -25,14 +25,30 @@ struct Piece {
     var x: Int
     var y: Int
     var orientation: Orientation
+    var isGhost: Bool
 
     var blocks: [Block] {
         let blockOffsets = type.blockOffsets(for: orientation)
+        let blockType: Block.BlockType = isGhost ? .ghost(type) : .active(type)
         return blockOffsets.map { offset in
-            Block(type: .tetromino(type), x: x + offset.x, y: y + offset.y)
+            Block(type: blockType, x: x + offset.x, y: y + offset.y)
         }
     }
 
+}
+
+
+extension Piece {
+    
+    init(type: Tetromino, x: Int, y: Int) {
+        self.init(type: type, x: x, y: y, orientation: .up, isGhost: false)
+    }
+
+    var ghost: Piece {
+        var ghost = self
+        ghost.isGhost = true
+        return ghost
+    }
 }
 
 

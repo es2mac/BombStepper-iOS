@@ -88,7 +88,7 @@ extension Field {
             }
 
 //            let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
-            let piece = Piece(type: type, x: 4, y: 18, orientation: .up)
+            let piece = Piece(type: type, x: 4, y: 18)
             
             guard !pieceIsObstructed(piece) else {
                 result = .toppedOut

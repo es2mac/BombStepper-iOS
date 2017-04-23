@@ -94,16 +94,14 @@ private extension PlayfieldNode {
 
         var map = BlockTileGroupMap()
 
-        let blockTypes: [Block.BlockType] = [.blank] + Tetromino.allCases.map { Block.BlockType.tetromino($0) }
-        for (type, name) in zip(blockTypes, ["blank", "I", "J", "L", "O", "S", "T", "Z"]) {
+        Block.BlockType.allCases.forEach { type in
             let image = type.squareImage(side: tileWidth)
             let texture = SKTexture(image: image)
             let tileDefinition = SKTileDefinition(texture: texture)
             let tileGroup = SKTileGroup(tileDefinition: tileDefinition)
-            tileGroup.name = name
             map[type] = tileGroup
         }
-
+        
         return map
     }
 
