@@ -37,9 +37,9 @@ final class PlayfieldNode: SKNode {
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
-        blockWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/60)
-        let fieldRect = CGRect(x: -blockWidth * 5 * 3, y: -blockWidth * 10 * 3,
-                               width: blockWidth * 10 * 3, height: blockWidth * 20 * 3)
+        blockWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
+        let fieldRect = CGRect(x: -blockWidth * 5, y: -blockWidth * 10,
+                               width: blockWidth * 10, height: blockWidth * 20)
         let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(innerFrameWidth), dy: -CGFloat(innerFrameWidth))
         let outerFrameRect = fieldRect.insetBy(dx: -CGFloat(outerFrameWidth), dy: -CGFloat(outerFrameWidth))
 
@@ -57,9 +57,8 @@ final class PlayfieldNode: SKNode {
 
         let tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
         let tileSize = CGSize(width: blockWidth, height: blockWidth)
-        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10 * 3, rows: 24 * 3, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
+        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 24, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
 
-        // Each mino in the tile map is 3x3, for tile map adjacency placement magic.
         // The tile map has 4 extra rows on top for auxiliary rendering, and is masked out.
         // Normal field update should happen in the lower 20 rows only.
         let maskNode = SKShapeNode(rect: fieldRect)
@@ -67,7 +66,7 @@ final class PlayfieldNode: SKNode {
         maskNode.lineWidth = 0
         cropNode = SKCropNode()
         cropNode.maskNode = maskNode
-        tileMapNode.position.y += blockWidth * 2 * 3
+        tileMapNode.position.y += blockWidth * 2
 
         settingManager = SettingManager()
         ghostOpacity = Alpha.ghostDefault
@@ -77,8 +76,10 @@ final class PlayfieldNode: SKNode {
         cropNode.addChild(tileMapNode)
         [outerFrameNode, innerFrameNode, cropNode].forEach(addChild)
 
-        settingManager.updateSettingsAction = { [weak self] in
-            self?.ghostOpacity = CGFloat($0.ghostOpacity)
+        settingManager.updateSettingsAction = { [weak self] settings in
+            DispatchQueue.main.async {
+                self?.ghostOpacity = CGFloat(settings.ghostOpacity)
+            }
         }
     }
 
@@ -103,11 +104,7 @@ final class PlayfieldNode: SKNode {
     func place(blocks: [Block])  {
         DispatchQueue.main.async {
             blocks.forEach {
-                for x in 0 ..< 3 {
-                    for y in 0 ..< 3 {
-                        self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x * 3 + x, row: $0.y * 3 + y)
-                    }
-                }
+                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x, row: $0.y)
             }
         }
         
@@ -172,29 +169,6 @@ private extension PlayfieldNode {
             map[type] = tileGroup
         }
 
-
-
-        
-
-        /*
-        Block.BlockType.allCases.forEach { type in
-            let image: UIImage
-            switch type {
-            case .ghost(let t):
-                image = type.ghostImage(side: tileWidth, tetromino: t, alpha: ghostOpacity)
-            default:
-                image = type.defaultImage(side: tileWidth)
-            }
-            let texture = SKTexture(image: image)
-            let tileDefinition = SKTileDefinition(texture: texture)
-//            SKTileGroupRule(adjacency: ., tileDefinitions: <#T##[SKTileDefinition]#>)
-//            SKTileGroup(rules: [])
-            let tileGroup = SKTileGroup(tileDefinition: tileDefinition)
-            tileGroup.name = type.name
-            map[type] = tileGroup
-        }
-        */
-        
         return map
     }
 
