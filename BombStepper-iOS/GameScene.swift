@@ -32,8 +32,8 @@ final class GameScene: SKScene {
     
     override func update(_ currentTime: TimeInterval) {
         dasManager.update()
-        field.update()
         controllerNode?.update()
+        field.update(currentTime)
     }
 
     private func buttonDown(_ button: Button, isDown: Bool) {
@@ -107,8 +107,10 @@ extension GameScene: FieldDelegate {
 
     func fieldActivePieceDidLock() {
         // TODO: pass to actual game logic component
-        
-        field.startPiece(type: tetrominoRandomizer.popNext())
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+            self.field.startPiece(type: self.tetrominoRandomizer.popNext())
+        }
     }
 }
 

@@ -18,8 +18,6 @@ class GameViewController: UIViewController {
         presentGameScene()
     }
 
-    // TODO: Change to MenuScene
-
     func presentGameScene() {
 
         let skView = self.view as! SKView

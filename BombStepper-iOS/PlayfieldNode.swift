@@ -38,36 +38,8 @@ final class PlayfieldNode: SKNode {
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
         blockWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
-        let fieldRect = CGRect(x: -blockWidth * 5, y: -blockWidth * 10,
-                               width: blockWidth * 10, height: blockWidth * 20)
-        let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(innerFrameWidth), dy: -CGFloat(innerFrameWidth))
-        let outerFrameRect = fieldRect.insetBy(dx: -CGFloat(outerFrameWidth), dy: -CGFloat(outerFrameWidth))
-
-        innerFrameNode = SKShapeNode(rect: innerFrameRect, cornerRadius: 2)
-        innerFrameNode.fillColor = .playfieldBorder
-        innerFrameNode.lineWidth = 0
-        innerFrameNode.zPosition = ZPosition.playfieldInnerFrame
-
-        outerFrameNode = SKShapeNode(rect: outerFrameRect, cornerRadius: 4)
-        outerFrameNode.fillColor = .playfieldOuterFrame
-        outerFrameNode.lineWidth = 0
-        outerFrameNode.zPosition = ZPosition.playfieldOuterFrame
-
-        blockTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: CGFloat(blockWidth), ghostOpacity: Alpha.ghostDefault)
-
-        let tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
-        let tileSize = CGSize(width: blockWidth, height: blockWidth)
-        tileMapNode = SKTileMapNode(tileSet: tileSet, columns: 10, rows: 24, tileSize: tileSize, fillWith: blockTileGroupMap[.blank]!)
-
-        // The tile map has 4 extra rows on top for auxiliary rendering, and is masked out.
-        // Normal field update should happen in the lower 20 rows only.
-        let maskNode = SKShapeNode(rect: fieldRect)
-        maskNode.fillColor = #colorLiteral(red: 0.168627451, green: 0.168627451, blue: 0.168627451, alpha: 1)
-        maskNode.lineWidth = 0
-        cropNode = SKCropNode()
-        cropNode.maskNode = maskNode
-        tileMapNode.position.y += blockWidth * 2
-
+        blockTileGroupMap = PlayfieldNode.createTileGroupMap(tileWidth: blockWidth, ghostOpacity: Alpha.ghostDefault)
+        (tileMapNode, innerFrameNode, outerFrameNode, cropNode) = PlayfieldNode.createNodes(blockWidth: blockWidth)
         settingManager = SettingManager()
         ghostOpacity = Alpha.ghostDefault
 
@@ -77,9 +49,7 @@ final class PlayfieldNode: SKNode {
         [outerFrameNode, innerFrameNode, cropNode].forEach(addChild)
 
         settingManager.updateSettingsAction = { [weak self] settings in
-            DispatchQueue.main.async {
-                self?.ghostOpacity = CGFloat(settings.ghostOpacity)
-            }
+            DispatchQueue.main.async { self?.ghostOpacity = CGFloat(settings.ghostOpacity) }
         }
     }
 
@@ -97,14 +67,28 @@ final class PlayfieldNode: SKNode {
                                       .fadeIn(withDuration: 1)]))
     }
 
-    func clearField() {
-        tileMapNode.fill(with: tileGroup(for: .blank))
-    }
+//    func clearField() { tileMapNode.fill(with: nil) }
 
-    func place(blocks: [Block])  {
+    func place(blocks: [Block], automapping: Bool = true)  {
         DispatchQueue.main.async {
+            if !automapping {
+                // TODO: do a copy at top lines
+                self.tileMapNode.enableAutomapping = false
+                self.tileMapNode.enableAutomapping = true
+            }
+            
             blocks.forEach {
-                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x, row: $0.y)
+                
+                // TODO: layer field on top of static background, blanks don't draw
+                
+                // TODO: layer field on top of static background, blanks don't draw
+                
+                if case .blank = $0.type {
+                    self.tileMapNode.setTileGroup(nil, forColumn: $0.x, row: $0.y)
+                }
+                else {
+                    self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x, row: $0.y)
+                }
             }
         }
         
@@ -120,7 +104,7 @@ final class PlayfieldNode: SKNode {
         // Seems magical esp. the ghost piece now has a new image, but maybe it
         // has a way of identifying the tile groups as being the same?
         // To help it does that I'll set group names
-        blockTileGroupMap = PlayfieldNode.makeTileGroupMap(tileWidth: blockWidth, ghostOpacity: ghostOpacity)
+        blockTileGroupMap = PlayfieldNode.createTileGroupMap(tileWidth: blockWidth, ghostOpacity: ghostOpacity)
         tileMapNode.tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
     }
 
@@ -129,7 +113,7 @@ final class PlayfieldNode: SKNode {
 
 private extension PlayfieldNode {
 
-    class func makeTileGroupMap(tileWidth: CGFloat, ghostOpacity: CGFloat) -> BlockTileGroupMap {
+    class func createTileGroupMap(tileWidth: CGFloat, ghostOpacity: CGFloat) -> BlockTileGroupMap {
 
         var map = BlockTileGroupMap()
 
@@ -166,6 +150,38 @@ private extension PlayfieldNode {
         return map
     }
 
+    class func createNodes(blockWidth: CGFloat) -> (tileMap: SKTileMapNode, innerFrame: SKShapeNode, outerFrame: SKShapeNode, cropNode: SKCropNode) {
+
+        // The tile map has 4 extra rows on top for auxiliary rendering, and is masked out.
+        // Normal field update should happen in the lower 20 rows only.
+        // Tile set is set after getting user settings back.
+        let tileSize = CGSize(width: blockWidth, height: blockWidth)
+        let tileMapNode = SKTileMapNode(tileSet: SKTileSet(tileGroups: []), columns: 10, rows: 24, tileSize: tileSize)
+        tileMapNode.position.y = blockWidth * 2
+
+        let fieldRect = CGRect(x: -blockWidth * 5, y: -blockWidth * 10,
+                               width: blockWidth * 10, height: blockWidth * 20)
+        let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(innerFrameWidth), dy: -CGFloat(innerFrameWidth))
+        let outerFrameRect = fieldRect.insetBy(dx: -CGFloat(outerFrameWidth), dy: -CGFloat(outerFrameWidth))
+
+        let innerFrameNode = SKShapeNode(rect: innerFrameRect, cornerRadius: 2)
+        innerFrameNode.fillColor = .playfieldBorder
+        innerFrameNode.lineWidth = 0
+        innerFrameNode.zPosition = ZPosition.playfieldInnerFrame
+
+        let outerFrameNode = SKShapeNode(rect: outerFrameRect, cornerRadius: 4)
+        outerFrameNode.fillColor = .playfieldOuterFrame
+        outerFrameNode.lineWidth = 0
+        outerFrameNode.zPosition = ZPosition.playfieldOuterFrame
+
+        let maskNode = SKShapeNode(rect: fieldRect)
+        maskNode.fillColor = #colorLiteral(red: 0.168627451, green: 0.168627451, blue: 0.168627451, alpha: 1)
+        maskNode.lineWidth = 0
+        let cropNode = SKCropNode()
+        cropNode.maskNode = maskNode
+
+        return (tileMap: tileMapNode, innerFrame: innerFrameNode, outerFrame: outerFrameNode, cropNode: cropNode)
+    }
 
 }
 

@@ -9,6 +9,7 @@
 import Foundation
 
 
+/// Field does work on a separate queue, so delegate might want to dispatch back to main
 protocol FieldDelegate: class {
     func updateField(blocks: [Block])
     func fieldActivePieceDidLock()
@@ -39,7 +40,6 @@ final class Field {
     // Changes are keyed by their index, so multiple changes on same place is overridden
     fileprivate var unreportedChanges: [Int : (newBlock: Block, oldType:Block.BlockType)] = [:]
     // Put most operations on a serial queue to make access on the two properties above atomic
-    // Delegate calls should be back on main queue to avoid potential lockdown
     fileprivate let queue = DispatchQueue(label: "field")
 
     fileprivate var activePiece: Piece? {
@@ -63,6 +63,7 @@ final class Field {
     
     fileprivate var dasFrameCount = 0
     fileprivate var softDropFrameCount = 0
+    fileprivate var lastUpdateTime: TimeInterval = 0
 
     private let settingManager: SettingManager
     fileprivate var settings: SettingManager.Settings
@@ -122,7 +123,7 @@ extension Field {
         queue.async { self.processAsync(das: das) }
     }
 
-    func update() {
+    func update(_ currentTime: TimeInterval) {
 
         // TODO: gravity drop & timing stuff
     }
@@ -198,9 +199,7 @@ private extension Field {
 
         clearCompletedLines()
 
-        DispatchQueue.main.async {
-            self.delegate?.fieldActivePieceDidLock()
-        }
+        self.delegate?.fieldActivePieceDidLock()
     }
 
     // Temporary.  May be more complicated
@@ -304,9 +303,7 @@ private extension Field {
         let blocks = unreportedChanges.map { $0.value.newBlock }
         unreportedChanges.removeAll(keepingCapacity: true)
 
-        DispatchQueue.main.async {
-            self.delegate?.updateField(blocks: blocks)
-        }
+        self.delegate?.updateField(blocks: blocks)
     }
 
 }
