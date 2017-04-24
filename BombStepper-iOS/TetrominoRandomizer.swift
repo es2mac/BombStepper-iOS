@@ -14,23 +14,36 @@ class TetrominoRandomizer {
 
     private var stack: [Tetromino] = []
     private let randomizer: GKARC4RandomSource
+    private let previewsCount = 5
 
     init() {
         randomizer = GKARC4RandomSource()
-        stack = randomizer.arrayByShufflingObjects(in: Tetromino.allCases) as! [Tetromino]
+        defer {
+            while stack.count < previewsCount + 1 {
+                stack.insert(contentsOf: newBag(), at: 0)
+            }
+        }
     }
 
     func popNext() -> Tetromino {
-        if stack.count < 6 {
+        if stack.count <= previewsCount {
             defer {
-                stack.insert(contentsOf: randomizer.arrayByShufflingObjects(in: Tetromino.allCases) as! [Tetromino], at: 0)
+                stack.insert(contentsOf: newBag(), at: 0)
             }
         }
         return stack.popLast()!
     }
 
     func previews() -> [Tetromino] {
-        return Array(stack.suffix(5))
+        return Array(stack.suffix(previewsCount))
+    }
+
+    func reset() {
+        stack = newBag()
+    }
+
+    private func newBag() -> [Tetromino] {
+        return randomizer.arrayByShufflingObjects(in: Tetromino.allCases) as! [Tetromino]
     }
     
 }

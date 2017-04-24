@@ -33,15 +33,16 @@ final class DASManager {
     }
 
 
+    var performDAS: ((Direction) -> Void)?
+
     fileprivate var dasStatus: Status
     fileprivate var dasDelay: MachAbsTime
     // High priority queue for mach_wait for precision DAS firing
     private let dasPendingQueue = DispatchQueue(label: "net.mathemusician.BombStepper.DASManager", qos: .userInteractive)
-    fileprivate let performDAS: (Direction) -> Void
-
+    
 
     /// Note: performDAS is usually called off the main thread
-    init(performDAS: @escaping (Direction) -> Void) {
+    init(performDAS: ((Direction) -> Void)? = nil) {
         dasDelay = msToAbs(8 * 1000 / 60)   // Updates on settings manager callback
         dasStatus = Status.none
         self.performDAS = performDAS
@@ -70,7 +71,7 @@ final class DASManager {
 
         if fireTime < now {
             dasStatus = .active(direction)
-            performDAS(direction)
+            performDAS?(direction)
         }
         else {
             dasStatus = .imminent(direction)
@@ -78,7 +79,7 @@ final class DASManager {
                 mach_wait_until(fireTime)
                 if case .imminent(let d) = self.dasStatus, d == direction {
                     self.dasStatus = .active(direction)
-                    self.performDAS(direction)
+                    self.performDAS?(direction)
                 }
             }
         }
@@ -91,7 +92,7 @@ extension DASManager: GameSceneUpdatable {
     func update(_ currentTime: TimeInterval) {
         switch dasStatus {
         case .active(let direction):
-            performDAS(direction)
+            performDAS?(direction)
         case .pending(let direction, let t):
             activateDASIfNeeded(direction: direction, fireTime: t)
         default:

@@ -9,6 +9,12 @@
 import SpriteKit
 
 
+protocol ControllerDelegate: class {
+    func buttonDown(_ button: Button)
+    func buttonUp(_ button: Button)
+}
+
+
 typealias ButtonMap = [SKShapeNode : Button]
 
 
@@ -21,7 +27,8 @@ typealias ButtonMap = [SKShapeNode : Button]
 final class ControllerNode: SKNode {
 
     let sceneSize: CGSize
-    fileprivate let buttonDownAction: (Button, _ isDown: Bool) -> Void
+    weak var delegate: ControllerDelegate?
+    
 
     fileprivate let buttonNodes: [SKShapeNode]
     fileprivate var buttonMap: ButtonMap
@@ -32,9 +39,9 @@ final class ControllerNode: SKNode {
     fileprivate var touchesData = [UITouch : TouchData]()
 
 
-    init(sceneSize: CGSize, buttonDownAction: @escaping (Button, _ isDown: Bool) -> Void) {
+    init(sceneSize: CGSize, delegate: ControllerDelegate?) {
         self.sceneSize = sceneSize
-        self.buttonDownAction = buttonDownAction
+        self.delegate = delegate
 
         let buttonWidth = Int(sceneSize.height / 8) * 2     // Quarter height, rounded down to even number
         buttonNodes = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
@@ -81,7 +88,7 @@ extension ControllerNode: GameSceneUpdatable {
     // Let soft drop be continuously-firing
     func update(_ currentTime: TimeInterval) {
         if touchesData.values.contains(where: { $0.button == .softDrop }) {
-            buttonDownAction(.softDrop, true)
+            delegate?.buttonDown(.softDrop)
         }
     }
 }
@@ -151,7 +158,7 @@ private extension ControllerNode {
             let button = buttonMap[node] {
             touchesData[touch] = TouchData(node: node, button: button, time: touch.timestamp, location: location)
             node.alpha = Alpha.pressedButton
-            buttonDownAction(button, true)
+            delegate?.buttonDown(button)
         }
     }
 
@@ -162,8 +169,7 @@ private extension ControllerNode {
         data.recordSpeed(time: touch.timestamp, location: touch.location(in: self))
         if data.touchIsSwipingDown() {
             touchUp(touch)
-            buttonDownAction(.hardDrop, true)
-            buttonDownAction(.hardDrop, false)
+            delegate?.buttonDown(.hardDrop)
         }
         
         // LR swipe test
@@ -190,7 +196,7 @@ private extension ControllerNode {
     func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
             node.alpha = Alpha.releasedButton
-            buttonDownAction(buttonMap[node]!, false)
+            delegate?.buttonUp(buttonMap[node]!)
         }
     }
 

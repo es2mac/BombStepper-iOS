@@ -11,13 +11,13 @@ import Foundation
 
 class GravityTimer {
 
-    let dropAction: (_ dropBy: Int) -> Void
+    var dropAction: ((_ dropBy: Int) -> Void)?
 
     fileprivate var started = false
     fileprivate var lastUpdateTime: TimeInterval = 0
     fileprivate var lastGravityDropTime: TimeInterval = 0
 
-    init(dropAction: @escaping (Int) -> Void) {
+    init(dropAction: ((Int) -> Void)? = nil) {
         self.dropAction = dropAction
     }
 
@@ -39,7 +39,7 @@ extension GravityTimer: GameSceneUpdatable {
 
         if started, currentTime - lastGravityDropTime > 1 {
             let dropBy = Int(currentTime - lastGravityDropTime)
-            dropAction(dropBy)
+            dropAction?(dropBy)
             lastGravityDropTime += Double(dropBy)
         }
     }

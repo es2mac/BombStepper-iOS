@@ -35,7 +35,8 @@ final class Field {
     }
 
 
-    fileprivate weak var delegate: FieldDelegate?
+    weak var delegate: FieldDelegate?
+
     // Data for the whole 40 x 10 field
     fileprivate var allBlocks: [Block.BlockType]
     // Changes are keyed by their index, so multiple changes on same place is overridden
@@ -56,7 +57,7 @@ final class Field {
     fileprivate var softDropFrameCounter = 0
     // TODO: Move soft drop logic out
 
-    init(delegate: FieldDelegate?) {
+    init(delegate: FieldDelegate? = nil) {
         self.delegate = delegate
         allBlocks = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
     }
@@ -116,7 +117,12 @@ extension Field {
         queue.async { self.shiftAsync(offset) }
     }
 
-//    func reset() { }
+    func reset() {
+        (0 ..< allBlocks.count).forEach { allBlocks[$0] = .blank }
+        activePiece = nil
+        ghostPiece = nil
+        unreportedChanges.removeAll()
+    }
 
 }
 
@@ -214,6 +220,9 @@ private extension Field {
         }
 
         clearCompletedLines()
+
+        // TODO: may be "tooped out" by locking completely outside of visible field
+        // logically may be easiest to place an obstruction at the starting place
 
         self.delegate?.fieldActivePieceDidLock()
     }

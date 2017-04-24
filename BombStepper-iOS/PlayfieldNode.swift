@@ -63,7 +63,7 @@ final class PlayfieldNode: SKNode {
         DispatchQueue.main.async { self.placeAsync(blocks: blocks) }
     }
 
-//    func clearField() { tileMapNode.fill(with: nil) }
+    func clearField() { tileMapNode.fill(with: nil) }
 
 }
 
