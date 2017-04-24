@@ -29,14 +29,7 @@ final class PlayfieldNode: SKNode {
     fileprivate let textureGenerationQueue = OperationQueue()
     fileprivate var blockTileGroupMap: BlockTileGroupMap = [:]
 
-    fileprivate let settingManager = SettingManager()
-    fileprivate var ghostOpacity: CGFloat  = Alpha.ghostDefault {
-        didSet {
-            guard ghostOpacity != oldValue, !blockTileGroupMap.isEmpty else { return }
-            let operation = UpdateGhostTexturesOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, map: blockTileGroupMap)
-            textureGenerationQueue.addOperation(operation)
-        }
-    }
+    fileprivate var ghostOpacity: CGFloat  = Alpha.ghostDefault
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
@@ -47,10 +40,6 @@ final class PlayfieldNode: SKNode {
 
         cropNode.addChild(tileMapNode)
         [outerFrameNode, innerFrameNode, cropNode].forEach(addChild)
-
-        settingManager.updateSettingsAction = { [weak self] settings in
-            self?.ghostOpacity = CGFloat(settings.ghostOpacity)
-        }
 
         let operation = GenerateTileSetOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, doneTarget: self)
         textureGenerationQueue.addOperation(operation)
@@ -76,6 +65,16 @@ final class PlayfieldNode: SKNode {
 
 //    func clearField() { tileMapNode.fill(with: nil) }
 
+}
+
+
+extension PlayfieldNode: SettingsNotificationTarget {
+    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
+        guard CGFloat(settings.ghostOpacity) != ghostOpacity, !blockTileGroupMap.isEmpty else { return }
+        ghostOpacity = CGFloat(settings.ghostOpacity)
+        let operation = UpdateGhostTexturesOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, map: blockTileGroupMap)
+        textureGenerationQueue.addOperation(operation)
+    }
 }
 
 

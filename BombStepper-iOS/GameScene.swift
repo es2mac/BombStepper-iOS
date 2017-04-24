@@ -10,19 +10,22 @@ import SpriteKit
 import GameplayKit
 
 
+protocol GameSceneUpdatable {
+    func update(_ currentTime: TimeInterval)
+}
+
+
 final class GameScene: SKScene {
 
-    private var controllerNode: ControllerNode?
+    fileprivate var controllerNode: ControllerNode!
 
-    fileprivate var playfieldNode: PlayfieldNode?
+    fileprivate var playfieldNode: PlayfieldNode!
 
     fileprivate var field: Field!
     fileprivate var tetrominoRandomizer: TetrominoRandomizer!
     
-    private var dasManager: DASManager!
-
-
-    // TODO: Programmatically init, put background color in Constants
+    fileprivate var dasManager: DASManager!
+    fileprivate let settingsManager = SettingsManager()
     
 
     override func didMove(to view: SKView) {
@@ -32,21 +35,23 @@ final class GameScene: SKScene {
         // TODO: a "tetris system" class that composes of field, hold, preview, randomizer/generator
         setupTetrisSystem()
         setupDASManager()
+        settingsManager.addNotificationTargets([controllerNode, dasManager, field, playfieldNode])
     }
     
     override func update(_ currentTime: TimeInterval) {
-        dasManager.update()
-        controllerNode?.update()
+        dasManager.update(currentTime)
+        controllerNode.update(currentTime)
         field.update(currentTime)
     }
 
     private func buttonDown(_ button: Button, isDown: Bool) {
 
 
-        // debug
+        /* debug */
         if case .hold = button, isDown == true {
             field.startPiece(type: tetrominoRandomizer.popNext())
         }
+        /* end debug */
 
 
         if isDown {
@@ -66,6 +71,7 @@ final class GameScene: SKScene {
     }
 
     // Create or (if size changed) recreate the controller node
+    // Treat controllerNode as regular optional here
     private func setupControllerNode() {
         guard controllerNode?.sceneSize != size else { return }
         controllerNode?.removeFromParent()
@@ -82,6 +88,8 @@ final class GameScene: SKScene {
         }
     }
 
+    // Create or (if size changed) recreate the playfield node
+    // Treat playfieldNode as regular optional here
     private func setupPlayfieldNode() {
         guard playfieldNode?.sceneSize != size else { return }
         playfieldNode?.removeFromParent()
@@ -109,7 +117,7 @@ final class GameScene: SKScene {
 extension GameScene: FieldDelegate {
 
     func updateField(blocks: [Block]) {
-        self.playfieldNode?.place(blocks: blocks)
+        self.playfieldNode.place(blocks: blocks)
     }
 
     func fieldActivePieceDidLock() {

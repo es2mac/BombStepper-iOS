@@ -16,7 +16,7 @@ final class DASManager {
         case left, right
     }
 
-    private enum Status {
+    fileprivate enum Status {
         case none
         case pending(Direction, fire: MachAbsTime)
         case imminent(Direction)   // Only when mach_waiting, within 1 frame time
@@ -33,13 +33,11 @@ final class DASManager {
     }
 
 
-    private let settingManager: SettingManager
-
-    private var dasStatus: Status
-    private var dasDelay: MachAbsTime
+    fileprivate var dasStatus: Status
+    fileprivate var dasDelay: MachAbsTime
     // High priority queue for mach_wait for precision DAS firing
-    private let dasPendingQueue = DispatchQueue(label: "dasManager", qos: .userInteractive)
-    private let performDAS: (Direction) -> Void
+    private let dasPendingQueue = DispatchQueue(label: "net.mathemusician.BombStepper.DASManager", qos: .userInteractive)
+    fileprivate let performDAS: (Direction) -> Void
 
 
     /// Note: performDAS is usually called off the main thread
@@ -47,10 +45,6 @@ final class DASManager {
         dasDelay = msToAbs(8 * 1000 / 60)   // Updates on settings manager callback
         dasStatus = Status.none
         self.performDAS = performDAS
-        settingManager = SettingManager()
-        settingManager.updateSettingsAction = { [weak self] in
-            self?.dasDelay = msToAbs(Double($0.dasValue) * 1000 / 60)
-        }
     }
 
     func inputBegan(_ direction: Direction) {
@@ -69,18 +63,7 @@ final class DASManager {
         }
     }
 
-    func update() {
-        switch dasStatus {
-        case .active(let direction):
-            performDAS(direction)
-        case .pending(let direction, let t):
-            activateDASIfNeeded(direction: direction, fireTime: t)
-        default:
-            break
-        }
-    }
-
-    private func activateDASIfNeeded(direction: Direction, fireTime: MachAbsTime) {
+    fileprivate func activateDASIfNeeded(direction: Direction, fireTime: MachAbsTime) {
         let now = mach_absolute_time()
 
         guard fireTime < now + singleFrameTime else { return }
@@ -101,6 +84,27 @@ final class DASManager {
         }
     }
 
+}
+
+
+extension DASManager: GameSceneUpdatable {
+    func update(_ currentTime: TimeInterval) {
+        switch dasStatus {
+        case .active(let direction):
+            performDAS(direction)
+        case .pending(let direction, let t):
+            activateDASIfNeeded(direction: direction, fireTime: t)
+        default:
+            break
+        }
+    }
+}
+
+
+extension DASManager: SettingsNotificationTarget {
+    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
+        dasDelay = msToAbs(Double(settings.dasValue) * 1000 / 60)
+    }
 }
 
 

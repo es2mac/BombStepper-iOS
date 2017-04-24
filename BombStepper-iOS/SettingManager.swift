@@ -1,5 +1,5 @@
 //
-//  SettingManager.swift
+//  SettingsManager.swift
 //  BombStepper-iOS
 //
 //  Created by Paul on 4/21/17.
@@ -7,6 +7,12 @@
 //
 
 import Foundation
+
+
+protocol SettingsNotificationTarget: class {
+    // Called the first time added to the manager, and every time there's an update
+    func settingsDidUpdate(_ settings: SettingsManager.Settings)
+}
 
 
 enum Button: String {
@@ -21,12 +27,13 @@ enum Button: String {
 }
 
 
-final class SettingManager {
+final class SettingsManager {
 
     struct Settings {
 
         private enum SettingKey: String {
-            case dasValue, dasFrames
+            case dasValue
+            case dasFrames
             case softDropFrames
             case swipeDropEnabled   
             case swipeDownThreshold
@@ -80,7 +87,7 @@ final class SettingManager {
         let button11: Button
 
 
-        static var initial = Settings(dictionary: initialValuesDictionary)
+        static let initial = Settings(dictionary: initialValuesDictionary)
 
 
         init(dictionary: [String : Any]) {
@@ -106,19 +113,20 @@ final class SettingManager {
         }
     }
 
-    private let queue = DispatchQueue.global(qos: .background)
 
-    // Provide current settings, called on first set and whenever settings update
-    // Called on background queue because I don't know how heavy the defaults operations are
-    var updateSettingsAction: ((Settings) -> Void)? {
-        didSet {
-            fetchSettings()
-        }
-    }
+    fileprivate var currentSettings = Settings.initial
+
+    fileprivate var notificationTargets = [NotifyTargetWeakWrapper]()
+
+    fileprivate let queue = DispatchQueue(label: "net.mathemusician.BombStepper.SettingsManager", qos: .background)
 
     init() {
         NotificationCenter.default.addObserver(forName: UserDefaults.didChangeNotification, object: nil, queue: nil) { [weak self] notification in
-            self?.settingsDidChange(notification: notification)
+            guard let defaults = notification.object as? UserDefaults else { return }
+            self?.fetchSettings(from: defaults)
+        }
+        defer {
+            fetchSettings()
         }
     }
 
@@ -126,28 +134,21 @@ final class SettingManager {
         NotificationCenter.default.removeObserver(self)
     }
 
-    private var temporarilyIgnoreChangeNotifications = false
-
-    private func settingsDidChange(notification: Notification) {
-        guard let defaults = notification.object as? UserDefaults else { return }
-
-        if temporarilyIgnoreChangeNotifications == false {
-            fetchSettings(from: defaults)
-        }
+    func addNotificationTargets(_ targets: [SettingsNotificationTarget]) {
+        notificationTargets.append(contentsOf: targets.map(NotifyTargetWeakWrapper.init))
+        targets.forEach { $0.settingsDidUpdate(currentSettings) }
     }
+}
+
+
+private extension SettingsManager {
 
     // Fetch settings, and if missing defaults, set to initial value
-    private func fetchSettings(from defaults: UserDefaults = .standard) {
-        queue.async {
-            self.temporarilyIgnoreChangeNotifications = true
-            self.fetchSettingsAsynchronously(from: defaults)
-            self.temporarilyIgnoreChangeNotifications = false
-        }
+    func fetchSettings(from defaults: UserDefaults = .standard) {
+        queue.async { self.fetchSettingsAsync(from: defaults) }
     }
 
-    private func fetchSettingsAsynchronously(from defaults: UserDefaults) {
-
-        guard updateSettingsAction != nil else { return }
+    private func fetchSettingsAsync(from defaults: UserDefaults) {
 
         var defaultsWritten = false
         var dictionary = [String : Any]()
@@ -162,14 +163,56 @@ final class SettingManager {
                 defaultsWritten = true
             }
         }
-        
+
         if defaultsWritten { defaults.synchronize() }
-        
-        updateSettingsAction?(Settings(dictionary: dictionary))
+
+        let newSettings = Settings(dictionary: dictionary)
+        if newSettings != currentSettings {
+            currentSettings = newSettings
+            notifyTargets()
+        }
     }
 
+    private func notifyTargets() {
+        notificationTargets = notificationTargets.filter { targetWrapper in
+            targetWrapper.target?.settingsDidUpdate(currentSettings)
+            return targetWrapper.target != nil
+        }
+    }
 }
 
+
+private class NotifyTargetWeakWrapper {
+    weak var target: SettingsNotificationTarget?
+    init(target: SettingsNotificationTarget) {
+        self.target = target
+    }
+}
+
+
+extension SettingsManager.Settings: Equatable { }
+
+func ==(lhs: SettingsManager.Settings, rhs: SettingsManager.Settings) -> Bool {
+    return lhs.dasValue        == rhs.dasValue &&
+        lhs.dasFrames          == rhs.dasFrames &&
+        lhs.softDropFrames     == rhs.softDropFrames &&
+        lhs.swipeDropEnabled   == rhs.swipeDropEnabled &&
+        lhs.swipeDownThreshold == rhs.swipeDownThreshold &&
+        lhs.lrSwipeEnabled     == rhs.lrSwipeEnabled &&
+        lhs.ghostOpacity       == rhs.ghostOpacity &&
+        lhs.button00           == rhs.button00 &&
+        lhs.button01           == rhs.button01 &&
+        lhs.button02           == rhs.button02 &&
+        lhs.button03           == rhs.button03 &&
+        lhs.button04           == rhs.button04 &&
+        lhs.button05           == rhs.button05 &&
+        lhs.button06           == rhs.button06 &&
+        lhs.button07           == rhs.button07 &&
+        lhs.button08           == rhs.button08 &&
+        lhs.button09           == rhs.button09 &&
+        lhs.button10           == rhs.button10 &&
+        lhs.button11           == rhs.button11
+}
 
 
 

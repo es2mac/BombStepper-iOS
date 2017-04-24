@@ -25,14 +25,7 @@ final class ControllerNode: SKNode {
 
     fileprivate let buttons: [SKShapeNode]
     fileprivate var buttonMap: ButtonMap
-    private let settingManager: SettingManager
-    fileprivate var settings: SettingManager.Settings {
-        didSet {
-            TouchData.swipeDropEnabled = settings.swipeDropEnabled
-            TouchData.swipeDownThreshold = settings.swipeDownThreshold
-            buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
-        }
-    }
+    fileprivate var settings: SettingsManager.Settings
 
     // Stores touches that correspond to buttons to calculate swipe speed
     fileprivate var touchesData = [UITouch : TouchData]()
@@ -43,17 +36,14 @@ final class ControllerNode: SKNode {
         self.buttonDownAction = buttonDownAction
 
         let buttonWidth = Int(sceneSize.height / 8) * 2     // Quarter height, rounded down to even number
-        settingManager = SettingManager()
         buttons = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
-        settings = SettingManager.Settings.initial
+        settings = SettingsManager.Settings.initial
         buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
 
         super.init()
 
         buttons.forEach(addChild)
         layoutButtons(for: sceneSize)
-
-        settingManager.updateSettingsAction = { [weak self] in self?.settings = $0 }
 
         NotificationCenter.default.addObserver(forName: .UIApplicationWillResignActive, object: nil, queue: nil) { [weak self] _ in
             self?.stopAllTouches()
@@ -84,14 +74,28 @@ final class ControllerNode: SKNode {
         touches.forEach(touchUp)
     }
 
+}
+
+
+extension ControllerNode: GameSceneUpdatable {
     // Let soft drop be continuously-firing
-    func update() {
+    func update(_ currentTime: TimeInterval) {
         if touchesData.values.contains(where: { $0.button == .softDrop }) {
             buttonDownAction(.softDrop, true)
         }
     }
-
 }
+
+
+extension ControllerNode: SettingsNotificationTarget {
+    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
+        self.settings = settings
+        TouchData.swipeDropEnabled = settings.swipeDropEnabled
+        TouchData.swipeDownThreshold = settings.swipeDownThreshold
+        buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
+    }
+}
+
 
 private extension ControllerNode {
 
@@ -208,7 +212,7 @@ fileprivate extension ControllerNode {
         return node
     }
 
-    class func buildButtonMap(withButtons buttons: [SKShapeNode], settings: SettingManager.Settings) -> ButtonMap {
+    class func buildButtonMap(withButtons buttons: [SKShapeNode], settings: SettingsManager.Settings) -> ButtonMap {
         return [ buttons[0] : settings.button00,
                  buttons[1] : settings.button01,
                  buttons[2] : settings.button02,

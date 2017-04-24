@@ -40,7 +40,7 @@ final class Field {
     // Changes are keyed by their index, so multiple changes on same place is overridden
     fileprivate var unreportedChanges: [Int : (newBlock: Block, oldType:Block.BlockType)] = [:]
     // Put most operations on a serial queue to make access on the two properties above atomic
-    fileprivate let queue = DispatchQueue(label: "field")
+    fileprivate let queue = DispatchQueue(label: "net.mathemusician.BombStepper.Field")
 
     fileprivate var activePiece: Piece? {
         didSet {
@@ -64,20 +64,21 @@ final class Field {
     fileprivate var softDropFrameCount = 0
     fileprivate var lastUpdateTime: TimeInterval = 0
 
-    private let settingManager: SettingManager
-    fileprivate var settings: SettingManager.Settings
+    fileprivate var settings: SettingsManager.Settings
 
     init(delegate: FieldDelegate?) {
         self.delegate = delegate
         allBlocks = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
-        settingManager = SettingManager()
-        settings = SettingManager.Settings.initial
-
-        defer {
-            settingManager.updateSettingsAction = { [weak self] in self?.settings = $0 }
-        }
+        settings = SettingsManager.Settings.initial
     }
 
+}
+
+
+extension Field: SettingsNotificationTarget {
+    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
+        self.settings = settings
+    }
 }
 
 
