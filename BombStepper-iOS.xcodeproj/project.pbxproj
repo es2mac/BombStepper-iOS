@@ -11,7 +11,7 @@
 		DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0ED92D1EA7AA11008F3C61 /* MenuViewController.swift */; };
 		DA0ED9321EA7B71A008F3C61 /* Tetromino.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */; };
 		DA0ED9341EA7C82C008F3C61 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = DA0ED9331EA7C82C008F3C61 /* Settings.bundle */; };
-		DA10B4421EA9D8E800C2C805 /* SettingManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA10B4411EA9D8E800C2C805 /* SettingManager.swift */; };
+		DA10B4421EA9D8E800C2C805 /* SettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA10B4411EA9D8E800C2C805 /* SettingsManager.swift */; };
 		DA25F1C31EAB0D3C0031F833 /* Field.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C21EAB0D3C0031F833 /* Field.swift */; };
 		DA25F1C51EAB19110031F833 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C41EAB19110031F833 /* Block.swift */; };
 		DA25F1C71EAB39130031F833 /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C61EAB39130031F833 /* Piece.swift */; };
@@ -44,7 +44,7 @@
 		DA0ED92D1EA7AA11008F3C61 /* MenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Tetromino.swift; sourceTree = "<group>"; };
 		DA0ED9331EA7C82C008F3C61 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
-		DA10B4411EA9D8E800C2C805 /* SettingManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingManager.swift; sourceTree = "<group>"; };
+		DA10B4411EA9D8E800C2C805 /* SettingsManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsManager.swift; sourceTree = "<group>"; };
 		DA25F1C21EAB0D3C0031F833 /* Field.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Field.swift; sourceTree = "<group>"; };
 		DA25F1C41EAB19110031F833 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		DA25F1C61EAB39130031F833 /* Piece.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Piece.swift; sourceTree = "<group>"; };
@@ -128,7 +128,7 @@
 			isa = PBXGroup;
 			children = (
 				DA8324A91EA7F3060076AF4E /* DASManager.swift */,
-				DA10B4411EA9D8E800C2C805 /* SettingManager.swift */,
+				DA10B4411EA9D8E800C2C805 /* SettingsManager.swift */,
 				DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */,
 			);
 			name = Managers;
@@ -300,7 +300,7 @@
 				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,
 				DA25F1C31EAB0D3C0031F833 /* Field.swift in Sources */,
 				DA0ED9321EA7B71A008F3C61 /* Tetromino.swift in Sources */,
-				DA10B4421EA9D8E800C2C805 /* SettingManager.swift in Sources */,
+				DA10B4421EA9D8E800C2C805 /* SettingsManager.swift in Sources */,
 				DA4D28FE1EA4F6C5008F3BDF /* GameViewController.swift in Sources */,
 				DA25F1C71EAB39130031F833 /* Piece.swift in Sources */,
 				DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */,
