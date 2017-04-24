@@ -12,6 +12,7 @@ import Foundation
 /// Field does work on a separate queue, so delegate might want to dispatch back to main
 protocol FieldDelegate: class {
     func updateField(blocks: [Block])
+    func fieldActivePieceDidTouchBottom(touching: Bool)
     func fieldActivePieceDidLock()
 }
 
@@ -43,30 +44,17 @@ final class Field {
     fileprivate let queue = DispatchQueue(label: "net.mathemusician.BombStepper.Field")
 
     fileprivate var activePiece: Piece? {
-        didSet {
-            oldValue?.blocks.forEach(clearBlock)
-            ghostPiece?.blocks.forEach(clearBlock)
-            defer { activePiece?.blocks.forEach(setBlock) }
-
-            if hideGhost {
-                ghostPiece = nil
-            }
-            else {
-                ghostPiece = activePiece.map(positionedGhost)
-                ghostPiece?.blocks.forEach(setBlock)
-            }
-        }
+        didSet { updateActivePiece(current: activePiece, previous: oldValue) }
     }
 
-    private var ghostPiece: Piece?
-
+    fileprivate var ghostPiece: Piece?
 
     fileprivate var hideGhost = false
     fileprivate var dasFrames = 1
     fileprivate var dasFrameCounter = 0
     fileprivate var softDropFrames = 1
     fileprivate var softDropFrameCounter = 0
-    fileprivate var lastUpdateTime: TimeInterval = 0
+    // TODO: Move soft drop logic out
 
     init(delegate: FieldDelegate?) {
         self.delegate = delegate
@@ -87,9 +75,8 @@ extension Field: SettingsNotificationTarget {
 
 extension Field {
 
-    // TODO: timed gravity drop
-    // TODO: lock timing
-    // TODO: gravity setting
+    
+    // WISHLIST: gravity setting
 
     
     /// Top out is reported here
@@ -102,9 +89,8 @@ extension Field {
                 return
             }
 
-//            let piece = Piece(type: type, x: 4, y: 20, orientation: .up)
-            let piece = Piece(type: type, x: 4, y: 18)
-            
+            let piece = Piece(type: type, x: 4, y: 20)
+
             guard !pieceIsObstructed(piece) else {
                 result = .toppedOut
                 return
@@ -126,15 +112,25 @@ extension Field {
         queue.async { self.processAsync(das: das) }
     }
 
-    func update(_ currentTime: TimeInterval) {
-
-        // TODO: gravity drop & timing stuff
+    func shift(_ offset: Offset) {
+        queue.async { self.shiftAsync(offset) }
     }
+
+//    func reset() { }
 
 }
 
 
 private extension Field {
+
+    func updateActivePiece(current: Piece?, previous: Piece?) {
+        previous?.blocks.forEach(clearBlock)
+        ghostPiece?.blocks.forEach(clearBlock)
+
+        ghostPiece = hideGhost ? nil : current.map(positionedGhost)
+        ghostPiece?.blocks.forEach(setBlock)
+        current?.blocks.forEach(setBlock)
+    }
 
     func processAsync(input: Button) {
         guard activePiece != nil else { return }
@@ -168,6 +164,16 @@ private extension Field {
             while moveActivePiece(offset) { }
         }
 
+        reportChanges()
+    }
+
+    func shiftAsync(_ offset: Offset) {
+        for _ in 0 ..< abs(offset.x) {
+            if !moveActivePiece((x: (offset.x > 0 ? 1 : -1), y: 0)) { break }
+        }
+        for _ in 0 ..< abs(offset.y) {
+            if !moveActivePiece((x: 0, y: (offset.y > 0 ? 1 : -1))) { break }
+        }
         reportChanges()
     }
 
@@ -212,7 +218,7 @@ private extension Field {
         self.delegate?.fieldActivePieceDidLock()
     }
 
-    // Temporary.  May be more complicated
+    // Temporary.  May be more complicated (e.g. bombs)
     func clearCompletedLines() {
         var clearedLinesCount = 0
         for y in 0 ..< 24 {
@@ -237,6 +243,12 @@ private extension Field {
     @discardableResult
     func moveActivePiece(_ offset: Offset) -> Bool {
         guard var piece = activePiece else { return false }
+
+
+        // TODO: lock timing
+        // check if touching something below right after a move or rotate
+        
+
         piece.x += offset.x
         piece.y += offset.y
         let canMove = !pieceIsObstructed(piece)

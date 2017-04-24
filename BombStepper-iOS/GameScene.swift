@@ -23,6 +23,7 @@ final class GameScene: SKScene {
 
     fileprivate var field: Field!
     fileprivate var tetrominoRandomizer: TetrominoRandomizer!
+    fileprivate var gravityTimer: GravityTimer!
     
     fileprivate var dasManager: DASManager!
     fileprivate let settingsManager = SettingsManager()
@@ -41,9 +42,8 @@ final class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        dasManager.update(currentTime)
-        controllerNode.update(currentTime)
-        field.update(currentTime)
+        let updaters: [GameSceneUpdatable] = [dasManager, controllerNode, gravityTimer]
+        updaters.forEach { $0.update(currentTime) }
     }
 
     private func buttonDown(_ button: Button, isDown: Bool) {
@@ -52,6 +52,7 @@ final class GameScene: SKScene {
         /* debug */
         if case .hold = button, isDown == true {
             field.startPiece(type: tetrominoRandomizer.popNext())
+            gravityTimer.start()
         }
         /* end debug */
 
@@ -105,10 +106,12 @@ final class GameScene: SKScene {
     private func setupTetrisSystem() {
         guard field == nil else { return }
         field = Field(delegate: self)
+        gravityTimer = GravityTimer(dropAction: { [weak self] in self?.field.shift((x: 0, y: -$0)) })
         tetrominoRandomizer = TetrominoRandomizer()
     }
 
     private func setupDASManager() {
+        // TODO: DAS manager tells the field how much to shift so the field doesn't need to know about das
         dasManager = DASManager(performDAS: { [weak self] direction in
             self?.field.process(das: direction)
         })
@@ -124,11 +127,18 @@ extension GameScene: FieldDelegate {
 
     func fieldActivePieceDidLock() {
         // TODO: pass to actual game logic component
+        gravityTimer.stop()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             self.field.startPiece(type: self.tetrominoRandomizer.popNext())
+            self.gravityTimer.start()
         }
     }
+
+    func fieldActivePieceDidTouchBottom(touching: Bool) {
+        // TODO: lock timer
+}
+
 }
 
 
