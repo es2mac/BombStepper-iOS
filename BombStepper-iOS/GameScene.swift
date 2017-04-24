@@ -33,6 +33,8 @@ final class GameScene: SKScene {
         setupPlayfieldNode()
 
         // TODO: a "tetris system" class that composes of field, hold, preview, randomizer/generator
+        // TODO: Preview
+        // TODO: Hold
         setupTetrisSystem()
         setupDASManager()
         settingsManager.addNotificationTargets([controllerNode, dasManager, field, playfieldNode])

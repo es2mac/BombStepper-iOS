@@ -37,6 +37,7 @@ final class SettingsManager {
         case swipeDownThreshold
         case lrSwipeEnabled
         case ghostOpacity
+        case hideGhost
         case button00, button01, button02, button03
         case button04, button05, button06, button07
         case button08, button09, button10, button11
@@ -50,6 +51,7 @@ final class SettingsManager {
     fileprivate(set) var swipeDownThreshold: Double = 1000.0
     fileprivate(set) var lrSwipeEnabled: Bool       = true
     fileprivate(set) var ghostOpacity: Double       = 0.25
+    fileprivate(set) var hideGhost: Bool            = false
     fileprivate(set) var button00: Button           = SettingsManager.defaultButtons[0]
     fileprivate(set) var button01: Button           = SettingsManager.defaultButtons[1]
     fileprivate(set) var button02: Button           = SettingsManager.defaultButtons[2]
@@ -147,6 +149,7 @@ private extension SettingsManager {
                  SettingKey.swipeDownThreshold.rawValue : swipeDownThreshold,
                  SettingKey.lrSwipeEnabled.rawValue     : lrSwipeEnabled,
                  SettingKey.ghostOpacity.rawValue       : ghostOpacity,
+                 SettingKey.hideGhost.rawValue          : hideGhost,
                  SettingKey.button00.rawValue : button00.rawValue,
                  SettingKey.button01.rawValue : button01.rawValue,
                  SettingKey.button02.rawValue : button02.rawValue,
@@ -169,6 +172,7 @@ private extension SettingsManager {
         swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold.rawValue] as! Double
         lrSwipeEnabled     = dictionary[SettingKey.lrSwipeEnabled.rawValue] as! Bool
         ghostOpacity       = dictionary[SettingKey.ghostOpacity.rawValue] as! Double
+        hideGhost          = dictionary[SettingKey.hideGhost.rawValue] as! Bool
         button00 = Button(rawValue: dictionary[SettingKey.button00.rawValue] as! String)!
         button01 = Button(rawValue: dictionary[SettingKey.button01.rawValue] as! String)!
         button02 = Button(rawValue: dictionary[SettingKey.button02.rawValue] as! String)!

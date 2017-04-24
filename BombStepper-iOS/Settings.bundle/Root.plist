@@ -8,6 +8,22 @@
 	<array>
 		<dict>
 			<key>FooterText</key>
+			<string>Any number of buttons may be set to the same function, or no function at all.</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Controls</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>Button Settings</string>
+			<key>File</key>
+			<string>Controls</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>Move a piece quickly by holding the left or right button. Delay is the amount of time (measured in frames, typically 1/60 second) one needs to hold down a button before autorepeat kicks in, and Shiftign Speed is how fast the piece will move on autorepeat.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
@@ -170,23 +186,7 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
-			<string>Any number of buttons may be set to the same function, or no function at all.</string>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>Title</key>
-			<string>Controls</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-			<key>Title</key>
-			<string>Button Settings</string>
-			<key>File</key>
-			<string>Controls</string>
-		</dict>
-		<dict>
-			<key>FooterText</key>
-			<string>The ghost piece shows you where the piece will land by hard dropping.  It can have an opacity of between 0 and 50% of the original piece.</string>
+			<string>The ghost piece shows you where the piece will land by hard dropping.  It has a light frame and adjustable 0~50% of the original piece&apos;s color.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
@@ -203,6 +203,16 @@
 			<integer>0</integer>
 			<key>MaximumValue</key>
 			<real>0.5</real>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Hide Ghost Completely</string>
+			<key>Key</key>
+			<string>hideGhost</string>
+			<key>DefaultValue</key>
+			<false/>
 		</dict>
 	</array>
 </dict>

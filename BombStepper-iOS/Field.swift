@@ -48,9 +48,10 @@ final class Field {
             ghostPiece?.blocks.forEach(clearBlock)
             defer { activePiece?.blocks.forEach(setBlock) }
 
-            // TODO: take draw ghost from settings
-            let drawGhost = true
-            if drawGhost {
+            if hideGhost {
+                ghostPiece = nil
+            }
+            else {
                 ghostPiece = activePiece.map(positionedGhost)
                 ghostPiece?.blocks.forEach(setBlock)
             }
@@ -60,6 +61,7 @@ final class Field {
     private var ghostPiece: Piece?
 
 
+    fileprivate var hideGhost = false
     fileprivate var dasFrames = 1
     fileprivate var dasFrameCounter = 0
     fileprivate var softDropFrames = 1
@@ -76,12 +78,9 @@ final class Field {
 
 extension Field: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
-
-        dasFrames = settings.dasFrames
+        dasFrames      = settings.dasFrames
         softDropFrames = settings.softDropFrames
-
-        
-        // TODO: update draw ghost logic
+        hideGhost      = settings.hideGhost
     }
 }
 
