@@ -11,7 +11,7 @@ import Foundation
 
 protocol SettingsNotificationTarget: class {
     // Called the first time added to the manager, and every time there's an update
-    func settingsDidUpdate(_ settings: SettingsManager.Settings)
+    func settingsDidUpdate(_ settings: SettingsManager)
 }
 
 
@@ -29,92 +29,48 @@ enum Button: String {
 
 final class SettingsManager {
 
-    struct Settings {
-
-        private enum SettingKey: String {
-            case dasValue
-            case dasFrames
-            case softDropFrames
-            case swipeDropEnabled   
-            case swipeDownThreshold
-            case lrSwipeEnabled
-            case ghostOpacity
-            case button00, button01, button02, button03
-            case button04, button05, button06, button07
-            case button08, button09, button10, button11
-        }
-
-        fileprivate static let initialValuesDictionary: [String : Any] =
-            [ SettingKey.dasValue.rawValue : 9,
-              SettingKey.dasFrames.rawValue : 1,
-              SettingKey.softDropFrames.rawValue : 1,
-              SettingKey.swipeDropEnabled.rawValue : true,
-              SettingKey.swipeDownThreshold.rawValue : 1000.0,
-              SettingKey.lrSwipeEnabled.rawValue : true,
-              SettingKey.ghostOpacity.rawValue : 0.25,
-              SettingKey.button00.rawValue : Button.hardDrop.rawValue,
-              SettingKey.button01.rawValue : Button.hardDrop.rawValue,
-              SettingKey.button02.rawValue : Button.moveLeft.rawValue,
-              SettingKey.button03.rawValue : Button.moveRight.rawValue,
-              SettingKey.button04.rawValue : Button.softDrop.rawValue,
-              SettingKey.button05.rawValue : Button.softDrop.rawValue,
-              SettingKey.button06.rawValue : Button.hold.rawValue,
-              SettingKey.button07.rawValue : Button.hold.rawValue,
-              SettingKey.button08.rawValue : Button.rotateLeft.rawValue,
-              SettingKey.button09.rawValue : Button.rotateRight.rawValue,
-              SettingKey.button10.rawValue : Button.none.rawValue,
-              SettingKey.button11.rawValue : Button.none.rawValue ]
-        
-
-        let dasValue: Int
-        let dasFrames: Int
-        let softDropFrames: Int
-        let swipeDropEnabled: Bool
-        let swipeDownThreshold: Double
-        let lrSwipeEnabled: Bool
-        let ghostOpacity: Double
-        let button00: Button
-        let button01: Button
-        let button02: Button
-        let button03: Button
-        let button04: Button
-        let button05: Button
-        let button06: Button
-        let button07: Button
-        let button08: Button
-        let button09: Button
-        let button10: Button
-        let button11: Button
-
-
-        static let initial = Settings(dictionary: initialValuesDictionary)
-
-
-        init(dictionary: [String : Any]) {
-            dasValue           = dictionary[SettingKey.dasValue.rawValue] as! Int
-            dasFrames          = dictionary[SettingKey.dasFrames.rawValue] as! Int
-            softDropFrames     = dictionary[SettingKey.softDropFrames.rawValue] as! Int
-            swipeDropEnabled   = dictionary[SettingKey.swipeDropEnabled.rawValue] as! Bool
-            swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold.rawValue] as! Double
-            lrSwipeEnabled     = dictionary[SettingKey.lrSwipeEnabled.rawValue] as! Bool
-            ghostOpacity       = dictionary[SettingKey.ghostOpacity.rawValue] as! Double
-            button00 = Button(rawValue: dictionary[SettingKey.button00.rawValue] as! String)!
-            button01 = Button(rawValue: dictionary[SettingKey.button01.rawValue] as! String)!
-            button02 = Button(rawValue: dictionary[SettingKey.button02.rawValue] as! String)!
-            button03 = Button(rawValue: dictionary[SettingKey.button03.rawValue] as! String)!
-            button04 = Button(rawValue: dictionary[SettingKey.button04.rawValue] as! String)!
-            button05 = Button(rawValue: dictionary[SettingKey.button05.rawValue] as! String)!
-            button06 = Button(rawValue: dictionary[SettingKey.button06.rawValue] as! String)!
-            button07 = Button(rawValue: dictionary[SettingKey.button07.rawValue] as! String)!
-            button08 = Button(rawValue: dictionary[SettingKey.button08.rawValue] as! String)!
-            button09 = Button(rawValue: dictionary[SettingKey.button09.rawValue] as! String)!
-            button10 = Button(rawValue: dictionary[SettingKey.button10.rawValue] as! String)!
-            button11 = Button(rawValue: dictionary[SettingKey.button11.rawValue] as! String)!
-        }
+    fileprivate enum SettingKey: String {
+        case dasValue
+        case dasFrames
+        case softDropFrames
+        case swipeDropEnabled   
+        case swipeDownThreshold
+        case lrSwipeEnabled
+        case ghostOpacity
+        case button00, button01, button02, button03
+        case button04, button05, button06, button07
+        case button08, button09, button10, button11
     }
 
+    // Initial values here match the actual default settings
+    fileprivate(set) var dasValue: Int              = 9
+    fileprivate(set) var dasFrames: Int             = 1
+    fileprivate(set) var softDropFrames: Int        = 1
+    fileprivate(set) var swipeDropEnabled: Bool     = true
+    fileprivate(set) var swipeDownThreshold: Double = 1000.0
+    fileprivate(set) var lrSwipeEnabled: Bool       = true
+    fileprivate(set) var ghostOpacity: Double       = 0.25
+    fileprivate(set) var button00: Button           = SettingsManager.defaultButtons[0]
+    fileprivate(set) var button01: Button           = SettingsManager.defaultButtons[1]
+    fileprivate(set) var button02: Button           = SettingsManager.defaultButtons[2]
+    fileprivate(set) var button03: Button           = SettingsManager.defaultButtons[3]
+    fileprivate(set) var button04: Button           = SettingsManager.defaultButtons[4]
+    fileprivate(set) var button05: Button           = SettingsManager.defaultButtons[5]
+    fileprivate(set) var button06: Button           = SettingsManager.defaultButtons[6]
+    fileprivate(set) var button07: Button           = SettingsManager.defaultButtons[7]
+    fileprivate(set) var button08: Button           = SettingsManager.defaultButtons[8]
+    fileprivate(set) var button09: Button           = SettingsManager.defaultButtons[9]
+    fileprivate(set) var button10: Button           = SettingsManager.defaultButtons[10]
+    fileprivate(set) var button11: Button           = SettingsManager.defaultButtons[11]
 
-    fileprivate var currentSettings = Settings.initial
+    static var defaultButtons: [Button] = [ .hardDrop, .hardDrop, .moveLeft, .moveRight,
+                                            .softDrop, .softDrop, .hold, .hold,
+                                            .rotateLeft, .rotateRight, .none, .none ]
+
+    var buttonsArray: [Button] {
+        return [ button00, button01, button02, button03, button04, button05,
+                 button06, button07, button08, button09, button10, button11 ]
+    }
 
     fileprivate var notificationTargets = [NotifyTargetWeakWrapper]()
 
@@ -136,7 +92,7 @@ final class SettingsManager {
 
     func addNotificationTargets(_ targets: [SettingsNotificationTarget]) {
         notificationTargets.append(contentsOf: targets.map(NotifyTargetWeakWrapper.init))
-        targets.forEach { $0.settingsDidUpdate(currentSettings) }
+        targets.forEach { $0.settingsDidUpdate(self) }
     }
 }
 
@@ -151,33 +107,80 @@ private extension SettingsManager {
     private func fetchSettingsAsync(from defaults: UserDefaults) {
 
         var defaultsWritten = false
-        var dictionary = [String : Any]()
-        
-        for (key, initialValue) in Settings.initialValuesDictionary {
-            if let value = defaults.object(forKey: key) {
-                dictionary[key] = value
+        let oldDictionary = serializeValuesToDictionary()
+        let newDictionary = NSMutableDictionary()
+
+        for (key, oldValue) in oldDictionary {
+            if let newValue = defaults.object(forKey: key) {
+                newDictionary.setValue(newValue, forKey: key)
             }
             else {
-                dictionary[key] = initialValue
-                defaults.set(initialValue, forKey: key)
+                newDictionary.setValue(oldValue, forKey: key)
+                defaults.set(oldValue, forKey: key)
                 defaultsWritten = true
             }
         }
 
         if defaultsWritten { defaults.synchronize() }
 
-        let newSettings = Settings(dictionary: dictionary)
-        if newSettings != currentSettings {
-            currentSettings = newSettings
+        if !newDictionary.isEqual(to: oldDictionary) {
+            setValues(from: newDictionary)
             notifyTargets()
         }
     }
 
     private func notifyTargets() {
         notificationTargets = notificationTargets.filter { targetWrapper in
-            targetWrapper.target?.settingsDidUpdate(currentSettings)
+            targetWrapper.target?.settingsDidUpdate(self)
             return targetWrapper.target != nil
         }
+    }
+}
+
+
+private extension SettingsManager {
+    func serializeValuesToDictionary() -> [String : Any] {
+        return [ SettingKey.dasValue.rawValue           : dasValue,
+                 SettingKey.dasFrames.rawValue          : dasFrames,
+                 SettingKey.softDropFrames.rawValue     : softDropFrames,
+                 SettingKey.swipeDropEnabled.rawValue   : swipeDropEnabled,
+                 SettingKey.swipeDownThreshold.rawValue : swipeDownThreshold,
+                 SettingKey.lrSwipeEnabled.rawValue     : lrSwipeEnabled,
+                 SettingKey.ghostOpacity.rawValue       : ghostOpacity,
+                 SettingKey.button00.rawValue : button00.rawValue,
+                 SettingKey.button01.rawValue : button01.rawValue,
+                 SettingKey.button02.rawValue : button02.rawValue,
+                 SettingKey.button03.rawValue : button03.rawValue,
+                 SettingKey.button04.rawValue : button04.rawValue,
+                 SettingKey.button05.rawValue : button05.rawValue,
+                 SettingKey.button06.rawValue : button06.rawValue,
+                 SettingKey.button07.rawValue : button07.rawValue,
+                 SettingKey.button08.rawValue : button08.rawValue,
+                 SettingKey.button09.rawValue : button09.rawValue,
+                 SettingKey.button10.rawValue : button10.rawValue,
+                 SettingKey.button11.rawValue : button11.rawValue ]
+    }
+
+    func setValues(from dictionary: NSDictionary) {
+        dasValue           = dictionary[SettingKey.dasValue.rawValue] as! Int
+        dasFrames          = dictionary[SettingKey.dasFrames.rawValue] as! Int
+        softDropFrames     = dictionary[SettingKey.softDropFrames.rawValue] as! Int
+        swipeDropEnabled   = dictionary[SettingKey.swipeDropEnabled.rawValue] as! Bool
+        swipeDownThreshold = dictionary[SettingKey.swipeDownThreshold.rawValue] as! Double
+        lrSwipeEnabled     = dictionary[SettingKey.lrSwipeEnabled.rawValue] as! Bool
+        ghostOpacity       = dictionary[SettingKey.ghostOpacity.rawValue] as! Double
+        button00 = Button(rawValue: dictionary[SettingKey.button00.rawValue] as! String)!
+        button01 = Button(rawValue: dictionary[SettingKey.button01.rawValue] as! String)!
+        button02 = Button(rawValue: dictionary[SettingKey.button02.rawValue] as! String)!
+        button03 = Button(rawValue: dictionary[SettingKey.button03.rawValue] as! String)!
+        button04 = Button(rawValue: dictionary[SettingKey.button04.rawValue] as! String)!
+        button05 = Button(rawValue: dictionary[SettingKey.button05.rawValue] as! String)!
+        button06 = Button(rawValue: dictionary[SettingKey.button06.rawValue] as! String)!
+        button07 = Button(rawValue: dictionary[SettingKey.button07.rawValue] as! String)!
+        button08 = Button(rawValue: dictionary[SettingKey.button08.rawValue] as! String)!
+        button09 = Button(rawValue: dictionary[SettingKey.button09.rawValue] as! String)!
+        button10 = Button(rawValue: dictionary[SettingKey.button10.rawValue] as! String)!
+        button11 = Button(rawValue: dictionary[SettingKey.button11.rawValue] as! String)!
     }
 }
 
@@ -187,31 +190,6 @@ private class NotifyTargetWeakWrapper {
     init(target: SettingsNotificationTarget) {
         self.target = target
     }
-}
-
-
-extension SettingsManager.Settings: Equatable { }
-
-func ==(lhs: SettingsManager.Settings, rhs: SettingsManager.Settings) -> Bool {
-    return lhs.dasValue        == rhs.dasValue &&
-        lhs.dasFrames          == rhs.dasFrames &&
-        lhs.softDropFrames     == rhs.softDropFrames &&
-        lhs.swipeDropEnabled   == rhs.swipeDropEnabled &&
-        lhs.swipeDownThreshold == rhs.swipeDownThreshold &&
-        lhs.lrSwipeEnabled     == rhs.lrSwipeEnabled &&
-        lhs.ghostOpacity       == rhs.ghostOpacity &&
-        lhs.button00           == rhs.button00 &&
-        lhs.button01           == rhs.button01 &&
-        lhs.button02           == rhs.button02 &&
-        lhs.button03           == rhs.button03 &&
-        lhs.button04           == rhs.button04 &&
-        lhs.button05           == rhs.button05 &&
-        lhs.button06           == rhs.button06 &&
-        lhs.button07           == rhs.button07 &&
-        lhs.button08           == rhs.button08 &&
-        lhs.button09           == rhs.button09 &&
-        lhs.button10           == rhs.button10 &&
-        lhs.button11           == rhs.button11
 }
 
 

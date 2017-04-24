@@ -59,25 +59,29 @@ final class Field {
 
     private var ghostPiece: Piece?
 
-    
-    fileprivate var dasFrameCount = 0
-    fileprivate var softDropFrameCount = 0
-    fileprivate var lastUpdateTime: TimeInterval = 0
 
-    fileprivate var settings: SettingsManager.Settings
+    fileprivate var dasFrames = 1
+    fileprivate var dasFrameCounter = 0
+    fileprivate var softDropFrames = 1
+    fileprivate var softDropFrameCounter = 0
+    fileprivate var lastUpdateTime: TimeInterval = 0
 
     init(delegate: FieldDelegate?) {
         self.delegate = delegate
         allBlocks = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
-        settings = SettingsManager.Settings.initial
     }
 
 }
 
 
 extension Field: SettingsNotificationTarget {
-    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
-        self.settings = settings
+    func settingsDidUpdate(_ settings: SettingsManager) {
+
+        dasFrames = settings.dasFrames
+        softDropFrames = settings.softDropFrames
+
+        
+        // TODO: update draw ghost logic
     }
 }
 
@@ -149,9 +153,9 @@ private extension Field {
     }
 
     func processAsync(das: DASManager.Direction) {
-        dasFrameCount += 1
-        guard dasFrameCount >= settings.dasFrames else { return }
-        dasFrameCount = 0
+        dasFrameCounter += 1
+        guard dasFrameCounter >= dasFrames else { return }
+        dasFrameCounter = 0
 
         let offset: Offset
         switch das {
@@ -161,7 +165,7 @@ private extension Field {
             offset = (x: 1, y: 0)
         }
 
-        if moveActivePiece(offset), settings.dasFrames == 0 {
+        if moveActivePiece(offset), dasFrames == 0 {
             while moveActivePiece(offset) { }
         }
 
@@ -181,11 +185,11 @@ private extension Field {
     }
 
     func softDrop()  {
-        softDropFrameCount += 1
-        guard softDropFrameCount >= settings.softDropFrames else { return }
-        softDropFrameCount = 0
+        softDropFrameCounter += 1
+        guard softDropFrameCounter >= softDropFrames else { return }
+        softDropFrameCounter = 0
 
-        if moveActivePiece((x: 0, y: -1)), settings.softDropFrames == 0 {
+        if moveActivePiece((x: 0, y: -1)), softDropFrames == 0 {
             while moveActivePiece((x: 0, y: -1)) { }
         }
     }

@@ -69,7 +69,7 @@ final class PlayfieldNode: SKNode {
 
 
 extension PlayfieldNode: SettingsNotificationTarget {
-    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
+    func settingsDidUpdate(_ settings: SettingsManager) {
         guard CGFloat(settings.ghostOpacity) != ghostOpacity, !blockTileGroupMap.isEmpty else { return }
         ghostOpacity = CGFloat(settings.ghostOpacity)
         let operation = UpdateGhostTexturesOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, map: blockTileGroupMap)

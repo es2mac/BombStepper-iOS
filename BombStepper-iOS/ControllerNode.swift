@@ -23,9 +23,10 @@ final class ControllerNode: SKNode {
     let sceneSize: CGSize
     fileprivate let buttonDownAction: (Button, _ isDown: Bool) -> Void
 
-    fileprivate let buttons: [SKShapeNode]
+    fileprivate let buttonNodes: [SKShapeNode]
     fileprivate var buttonMap: ButtonMap
-    fileprivate var settings: SettingsManager.Settings
+
+    fileprivate var lrSwipeEnabled: Bool = true
 
     // Stores touches that correspond to buttons to calculate swipe speed
     fileprivate var touchesData = [UITouch : TouchData]()
@@ -36,13 +37,12 @@ final class ControllerNode: SKNode {
         self.buttonDownAction = buttonDownAction
 
         let buttonWidth = Int(sceneSize.height / 8) * 2     // Quarter height, rounded down to even number
-        buttons = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
-        settings = SettingsManager.Settings.initial
-        buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
+        buttonNodes = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
+        buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: SettingsManager.defaultButtons)
 
         super.init()
 
-        buttons.forEach(addChild)
+        buttonNodes.forEach(addChild)
         layoutButtons(for: sceneSize)
 
         NotificationCenter.default.addObserver(forName: .UIApplicationWillResignActive, object: nil, queue: nil) { [weak self] _ in
@@ -88,11 +88,11 @@ extension ControllerNode: GameSceneUpdatable {
 
 
 extension ControllerNode: SettingsNotificationTarget {
-    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
-        self.settings = settings
+    func settingsDidUpdate(_ settings: SettingsManager) {
         TouchData.swipeDropEnabled = settings.swipeDropEnabled
         TouchData.swipeDownThreshold = settings.swipeDownThreshold
-        buttonMap = ControllerNode.buildButtonMap(withButtons: buttons, settings: settings)
+        lrSwipeEnabled = settings.lrSwipeEnabled
+        buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: settings.buttonsArray)
     }
 }
 
@@ -167,7 +167,7 @@ private extension ControllerNode {
         }
         
         // LR swipe test
-        guard settings.lrSwipeEnabled else { return }
+        guard lrSwipeEnabled else { return }
         
         let button = data.button
         let oppositeButton: Button
@@ -212,19 +212,10 @@ fileprivate extension ControllerNode {
         return node
     }
 
-    class func buildButtonMap(withButtons buttons: [SKShapeNode], settings: SettingsManager.Settings) -> ButtonMap {
-        return [ buttons[0] : settings.button00,
-                 buttons[1] : settings.button01,
-                 buttons[2] : settings.button02,
-                 buttons[3] : settings.button03,
-                 buttons[4] : settings.button04,
-                 buttons[5] : settings.button05,
-                 buttons[6] : settings.button06,
-                 buttons[7] : settings.button07,
-                 buttons[8] : settings.button08,
-                 buttons[9] : settings.button09,
-                 buttons[10] : settings.button10,
-                 buttons[11] : settings.button11 ]
+    class func buildButtonMap(withButtons buttonNodes: [SKShapeNode], buttons: [Button]) -> ButtonMap {
+        var map = ButtonMap()
+        zip(buttonNodes, buttons).forEach { map[$0] = $1 }
+        return map
     }
 
     func layoutButtons(for sceneSize: CGSize) {
@@ -248,12 +239,11 @@ fileprivate extension ControllerNode {
         for (i, j) in zip([0, 1, 2, 3, 4, 5], [7, 6, 9, 8, 11, 10]) {
             p[j] = CGPoint(x: -p[i].x, y: p[i].y)
         }
-        zip(buttons, p).forEach { $0.position = $1 }
-        buttons[0 ..< 6].forEach { $0.zRotation = -.pi/8 }
-        buttons[6 ..< 12].forEach { $0.zRotation = .pi/8 }
+        zip(buttonNodes, p).forEach { $0.position = $1 }
+        buttonNodes[0 ..< 6].forEach { $0.zRotation = -.pi/8 }
+        buttonNodes[6 ..< 12].forEach { $0.zRotation = .pi/8 }
     }
 }
-
 
 
 private func +(lhs: CGPoint, rhs: CGVector) -> CGPoint  {

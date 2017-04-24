@@ -102,7 +102,7 @@ extension DASManager: GameSceneUpdatable {
 
 
 extension DASManager: SettingsNotificationTarget {
-    func settingsDidUpdate(_ settings: SettingsManager.Settings) {
+    func settingsDidUpdate(_ settings: SettingsManager) {
         dasDelay = msToAbs(Double(settings.dasValue) * 1000 / 60)
     }
 }
