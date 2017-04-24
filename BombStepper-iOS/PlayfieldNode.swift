@@ -92,6 +92,7 @@ private extension PlayfieldNode {
         blocks.forEach {
             
             // TODO: layer field on top of static background, blanks don't draw
+            // TODO: setting for background gridline opacity
             
             if case .blank = $0.type {
                 self.tileMapNode.setTileGroup(nil, forColumn: $0.x, row: $0.y)
@@ -104,19 +105,6 @@ private extension PlayfieldNode {
 
     func tileGroup(for t: Block.BlockType) -> SKTileGroup {
         return blockTileGroupMap[t]!
-    }
-
-    func updateTileSet(ghostOpacity: CGFloat) {
-
-        // TODO: move heavy initiation stuff to concurrent thread, use operation queues
-
-
-        // TODO: only update the textures in the existing tile groups
-        // create textures in own queue, dispatch back to main to set
-
-
-//        blockTileGroupMap = PlayfieldNode.createTileGroupMap(tileWidth: blockWidth, ghostOpacity: ghostOpacity)
-//        tileMapNode.tileSet = SKTileSet(tileGroups: Array(blockTileGroupMap.values))
     }
 
 }

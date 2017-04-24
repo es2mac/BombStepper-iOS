@@ -46,15 +46,14 @@ final class Field {
         didSet {
             oldValue?.blocks.forEach(clearBlock)
             ghostPiece?.blocks.forEach(clearBlock)
-            ghostPiece = activePiece.map {
-                var ghost = $0.ghost
-                while !pieceIsObstructed(ghost) { ghost.y -= 1 }
-                ghost.y += 1
-                return ghost
+            defer { activePiece?.blocks.forEach(setBlock) }
+
+            // TODO: take draw ghost from settings
+            let drawGhost = true
+            if drawGhost {
+                ghostPiece = activePiece.map(positionedGhost)
+                ghostPiece?.blocks.forEach(setBlock)
             }
-            
-            ghostPiece?.blocks.forEach(setBlock)
-            activePiece?.blocks.forEach(setBlock)
         }
     }
 
@@ -172,6 +171,13 @@ private extension Field {
 
 
 private extension Field {
+    
+    func positionedGhost(for piece: Piece) -> Piece{
+        var ghost = piece.ghost
+        while !pieceIsObstructed(ghost) { ghost.y -= 1 }
+        ghost.y += 1
+        return ghost
+    }
 
     func softDrop()  {
         softDropFrameCount += 1
