@@ -90,16 +90,16 @@ extension Block.BlockType {
             return UIImage.borderedSquare(side: side, color: .blankTile, edgeColor: .playfieldBorder)
         case .active(let t), .locked(let t):
             return UIImage.borderedSquare(side: side, color: t.color, edgeColor: t.edgeColor, adjacency: adjacency)
-        case .ghost(let t):
+        case .ghost:
             assertionFailure("You should use ghostImage() with user-specified alpha")
-            return ghostImage(side: side, tetromino: t, alpha: Alpha.ghostDefault, adjacency: adjacency)
+            return ghostImage(side: side, alpha: Alpha.ghostDefault, adjacency: adjacency)
         }
     }
 
     /// Specialized drawing for ghost pieces.  If self is not a ghost piece,
     /// you get a black image.
-    func ghostImage(side: CGFloat, tetromino t: Tetromino, alpha: CGFloat, adjacency: SKTileAdjacencyMask = []) -> UIImage {
-        guard case .ghost = self else {
+    func ghostImage(side: CGFloat, alpha: CGFloat, adjacency: SKTileAdjacencyMask = []) -> UIImage {
+        guard case .ghost(let t) = self else {
             return UIImage.borderedSquare(side: side, color: .black, edgeColor: .black, adjacency: adjacency)
         }
         guard alpha > 0.05 else { return Block.BlockType.blank.defaultImage(side: side) }

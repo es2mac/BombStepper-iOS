@@ -21,6 +21,10 @@ final class GameScene: SKScene {
     
     private var dasManager: DASManager!
 
+
+    // TODO: Programmatically init, put background color in Constants
+    
+
     override func didMove(to view: SKView) {
         setupControllerNode()
         setupPlayfieldNode()
@@ -73,6 +77,9 @@ final class GameScene: SKScene {
         addChild(node)
         node.run(.fadeIn(withDuration: 1))
         controllerNode = node
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+            node.isUserInteractionEnabled = true
+        }
     }
 
     private func setupPlayfieldNode() {

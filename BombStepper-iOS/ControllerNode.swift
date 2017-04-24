@@ -50,7 +50,6 @@ final class ControllerNode: SKNode {
 
         super.init()
 
-        isUserInteractionEnabled = true
         buttons.forEach(addChild)
         layoutButtons(for: sceneSize)
 
