@@ -56,6 +56,8 @@ class TetrisSystem {
 extension TetrisSystem {
 
     func startGame() {
+//        tetrominoRandomizer.popNext()
+//        delegate?.updatePreviews(tetrominoRandomizer.previews())
         guard !isGameRunning else { return }
         delegate?.clearFieldDisplay()
         field.reset()

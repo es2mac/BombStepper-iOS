@@ -15,8 +15,9 @@ import SpriteKit
 // Put each piece in a hypothetical 4x3, and shifted for type
 final class PreviewsNode: SKNode {
 
-    private let pieceNodes: [SinglePieceNode]
+    private var pieceNodes: [SinglePieceNode]
     private let tileWidth: CGFloat
+    private var previousTypes: [Tetromino] = []
 
     init(tileWidth: CGFloat) {
 
@@ -39,11 +40,45 @@ final class PreviewsNode: SKNode {
     }
 
     func show(_ types: [Tetromino]) {
+
+        let animate = typesAreAdvancedFromLastSet(types)
+        let rotated = pieceNodes.removeFirst()
+        pieceNodes.append(rotated)
+        rotated.position = CGPoint(x: 0, y: (tileWidth * 3) * CGFloat(2 - types.count))
+        rotated.shiftPositionForType(types.last!)
+        rotated.removeAllActions()
+
+        let animateDuration = animate ? 0.1 : 0
+        if animate {
+            rotated.alpha = 0
+            rotated.run(.fadeIn(withDuration: animateDuration))
+        }
+
         for (index, (node, type)) in zip(pieceNodes, types).enumerated() {
             node.show(type)
-            node.position = CGPoint(x: 0, y: (tileWidth * 3) * CGFloat(2 - index))
-            node.shiftPositionForType(type)
+
+            var position = CGPoint(x: 0, y: (tileWidth * 3) * CGFloat(2 - index))
+
+            switch type {
+            case .I:
+                position.y += tileWidth / 2
+            case .O:
+                break
+            case .J, .L, .S, .T, .Z:
+                position.x += tileWidth / 2
+            }
+
+            node.run(.move(to: position, duration: animateDuration))
         }
+    }
+
+    func typesAreAdvancedFromLastSet(_ types: [Tetromino]) -> Bool {
+        defer { previousTypes = types }
+        if types.count != previousTypes.count { return false }
+        for (t1, t2) in zip(types.dropLast(), previousTypes.dropFirst()) {
+            if t1 != t2 { return false }
+        }
+        return true
     }
 }
 
