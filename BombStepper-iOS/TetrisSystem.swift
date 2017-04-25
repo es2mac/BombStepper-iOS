@@ -12,9 +12,12 @@ import Foundation
 protocol TetrisSystemDelegate: class {
     func updateFieldDisplay(blocks: [Block])
     func updatePreviews(_ types: [Tetromino])
+    func updateHeldPiece(_ type: Tetromino)
     func clearFieldDisplay()
 }
 
+
+// WISHLIST: Holding on/off setting
 
 class TetrisSystem {
 
@@ -26,6 +29,9 @@ class TetrisSystem {
     fileprivate let tetrominoRandomizer = TetrominoRandomizer()
     fileprivate let dasManager = DASManager()
     fileprivate let movementTimer = MovementTimer()
+
+    fileprivate var heldPieceType: Tetromino?
+    fileprivate var holdPieceLocked = false
 
     init(delegate: TetrisSystemDelegate? = nil) {
         self.delegate = delegate
@@ -56,15 +62,13 @@ class TetrisSystem {
 extension TetrisSystem {
 
     func startGame() {
-//        tetrominoRandomizer.popNext()
-//        delegate?.updatePreviews(tetrominoRandomizer.previews())
         guard !isGameRunning else { return }
         delegate?.clearFieldDisplay()
         field.reset()
         tetrominoRandomizer.reset()
-        field.startPiece(type: tetrominoRandomizer.popNext())
-        delegate?.updatePreviews(tetrominoRandomizer.previews())
-        movementTimer.startTiming(.gravity)
+        holdPieceLocked = false
+        heldPieceType = nil
+        playNextPiece()
         isGameRunning = true
     }
 
@@ -113,9 +117,7 @@ extension TetrisSystem: ControllerDelegate {
         case .softDrop:
             movementTimer.startTiming(.softDrop)
         case .hold:
-
-            
-            break
+            holdPiece()
         case .rotateLeft:
             field.activePiece.map {
                 field.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingLeft())
@@ -143,7 +145,6 @@ extension TetrisSystem: ControllerDelegate {
             break
         }
     }
-
 }
 
 extension TetrisSystem: FieldDelegate {
@@ -155,6 +156,7 @@ extension TetrisSystem: FieldDelegate {
     func activePieceDidLock(lockedOut: Bool) {
         movementTimer.stopTiming(.gravity)
         movementTimer.resetDelayedLock()
+        holdPieceLocked = false
 
         guard !lockedOut else {
             isGameRunning = false
@@ -179,8 +181,9 @@ extension TetrisSystem: FieldDelegate {
 
 private extension TetrisSystem {
 
-    func playNextPiece() {
-        switch field.startPiece(type: tetrominoRandomizer.popNext()) {
+    func playNextPiece(_ nextPiece: Tetromino? = nil) {
+        let piece = nextPiece ?? tetrominoRandomizer.popNext()
+        switch field.startPiece(type: piece) {
         case .blockedOut:
             isGameRunning = false
         case .success:
@@ -190,6 +193,36 @@ private extension TetrisSystem {
             break
         }
     }
+
+    func holdPiece() {
+        guard !holdPieceLocked, let piece = field.activePiece else { return }
+
+        field.clearActivePiece()
+        playNextPiece(heldPieceType)
+        heldPieceType = piece.type
+        holdPieceLocked = true
+        delegate?.updateHeldPiece(piece.type)
+    }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

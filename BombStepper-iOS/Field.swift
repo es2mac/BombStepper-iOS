@@ -105,6 +105,10 @@ extension Field {
         return result
     }
 
+    func clearActivePiece() {
+        activePiece = nil
+    }
+
     func movePiece(_ direction: Direction, steps: Int = 1) {
         queue.async { self.movePieceAsync(direction, steps: steps) }
     }

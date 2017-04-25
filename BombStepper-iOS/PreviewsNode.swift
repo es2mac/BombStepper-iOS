@@ -10,7 +10,7 @@ import SpriteKit
 
 
 // Assume 5 previews for now
-// TODO: Adjustable number of previews
+// WISHLIST: Adjustable number of previews
 
 // Put each piece in a hypothetical 4x3, and shifted for type
 final class PreviewsNode: SKNode {

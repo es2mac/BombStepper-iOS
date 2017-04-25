@@ -19,25 +19,21 @@ final class GameScene: SKScene {
     
     fileprivate var controllerNode: ControllerNode!
     fileprivate var playfieldNode: PlayfieldNode!
-    fileprivate var holdNode: SinglePieceNode!
+    fileprivate var heldPieceNode: SinglePieceNode!
     fileprivate var previewsNode: PreviewsNode!
     fileprivate let settingsManager = SettingsManager()
     fileprivate let system = TetrisSystem()
-    fileprivate var heldPiece: Tetromino?
 
     override func didMove(to view: SKView) {
         setupControllerNode()
         setupDisplayNodes()
         system.delegate = self
-        
-        // TODO: Hold
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])
     }
     
     override func update(_ currentTime: TimeInterval) {
         system.update(currentTime)
     }
-    
 }
 
 
@@ -76,6 +72,11 @@ private extension GameScene {
         previewsNode.position.x = tileWidth * (5 + 2) + CGFloat(Dimension.outerFrameWidth) + 5
         previewsNode.position.y = tileWidth * 2
         addChild(previewsNode)
+
+        heldPieceNode = SinglePieceNode(tileWidth: tileWidth)
+        heldPieceNode.position.x = -tileWidth * (5 + 2) - CGFloat(Dimension.outerFrameWidth) + 5
+        heldPieceNode.position.y = tileWidth * 8
+        addChild(heldPieceNode)
     }
 
 }
@@ -92,6 +93,10 @@ extension GameScene: TetrisSystemDelegate {
 
     func updatePreviews(_ types: [Tetromino]) {
         previewsNode.show(types)
+    }
+
+    func updateHeldPiece(_ type: Tetromino) {
+        heldPieceNode.show(type)
     }
 
 }
