@@ -113,8 +113,8 @@ extension Field {
         queue.async { self.processAsync(das: das) }
     }
 
-    func shift(_ offset: Offset) {
-        queue.async { self.shiftAsync(offset) }
+    func shiftPiece(_ direction: Direction, steps: Int = 1) {
+        queue.async { self.shiftPieceAsync(direction, steps: steps) }
     }
 
     func reset() {
@@ -165,12 +165,9 @@ private extension Field {
         reportChanges()
     }
 
-    func shiftAsync(_ offset: Offset) {
-        for _ in 0 ..< abs(offset.x) {
-            if !moveActivePiece((x: (offset.x > 0 ? 1 : -1), y: 0)) { break }
-        }
-        for _ in 0 ..< abs(offset.y) {
-            if !moveActivePiece((x: 0, y: (offset.y > 0 ? 1 : -1))) { break }
+    func shiftPieceAsync(_ direction: Direction, steps: Int) {
+        for _ in 0 ..< steps {
+            if !moveActivePiece(direction.offset) { break }
         }
         reportChanges()
     }

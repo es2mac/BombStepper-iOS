@@ -33,8 +33,8 @@ class TetrisSystem {
 
     private func setup() {
         field.delegate = self
-        gravityTimer.dropAction = { [weak self] in
-            self?.field.shift((x: 0, y: -$0))
+        gravityTimer.dropAction = { [weak self] dropBy in
+            self?.field.shiftPiece(.down, steps: dropBy)
         }
         dasManager.performDAS = { [weak self] direction in
             self?.field.process(das: direction)
