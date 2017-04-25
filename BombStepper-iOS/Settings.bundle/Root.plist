@@ -214,6 +214,26 @@
 			<key>DefaultValue</key>
 			<false/>
 		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>The grid line&apos;s opacity can be set from 0~100%.</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Grid Line Opacity</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSSliderSpecifier</string>
+			<key>Key</key>
+			<string>gridsOpacity</string>
+			<key>DefaultValue</key>
+			<real>1</real>
+			<key>MinimumValue</key>
+			<integer>0</integer>
+			<key>MaximumValue</key>
+			<integer>1</integer>
+		</dict>
 	</array>
 </dict>
 </plist>

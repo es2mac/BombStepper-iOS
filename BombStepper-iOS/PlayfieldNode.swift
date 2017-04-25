@@ -73,10 +73,8 @@ final class PlayfieldNode: SKNode {
 extension PlayfieldNode: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
 
-        // TODO: setting for background gridline opacity
-        let gridOpacity: CGFloat = 1
-        if gridsNode.alpha != gridOpacity {
-            gridsNode.alpha = gridOpacity
+        if gridsNode.alpha != CGFloat(settings.gridsOpacity) {
+            gridsNode.alpha = CGFloat(settings.gridsOpacity)
         }
 
         if CGFloat(settings.ghostOpacity) != ghostOpacity, !blockTileGroupMap.isEmpty {
