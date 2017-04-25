@@ -74,8 +74,6 @@ final class MovementTimer {
 
 }
 
-// TODO: when piece touch the ground and off again, gravity time should reset
-
 
 private extension MovementTimer {
 
@@ -121,8 +119,10 @@ private extension MovementTimer {
         lockDelayExtensionQuota -= grantedExtension
     }
 
+    // This only happens when a piece was touching ground, then left it.  So gravity is reset.
     func stopDelayedLock() {
         lockDelayStarted = false
+        lastGravityDropTime = lastUpdateTime
     }
 }
 
