@@ -213,7 +213,7 @@ private extension Field {
         piece.blocks.forEach { setBlock($0.locked) }
 
         // Check lock out (http://tetris.wikia.com/wiki/Top_out)
-        let lockedOut = piece.blocks.contains { $0.y >= 20 }
+        let lockedOut = !piece.blocks.contains { $0.y < 20 }
         self.delegate?.activePieceDidLock(lockedOut: lockedOut)
 
         if !lockedOut { clearCompletedLines() }
