@@ -120,10 +120,11 @@ private extension ControllerNode {
             guard TouchData.swipeDropEnabled else { return }
 
             // Calculate speed by taking account to slanted directions
+            // (Buttons are slanted pi/8, detection slant goes half way at pi/16)
             // to avoid conflict with LR swipe (side-swipe should not trigger a drop)
 
-            let c = cos(Double.pi / 8)
-            let s = sin(Double.pi / 8)
+            let c = cos(Double.pi / 16)
+            let s = sin(Double.pi / 16)
             let rotation = isLeft ? (c, -s, s, c) : (c, s, -s, c) 
             let delta = (Double(location.x - lastLocation.x),
                          Double(location.y - lastLocation.y))
