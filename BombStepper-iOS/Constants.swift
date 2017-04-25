@@ -24,6 +24,12 @@ extension UIColor {
 }
 
 
+enum Dimension {
+    static let outerFrameWidth = 4
+    static let innerFrameWidth = 1
+}
+
+
 enum ZPosition {
     static let controls: CGFloat = 10
     static let playfieldInnerFrame: CGFloat = -2

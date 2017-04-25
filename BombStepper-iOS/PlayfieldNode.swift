@@ -9,10 +9,6 @@
 import SpriteKit
 
 
-private let outerFrameWidth = 4
-private let innerFrameWidth = 1
-
-
 private typealias BlockTileGroupMap = [Block.BlockType : SKTileGroup]
 
 
@@ -34,7 +30,7 @@ final class PlayfieldNode: SKNode {
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
-        tileWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
+        tileWidth = CGFloat((Int(sceneSize.height) - Dimension.outerFrameWidth * 2)/20)
         (tileMapNode, gridsNode, innerFrameNode, outerFrameNode, cropNode) = PlayfieldNode.createNodes(tileWidth: tileWidth)
 
         super.init()
@@ -122,8 +118,8 @@ private extension PlayfieldNode {
 
         let fieldRect = CGRect(x: -tileWidth * 5, y: -tileWidth * 10,
                                width: tileWidth * 10, height: tileWidth * 20)
-        let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(innerFrameWidth), dy: -CGFloat(innerFrameWidth))
-        let outerFrameRect = fieldRect.insetBy(dx: -CGFloat(outerFrameWidth), dy: -CGFloat(outerFrameWidth))
+        let innerFrameRect = fieldRect.insetBy(dx: -CGFloat(Dimension.innerFrameWidth), dy: -CGFloat(Dimension.innerFrameWidth))
+        let outerFrameRect = fieldRect.insetBy(dx: -CGFloat(Dimension.outerFrameWidth), dy: -CGFloat(Dimension.outerFrameWidth))
 
         let innerFrameNode = SKShapeNode(rect: innerFrameRect, cornerRadius: 2)
         innerFrameNode.fillColor = .playfieldBorder

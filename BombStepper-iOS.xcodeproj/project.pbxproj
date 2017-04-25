@@ -28,6 +28,7 @@
 		DA882A951EAF024C0066A606 /* Directions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A941EAF024C0066A606 /* Directions.swift */; };
 		DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A961EAF0D300066A606 /* MovementTimer.swift */; };
 		DA882A991EAF20E80066A606 /* BlockDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A981EAF20E80066A606 /* BlockDrawing.swift */; };
+		DA882A9B1EAF9EF60066A606 /* SinglePieceNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */; };
 		DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */; };
 		DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */; };
 		DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD280A61EA8C1930064CB4D /* ControllerNode.swift */; };
@@ -69,6 +70,7 @@
 		DA882A941EAF024C0066A606 /* Directions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Directions.swift; sourceTree = "<group>"; };
 		DA882A961EAF0D300066A606 /* MovementTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovementTimer.swift; sourceTree = "<group>"; };
 		DA882A981EAF20E80066A606 /* BlockDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockDrawing.swift; sourceTree = "<group>"; };
+		DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePieceNode.swift; sourceTree = "<group>"; };
 		DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrominoRandomizer.swift; sourceTree = "<group>"; };
 		DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayfieldNode.swift; sourceTree = "<group>"; };
 		DAD280A61EA8C1930064CB4D /* ControllerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerNode.swift; sourceTree = "<group>"; };
@@ -124,26 +126,19 @@
 		DA25F1CB1EAB7EEE0031F833 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */,
+				DA882A921EAE8FE50066A606 /* TetrisSystem.swift */,
+				DA25F1C21EAB0D3C0031F833 /* Field.swift */,
 				DA25F1C41EAB19110031F833 /* Block.swift */,
 				DA882A981EAF20E80066A606 /* BlockDrawing.swift */,
 				DA25F1C61EAB39130031F833 /* Piece.swift */,
-				DA25F1C21EAB0D3C0031F833 /* Field.swift */,
-				DA882A941EAF024C0066A606 /* Directions.swift */,
-				DA882A921EAE8FE50066A606 /* TetrisSystem.swift */,
+				DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */,
+				DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */,
+				DA10B4411EA9D8E800C2C805 /* SettingsManager.swift */,
 				DA882A961EAF0D300066A606 /* MovementTimer.swift */,
+				DA8324A91EA7F3060076AF4E /* DASManager.swift */,
+				DA882A941EAF024C0066A606 /* Directions.swift */,
 			);
 			name = Models;
-			sourceTree = "<group>";
-		};
-		DA25F1CC1EAB80960031F833 /* Managers */ = {
-			isa = PBXGroup;
-			children = (
-				DA8324A91EA7F3060076AF4E /* DASManager.swift */,
-				DA10B4411EA9D8E800C2C805 /* SettingsManager.swift */,
-				DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */,
-			);
-			name = Managers;
 			sourceTree = "<group>";
 		};
 		DA25F1CD1EAB81150031F833 /* Nodes */ = {
@@ -151,6 +146,7 @@
 			children = (
 				DAD280A61EA8C1930064CB4D /* ControllerNode.swift */,
 				DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */,
+				DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */,
 			);
 			name = Nodes;
 			sourceTree = "<group>";
@@ -182,7 +178,6 @@
 				DA25F1C91EAB7E620031F833 /* Scenes */,
 				DA25F1CD1EAB81150031F833 /* Nodes */,
 				DA25F1CB1EAB7EEE0031F833 /* Models */,
-				DA25F1CC1EAB80960031F833 /* Managers */,
 				DA0ED9291EA7A5EA008F3C61 /* Constants.swift */,
 				DA25F1CA1EAB7EAE0031F833 /* Supporting Files */,
 			);
@@ -311,6 +306,7 @@
 				DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */,
 				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,
 				DA25F1C31EAB0D3C0031F833 /* Field.swift in Sources */,
+				DA882A9B1EAF9EF60066A606 /* SinglePieceNode.swift in Sources */,
 				DA0ED9321EA7B71A008F3C61 /* Tetromino.swift in Sources */,
 				DA10B4421EA9D8E800C2C805 /* SettingsManager.swift in Sources */,
 				DA4D28FE1EA4F6C5008F3BDF /* GameViewController.swift in Sources */,
