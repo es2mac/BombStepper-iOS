@@ -45,13 +45,6 @@ class TetrisSystem {
                 self?.movementTimer.stopTiming(.das(direction))
             }
         }
-
-
-        // TODO: DAS manager tells the field how much to shift so the field doesn't need to know about das
-
-        // TODO: unified timer for timed movements e.g. das, soft drop, gravity
-
-
     }
 }
 
@@ -113,7 +106,8 @@ extension TetrisSystem: ControllerDelegate {
         case .softDrop:
             movementTimer.startTiming(.softDrop)
         case .hold:
-            // TODO
+
+            
             break
         case .rotateLeft:
             field.activePiece.map {
@@ -172,7 +166,7 @@ extension TetrisSystem: FieldDelegate {
     }
     
     func fieldActivePieceDidTouchBottom(touching: Bool) {
-        // TODO: lock timer
+        // TODO: lock timing
     }
 }
 

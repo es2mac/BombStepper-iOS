@@ -89,13 +89,8 @@ extension PlayfieldNode: SettingsNotificationTarget {
 private extension PlayfieldNode {
 
     func placeAsync(blocks: [Block], automapping: Bool = true)  {
-
-        if !automapping {
-            // TODO: do a copy at top lines
-            self.tileMapNode.enableAutomapping = false
-            self.tileMapNode.enableAutomapping = true
-        }
-
+        // WISHLIST: Don't apply adjacency for locked pieces, by copying tile definitions first setting to above the field
+        
         blocks.forEach {
             let tileGroup = ($0.type == .blank) ? nil : self.tileGroup(for: $0.type)
             self.tileMapNode.setTileGroup(tileGroup, forColumn: $0.x, row: $0.y)
