@@ -23,6 +23,13 @@ enum Direction {
         case .right: return (x:  1, y:  0)
         }
     }
+
+    init(_ xDirection: XDirection) {
+        switch xDirection {
+        case .left:  self = .left
+        case .right: self = .right
+        }
+    }
 }
 
 
@@ -36,10 +43,11 @@ enum XDirection {
         }
     }
 
-    var asDirection: Direction {
-        switch self {
-        case .left:  return .left
-        case .right: return .right
+    init?(_ direction: Direction) {
+        switch direction {
+        case .left:  self = .left
+        case .right: self = .right
+        default: return nil
         }
     }
 }

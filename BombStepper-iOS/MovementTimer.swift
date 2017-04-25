@@ -57,6 +57,7 @@ private extension MovementTimer {
     func startDAS(_ direction: XDirection) {
         dasFrameCounter = 0
         dasDirection = direction
+        fireDAS(xDirection: direction)
     }
 
     func stopDAS(_ direction: XDirection) {
@@ -68,6 +69,7 @@ private extension MovementTimer {
     func startSoftDrop() {
         softDropFrameCounter = 0
         softDropStarted = true
+        fireSoftDrop()
     }
 
     func stopSoftDrop() {
@@ -111,19 +113,27 @@ private extension MovementTimer {
         softDropFrameCounter += 1
         if softDropFrameCounter >= softDropFrames {
             softDropFrameCounter = 0
-            let dropBy = (softDropFrames == 0) ? Int.max : 1
-            moveAction?(.down, dropBy)
+            fireSoftDrop()
         }
     }
-    
+
+    func fireSoftDrop() {
+        let dropBy = (softDropFrames == 0) ? Int.max : 1
+        moveAction?(.down, dropBy)
+    }
+
     func updateDAS() {
-        guard let xDirection = dasDirection else { return }
+        guard let direction = dasDirection else { return }
         dasFrameCounter += 1
         if dasFrameCounter >= dasFrames {
             dasFrameCounter = 0
-            let dasBy = (dasFrames == 0) ? Int.max : 1
-            moveAction?(xDirection.asDirection, dasBy)
+            fireDAS(xDirection: direction)
         }
+    }
+
+    func fireDAS(xDirection: XDirection) {
+        let dasBy = (dasFrames == 0) ? Int.max : 1
+        moveAction?(Direction(xDirection), dasBy)
     }
 }
 
