@@ -29,7 +29,7 @@ final class DASManager {
     }
 
 
-    var performDAS: ((XDirection) -> Void)?
+    var activateDAS: ((_ active: Bool, _ direction: XDirection) -> Void)?
 
     fileprivate var dasStatus: Status
     fileprivate var dasDelay: MachAbsTime
@@ -37,11 +37,11 @@ final class DASManager {
     private let dasPendingQueue = DispatchQueue(label: "net.mathemusician.BombStepper.DASManager", qos: .userInteractive)
     
 
-    /// Note: performDAS is usually called off the main thread
-    init(performDAS: ((XDirection) -> Void)? = nil) {
+    /// Note: activateDAS is usually called off the main thread
+    init(activateDAS: ((Bool, XDirection) -> Void)? = nil) {
         dasDelay = msToAbs(8 * 1000 / 60)   // Updates on settings manager callback
         dasStatus = Status.none
-        self.performDAS = performDAS
+        self.activateDAS = activateDAS
     }
 
     func inputBegan(_ direction: XDirection) {
@@ -52,6 +52,7 @@ final class DASManager {
     func inputEnded(_ direction: XDirection) {
         if direction == dasStatus.direction {
             dasStatus = .none
+            activateDAS?(false, direction)
         }
     }
 
@@ -62,7 +63,7 @@ final class DASManager {
 
         if fireTime < now {
             dasStatus = .active(direction)
-            performDAS?(direction)
+            activateDAS?(true, direction)
         }
         else {
             dasStatus = .imminent(direction)
@@ -70,24 +71,18 @@ final class DASManager {
                 mach_wait_until(fireTime)
                 if case .imminent(let d) = self.dasStatus, d == direction {
                     self.dasStatus = .active(direction)
-                    self.performDAS?(direction)
+                    self.activateDAS?(true, direction)
                 }
             }
         }
     }
-
 }
 
 
 extension DASManager: GameSceneUpdatable {
     func update(_ currentTime: TimeInterval) {
-        switch dasStatus {
-        case .active(let direction):
-            performDAS?(direction)
-        case .pending(let direction, let t):
+        if case .pending(let direction, let t) = dasStatus {
             activateDASIfNeeded(direction: direction, fireTime: t)
-        default:
-            break
         }
     }
 }

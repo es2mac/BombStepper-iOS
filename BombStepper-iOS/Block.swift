@@ -26,6 +26,15 @@ struct Block {
     let type: BlockType
     var x: Int
     var y: Int
+
+    var locked: Block {
+        switch type {
+        case .blank:
+            return self
+        case .active(let t), .ghost(let t), .locked(let t):
+            return Block(type: .locked(t), x: x, y: y)
+        }
+    }
 }
 
 

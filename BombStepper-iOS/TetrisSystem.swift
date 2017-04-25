@@ -37,8 +37,13 @@ class TetrisSystem {
             self?.field.movePiece(direction, steps: steps)
         }
             
-        dasManager.performDAS = { [weak self] direction in
-            self?.field.process(das: direction)
+        dasManager.activateDAS = { [weak self] active, direction in
+            if active {
+                self?.movementTimer.startTiming(.das(direction))
+            }
+            else {
+                self?.movementTimer.stopTiming(.das(direction))
+            }
         }
 
 
@@ -78,6 +83,7 @@ extension TetrisSystem: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
         field.settingsDidUpdate(settings)
         dasManager.settingsDidUpdate(settings)
+        movementTimer.settingsDidUpdate(settings)
     }
 }
 
@@ -95,16 +101,32 @@ extension TetrisSystem: ControllerDelegate {
         /* end temp */
 
         
-        field.process(input: button)
-
         switch button {
         case .moveLeft:
+            field.movePiece(.left)
             dasManager.inputBegan(.left)
         case .moveRight:
+            field.movePiece(.right)
             dasManager.inputBegan(.right)
-        default:
-            return
+        case .hardDrop:
+            field.hardDrop()
+        case .softDrop:
+            movementTimer.startTiming(.softDrop)
+        case .hold:
+            // TODO
+            break
+        case .rotateLeft:
+            field.activePiece.map {
+                field.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingLeft())
+            }
+        case .rotateRight:
+            field.activePiece.map {
+                field.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingRight())
+            }
+        case .none:
+            break
         }
+
     }
 
     func buttonUp(_ button: Button) {
@@ -114,10 +136,11 @@ extension TetrisSystem: ControllerDelegate {
             dasManager.inputEnded(.left)
         case .moveRight:
             dasManager.inputEnded(.right)
+        case .softDrop:
+            movementTimer.stopTiming(.softDrop)
         default:
-            return
+            break
         }
-
     }
 
 }
@@ -128,12 +151,17 @@ extension TetrisSystem: FieldDelegate {
         delegate?.updateFieldDisplay(blocks: blocks)
     }
     
-    func fieldActivePieceDidLock() {
+    func fieldActivePieceDidLock(lockedOut: Bool) {
         movementTimer.stopTiming(.gravity)
+
+        guard !lockedOut else {
+            isGameRunning = false
+            return
+        }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             switch self.field.startPiece(type: self.tetrominoRandomizer.popNext()) {
-            case .toppedOut:
+            case .blockedOut:
                 self.isGameRunning = false
             case .success:
                 self.movementTimer.startTiming(.gravity)

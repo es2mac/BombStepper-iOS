@@ -13,7 +13,7 @@ import Foundation
 protocol FieldDelegate: class {
     func updateField(blocks: [Block])
     func fieldActivePieceDidTouchBottom(touching: Bool)
-    func fieldActivePieceDidLock()
+    func fieldActivePieceDidLock(lockedOut: Bool)
 }
 
 
@@ -31,7 +31,7 @@ final class Field {
     enum StartPieceResult {
         case success
         case stillHasActivePiece
-        case toppedOut
+        case blockedOut
     }
 
 
@@ -44,18 +44,13 @@ final class Field {
     // Put most operations on a serial queue to make access on the two properties above atomic
     fileprivate let queue = DispatchQueue(label: "net.mathemusician.BombStepper.Field")
 
-    fileprivate var activePiece: Piece? {
+    fileprivate(set) var activePiece: Piece? {
         didSet { updateActivePiece(current: activePiece, previous: oldValue) }
     }
 
     fileprivate var ghostPiece: Piece?
 
     fileprivate var hideGhost = false
-    fileprivate var dasFrames = 1
-    fileprivate var dasFrameCounter = 0
-    fileprivate var softDropFrames = 1
-    fileprivate var softDropFrameCounter = 0
-    // TODO: Move soft drop logic out
 
     init(delegate: FieldDelegate? = nil) {
         self.delegate = delegate
@@ -67,9 +62,7 @@ final class Field {
 
 extension Field: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
-        dasFrames      = settings.dasFrames
-        softDropFrames = settings.softDropFrames
-        hideGhost      = settings.hideGhost
+        hideGhost = settings.hideGhost
     }
 }
 
@@ -93,7 +86,7 @@ extension Field {
             let piece = Piece(type: type, x: 4, y: 20)
 
             guard !pieceIsObstructed(piece) else {
-                result = .toppedOut
+                result = .blockedOut
                 return
             }
 
@@ -105,17 +98,25 @@ extension Field {
         return result
     }
 
-    func process(input: Button) {
-        queue.async { self.processAsync(input: input) }
-    }
-
-    // TODO: move timing to DASManager, use movePiece instead
-    func process(das: XDirection) {
-        queue.async { self.processAsync(das: das) }
-    }
-
     func movePiece(_ direction: Direction, steps: Int = 1) {
         queue.async { self.movePieceAsync(direction, steps: steps) }
+    }
+
+    func replacePieceWithFirstValidPiece(in candidates: [Piece]) {
+        queue.async {
+            candidates.first(where: { !self.pieceIsObstructed($0) }).map {
+                self.activePiece = $0
+                self.reportChanges()
+            }
+        }
+    }
+
+    func hardDrop() {
+        queue.async {
+            while self.moveActivePiece((x: 0, y: -1)) { }
+            self.lockDown()
+            self.reportChanges()
+        }
     }
 
     func reset() {
@@ -139,33 +140,6 @@ private extension Field {
         current?.blocks.forEach(setBlock)
     }
 
-    func processAsync(input: Button) {
-        guard activePiece != nil else { return }
-        switch input {
-        case .moveLeft: moveActivePiece((x: -1, y: 0))
-        case .moveRight: moveActivePiece((x: 1, y: 0))
-        case .hardDrop: hardDrop()
-        case .softDrop: softDrop()
-        case .hold: break
-        case .rotateLeft: rotateLeft()
-        case .rotateRight: rotateRight()
-        case .none: break
-        }
-        reportChanges()
-    }
-
-    func processAsync(das: XDirection) {
-        dasFrameCounter += 1
-        guard dasFrameCounter >= dasFrames else { return }
-        dasFrameCounter = 0
-
-        if moveActivePiece(das.offset), dasFrames == 0 {
-            while moveActivePiece(das.offset) { }
-        }
-
-        reportChanges()
-    }
-
     func movePieceAsync(_ direction: Direction, steps: Int = 1) {
         for _ in 0 ..< steps {
             if !moveActivePiece(direction.offset) { break }
@@ -178,43 +152,23 @@ private extension Field {
 
 private extension Field {
     
-    func positionedGhost(for piece: Piece) -> Piece{
+    func positionedGhost(for piece: Piece) -> Piece {
         var ghost = piece.ghost
         while !pieceIsObstructed(ghost) { ghost.y -= 1 }
         ghost.y += 1
         return ghost
     }
 
-    func softDrop()  {
-        softDropFrameCounter += 1
-        guard softDropFrameCounter >= softDropFrames else { return }
-        softDropFrameCounter = 0
-
-        if moveActivePiece((x: 0, y: -1)), softDropFrames == 0 {
-            while moveActivePiece((x: 0, y: -1)) { }
-        }
-    }
-
-    func hardDrop() {
-        while moveActivePiece((x: 0, y: -1)) { }
-        lockDown()
-    }
-    
     func lockDown() {
         guard let piece = activePiece else { return }
         activePiece = nil
-        piece.blocks.forEach { block in
-            guard case .active(let t) = block.type else { return }
-            let lockedBlock = Block(type: .locked(t), x: block.x, y: block.y)
-            setBlock(lockedBlock)
-        }
+        piece.blocks.forEach { setBlock($0.locked) }
 
-        clearCompletedLines()
+        // Check lock out (http://tetris.wikia.com/wiki/Top_out)
+        let lockedOut = piece.blocks.contains { $0.y >= 20 }
+        self.delegate?.fieldActivePieceDidLock(lockedOut: lockedOut)
 
-        // TODO: may be "topped out" by locking completely outside of visible field
-        // logically may be easiest to place an obstruction at the starting place
-
-        self.delegate?.fieldActivePieceDidLock()
+        if !lockedOut { clearCompletedLines() }
     }
 
     // Temporary.  May be more complicated (e.g. bombs)
@@ -253,24 +207,6 @@ private extension Field {
         let canMove = !pieceIsObstructed(piece)
         if canMove { activePiece = piece }
         return canMove
-    }
-
-    // TODO: extract rotation logic out, replace with e.g.:
-    // private(set) activePiece
-    // replacePieceWithFirstValidPiece(in pieces: [Piece])
-    // field.replacePieceWithFirstValidPiece(in: field.activePiece.kickCandidatesForRotatingRight()
-    func rotateRight() {
-        activePiece.map { rotateToFirstAvailablePosition(in: $0.kickCandidatesForRotatingRight()) }
-    }
-
-    func rotateLeft() {
-        activePiece.map { rotateToFirstAvailablePosition(in: $0.kickCandidatesForRotatingLeft()) }
-    }
-
-    private func rotateToFirstAvailablePosition(in candidates: [Piece]) {
-        if let piece = candidates.first(where: { !pieceIsObstructed($0) }) {
-            activePiece = piece
-        }
     }
 
     // Rules for free space: within 10 x 40, either blank or is active piece's space
@@ -334,9 +270,6 @@ private extension Field {
 }
 
 
-private extension Int {
-    static var allTheWay = 40
-}
 
 
 

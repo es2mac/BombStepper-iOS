@@ -84,16 +84,6 @@ final class ControllerNode: SKNode {
 }
 
 
-extension ControllerNode: GameSceneUpdatable {
-    // Let soft drop be continuously-firing
-    func update(_ currentTime: TimeInterval) {
-        if touchesData.values.contains(where: { $0.button == .softDrop }) {
-            delegate?.buttonDown(.softDrop)
-        }
-    }
-}
-
-
 extension ControllerNode: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
         TouchData.swipeDropEnabled = settings.swipeDropEnabled

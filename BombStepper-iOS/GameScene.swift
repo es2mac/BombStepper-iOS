@@ -33,7 +33,6 @@ final class GameScene: SKScene {
     }
     
     override func update(_ currentTime: TimeInterval) {
-        controllerNode.update(currentTime)
         system.update(currentTime)
     }
     
