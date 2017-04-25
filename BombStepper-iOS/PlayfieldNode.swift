@@ -72,10 +72,18 @@ final class PlayfieldNode: SKNode {
 
 extension PlayfieldNode: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
-        guard CGFloat(settings.ghostOpacity) != ghostOpacity, !blockTileGroupMap.isEmpty else { return }
-        ghostOpacity = CGFloat(settings.ghostOpacity)
-        let operation = UpdateGhostTexturesOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, map: blockTileGroupMap)
-        textureGenerationQueue.addOperation(operation)
+
+        // TODO: setting for background gridline opacity
+        let gridOpacity: CGFloat = 1
+        if gridsNode.alpha != gridOpacity {
+            gridsNode.alpha = gridOpacity
+        }
+
+        if CGFloat(settings.ghostOpacity) != ghostOpacity, !blockTileGroupMap.isEmpty {
+            ghostOpacity = CGFloat(settings.ghostOpacity)
+            let updateGhostTexture = UpdateGhostTexturesOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, map: blockTileGroupMap)
+            textureGenerationQueue.addOperation(updateGhostTexture)
+        }
     }
 }
 
@@ -89,18 +97,10 @@ private extension PlayfieldNode {
             self.tileMapNode.enableAutomapping = false
             self.tileMapNode.enableAutomapping = true
         }
-        
+
         blocks.forEach {
-            
-            // TODO: layer field on top of static background, blanks don't draw
-            // TODO: setting for background gridline opacity
-            
-            if case .blank = $0.type {
-                self.tileMapNode.setTileGroup(nil, forColumn: $0.x, row: $0.y)
-            }
-            else {
-                self.tileMapNode.setTileGroup(self.tileGroup(for: $0.type), forColumn: $0.x, row: $0.y)
-            }
+            let tileGroup = ($0.type == .blank) ? nil : self.tileGroup(for: $0.type)
+            self.tileMapNode.setTileGroup(tileGroup, forColumn: $0.x, row: $0.y)
         }
     }
 
@@ -122,7 +122,9 @@ private extension PlayfieldNode {
         let tileMapNode = SKTileMapNode(tileSet: SKTileSet(tileGroups: []), columns: 10, rows: 24, tileSize: tileSize)
         tileMapNode.position.y = tileWidth * 2
 
-        let gridsNode = SKTileMapNode(tileSet: SKTileSet(tileGroups: []), columns: 10, rows: 20, tileSize: tileSize)
+        let blankTileGroup = Block.BlockType.blank.tileGroup(tileWidth: tileWidth)
+        let gridsNode = SKTileMapNode(tileSet: SKTileSet(tileGroups: [blankTileGroup]), columns: 10, rows: 20, tileSize: tileSize)
+        gridsNode.fill(with: blankTileGroup)
         gridsNode.zPosition = ZPosition.playfieldGrids
 
         let fieldRect = CGRect(x: -tileWidth * 5, y: -tileWidth * 10,
@@ -170,12 +172,11 @@ private final class GenerateTileSetOperation: Operation {
         Block.BlockType.allCases.forEach { type in
             map[type] = type.tileGroup(tileWidth: tileWidth, ghostOpacity: ghostOpacity)
         }
+        map.removeValue(forKey: .blank)
 
         DispatchQueue.main.async {
             self.target?.blockTileGroupMap = map
             self.target?.tileMapNode.tileSet = SKTileSet(tileGroups: Array(map.values))
-            self.target?.gridsNode.tileSet = SKTileSet(tileGroups: [map[.blank]!])
-            self.target?.gridsNode.fill(with: map[.blank]!)
         }
     }
 }
