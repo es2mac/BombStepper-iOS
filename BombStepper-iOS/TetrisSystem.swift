@@ -12,7 +12,7 @@ import Foundation
 protocol TetrisSystemDelegate: class {
     func updateFieldDisplay(blocks: [Block])
     func updatePreviews(_ types: [Tetromino])
-    func updateHeldPiece(_ type: Tetromino)
+    func updateHeldPiece(_ type: Tetromino?)
     func clearFieldDisplay()
 }
 
@@ -64,6 +64,7 @@ extension TetrisSystem {
     func startGame() {
         guard !isGameRunning else { return }
         delegate?.clearFieldDisplay()
+        delegate?.updateHeldPiece(nil)
         field.reset()
         tetrominoRandomizer.reset()
         holdPieceLocked = false

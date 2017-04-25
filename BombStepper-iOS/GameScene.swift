@@ -95,7 +95,7 @@ extension GameScene: TetrisSystemDelegate {
         previewsNode.show(types)
     }
 
-    func updateHeldPiece(_ type: Tetromino) {
+    func updateHeldPiece(_ type: Tetromino?) {
         heldPieceNode.show(type)
     }
 

@@ -31,8 +31,9 @@ final class SinglePieceNode: SKTileMapNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func show(_ tetromino: Tetromino) {
+    func show(_ tetromino: Tetromino?) {
         fill(with: nil)
+        guard let tetromino = tetromino else { return }
         let tileGroup = blockTileGroupMap[Block.BlockType.active(tetromino)]
         let piece = Piece(type: tetromino, x: 1, y: 0)
         for block in piece.blocks {
