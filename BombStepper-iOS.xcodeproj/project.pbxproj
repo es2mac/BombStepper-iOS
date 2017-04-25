@@ -29,6 +29,8 @@
 		DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A961EAF0D300066A606 /* MovementTimer.swift */; };
 		DA882A991EAF20E80066A606 /* BlockDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A981EAF20E80066A606 /* BlockDrawing.swift */; };
 		DA882A9B1EAF9EF60066A606 /* SinglePieceNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */; };
+		DA882A9D1EAFBDCA0066A606 /* UIImageDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A9C1EAFBDCA0066A606 /* UIImageDrawing.swift */; };
+		DA882A9F1EAFC0910066A606 /* PreviewsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */; };
 		DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */; };
 		DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */; };
 		DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD280A61EA8C1930064CB4D /* ControllerNode.swift */; };
@@ -71,6 +73,8 @@
 		DA882A961EAF0D300066A606 /* MovementTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovementTimer.swift; sourceTree = "<group>"; };
 		DA882A981EAF20E80066A606 /* BlockDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BlockDrawing.swift; sourceTree = "<group>"; };
 		DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SinglePieceNode.swift; sourceTree = "<group>"; };
+		DA882A9C1EAFBDCA0066A606 /* UIImageDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageDrawing.swift; sourceTree = "<group>"; };
+		DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewsNode.swift; sourceTree = "<group>"; };
 		DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrominoRandomizer.swift; sourceTree = "<group>"; };
 		DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayfieldNode.swift; sourceTree = "<group>"; };
 		DAD280A61EA8C1930064CB4D /* ControllerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerNode.swift; sourceTree = "<group>"; };
@@ -130,6 +134,7 @@
 				DA25F1C21EAB0D3C0031F833 /* Field.swift */,
 				DA25F1C41EAB19110031F833 /* Block.swift */,
 				DA882A981EAF20E80066A606 /* BlockDrawing.swift */,
+				DA882A9C1EAFBDCA0066A606 /* UIImageDrawing.swift */,
 				DA25F1C61EAB39130031F833 /* Piece.swift */,
 				DA0ED9311EA7B71A008F3C61 /* Tetromino.swift */,
 				DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */,
@@ -147,6 +152,7 @@
 				DAD280A61EA8C1930064CB4D /* ControllerNode.swift */,
 				DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */,
 				DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */,
+				DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */,
 			);
 			name = Nodes;
 			sourceTree = "<group>";
@@ -300,7 +306,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA882A9D1EAFBDCA0066A606 /* UIImageDrawing.swift in Sources */,
 				DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */,
+				DA882A9F1EAFC0910066A606 /* PreviewsNode.swift in Sources */,
 				DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */,
 				DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */,
 				DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */,

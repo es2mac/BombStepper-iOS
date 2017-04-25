@@ -19,15 +19,17 @@ final class GameScene: SKScene {
     
     fileprivate var controllerNode: ControllerNode!
     fileprivate var playfieldNode: PlayfieldNode!
+    fileprivate var holdNode: SinglePieceNode!
+    fileprivate var previewsNode: PreviewsNode!
     fileprivate let settingsManager = SettingsManager()
     fileprivate let system = TetrisSystem()
+    fileprivate var heldPiece: Tetromino?
 
     override func didMove(to view: SKView) {
         setupControllerNode()
-        setupPlayfieldNode()
+        setupDisplayNodes()
         system.delegate = self
         
-        // TODO: Preview
         // TODO: Hold
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])
     }
@@ -59,14 +61,21 @@ private extension GameScene {
     
     // Create or (if size changed) recreate the playfield node
     // Treat playfieldNode as regular optional here
-    func setupPlayfieldNode() {
+    func setupDisplayNodes() {
         guard playfieldNode?.sceneSize != size else { return }
         playfieldNode?.removeFromParent()
-        let node = PlayfieldNode(sceneSize: size)
-        node.alpha = 0
-        addChild(node)
-        node.fadeIn()
-        playfieldNode = node
+
+        playfieldNode = PlayfieldNode(sceneSize: size)
+        playfieldNode.alpha = 0
+        addChild(playfieldNode)
+        playfieldNode.fadeIn()
+
+        let tileWidth = playfieldNode.tileWidth
+
+        previewsNode = PreviewsNode(tileWidth: tileWidth)
+        previewsNode.position.x = tileWidth * (5 + 2) + CGFloat(Dimension.outerFrameWidth) + 5
+        previewsNode.position.y = tileWidth * 2
+        addChild(previewsNode)
     }
 
 }
@@ -80,6 +89,11 @@ extension GameScene: TetrisSystemDelegate {
     func clearFieldDisplay() {
         playfieldNode.clearField()
     }
+
+    func updatePreviews(_ types: [Tetromino]) {
+        previewsNode.show(types)
+    }
+
 }
 
 

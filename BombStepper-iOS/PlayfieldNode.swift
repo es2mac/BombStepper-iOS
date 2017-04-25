@@ -9,13 +9,13 @@
 import SpriteKit
 
 
-private typealias BlockTileGroupMap = [Block.BlockType : SKTileGroup]
+typealias BlockTileGroupMap = [Block.BlockType : SKTileGroup]
 
 
 final class PlayfieldNode: SKNode {
 
     let sceneSize: CGSize
-    fileprivate let tileWidth: CGFloat
+    let tileWidth: CGFloat
 
     fileprivate let tileMapNode: SKTileMapNode
     fileprivate let gridsNode: SKTileMapNode

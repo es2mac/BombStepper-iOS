@@ -35,7 +35,7 @@ class TetrominoRandomizer {
     }
 
     func previews() -> [Tetromino] {
-        return Array(stack.suffix(previewsCount))
+        return stack.suffix(previewsCount).reversed()
     }
 
     func reset() {

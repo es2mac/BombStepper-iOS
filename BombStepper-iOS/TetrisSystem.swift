@@ -11,6 +11,7 @@ import Foundation
 
 protocol TetrisSystemDelegate: class {
     func updateFieldDisplay(blocks: [Block])
+    func updatePreviews(_ types: [Tetromino])
     func clearFieldDisplay()
 }
 
@@ -60,6 +61,7 @@ extension TetrisSystem {
         field.reset()
         tetrominoRandomizer.reset()
         field.startPiece(type: tetrominoRandomizer.popNext())
+        delegate?.updatePreviews(tetrominoRandomizer.previews())
         movementTimer.startTiming(.gravity)
         isGameRunning = true
     }
@@ -158,14 +160,7 @@ extension TetrisSystem: FieldDelegate {
         }
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
-            switch self.field.startPiece(type: self.tetrominoRandomizer.popNext()) {
-            case .blockedOut:
-                self.isGameRunning = false
-            case .success:
-                self.movementTimer.startTiming(.gravity)
-            default:
-                break
-            }
+            self.playNextPiece()
         }
     }
 
@@ -175,6 +170,22 @@ extension TetrisSystem: FieldDelegate {
             movementTimer.stopTiming(.delayedLock(touching))
         default:
             movementTimer.startTiming(.delayedLock(touching))
+        }
+    }
+}
+
+
+private extension TetrisSystem {
+
+    func playNextPiece() {
+        switch field.startPiece(type: tetrominoRandomizer.popNext()) {
+        case .blockedOut:
+            isGameRunning = false
+        case .success:
+            movementTimer.startTiming(.gravity)
+            delegate?.updatePreviews(tetrominoRandomizer.previews())
+        default:
+            break
         }
     }
 }
