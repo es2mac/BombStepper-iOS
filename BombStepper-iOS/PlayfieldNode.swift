@@ -22,6 +22,7 @@ final class PlayfieldNode: SKNode {
     fileprivate let tileWidth: CGFloat
 
     fileprivate let tileMapNode: SKTileMapNode
+    fileprivate let gridsNode: SKTileMapNode
     fileprivate let cropNode: SKCropNode
     fileprivate let outerFrameNode: SKShapeNode
     fileprivate let innerFrameNode: SKShapeNode
@@ -34,11 +35,12 @@ final class PlayfieldNode: SKNode {
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
         tileWidth = CGFloat((Int(sceneSize.height) - outerFrameWidth * 2)/20)
-        (tileMapNode, innerFrameNode, outerFrameNode, cropNode) = PlayfieldNode.createNodes(tileWidth: tileWidth)
+        (tileMapNode, gridsNode, innerFrameNode, outerFrameNode, cropNode) = PlayfieldNode.createNodes(tileWidth: tileWidth)
 
         super.init()
 
         cropNode.addChild(tileMapNode)
+        cropNode.addChild(gridsNode)
         [outerFrameNode, innerFrameNode, cropNode].forEach(addChild)
 
         let operation = GenerateTileSetOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, doneTarget: self)
@@ -50,11 +52,11 @@ final class PlayfieldNode: SKNode {
     }
 
     func fadeIn() {
-        [outerFrameNode, innerFrameNode, tileMapNode].forEach { $0.alpha = 0 }
         self.alpha = 1
-        tileMapNode.run(.fadeIn(withDuration: 1))
-        innerFrameNode.run(.sequence([.wait(forDuration: 0.5), .fadeIn(withDuration: 1)]))
-        outerFrameNode.run(.sequence([.wait(forDuration: 1), .fadeIn(withDuration: 1)])) {
+        outerFrameNode.alpha = 0
+        innerFrameNode.alpha = 0
+        innerFrameNode.run(.fadeIn(withDuration: 1))
+        outerFrameNode.run(.sequence([.wait(forDuration: 0.5), .fadeIn(withDuration: 1)])) {
             self.textureGenerationQueue.waitUntilAllOperationsAreFinished()
         }
     }
@@ -111,7 +113,7 @@ private extension PlayfieldNode {
 
 private extension PlayfieldNode {
 
-    class func createNodes(tileWidth: CGFloat) -> (tileMap: SKTileMapNode, innerFrame: SKShapeNode, outerFrame: SKShapeNode, cropNode: SKCropNode) {
+    class func createNodes(tileWidth: CGFloat) -> (tileMap: SKTileMapNode, grids: SKTileMapNode, innerFrame: SKShapeNode, outerFrame: SKShapeNode, cropNode: SKCropNode) {
 
         // The tile map has 4 extra rows on top for auxiliary rendering, and is masked out.
         // Normal field update should happen in the lower 20 rows only.
@@ -119,6 +121,9 @@ private extension PlayfieldNode {
         let tileSize = CGSize(width: tileWidth, height: tileWidth)
         let tileMapNode = SKTileMapNode(tileSet: SKTileSet(tileGroups: []), columns: 10, rows: 24, tileSize: tileSize)
         tileMapNode.position.y = tileWidth * 2
+
+        let gridsNode = SKTileMapNode(tileSet: SKTileSet(tileGroups: []), columns: 10, rows: 20, tileSize: tileSize)
+        gridsNode.zPosition = ZPosition.playfieldGrids
 
         let fieldRect = CGRect(x: -tileWidth * 5, y: -tileWidth * 10,
                                width: tileWidth * 10, height: tileWidth * 20)
@@ -141,7 +146,7 @@ private extension PlayfieldNode {
         let cropNode = SKCropNode()
         cropNode.maskNode = maskNode
 
-        return (tileMap: tileMapNode, innerFrame: innerFrameNode, outerFrame: outerFrameNode, cropNode: cropNode)
+        return (tileMap: tileMapNode, grids: gridsNode, innerFrame: innerFrameNode, outerFrame: outerFrameNode, cropNode: cropNode)
     }
 }
 
@@ -162,39 +167,15 @@ private final class GenerateTileSetOperation: Operation {
     override func main() {
         var map = BlockTileGroupMap()
 
-        let allAdjacencies = allAdjacencyOptionSets()
-
         Block.BlockType.allCases.forEach { type in
-            let rules: [SKTileGroupRule]
-            switch type {
-            case .blank:
-                let image = type.defaultImage(side: tileWidth)
-                let texture = SKTexture(image: image)
-                let tileDefinition = SKTileDefinition(texture: texture)
-                rules = [SKTileGroupRule(adjacency: [], tileDefinitions: [tileDefinition])]
-            case .ghost:
-                let image = type.ghostImage(side: tileWidth, alpha: ghostOpacity)
-                let texture = SKTexture(image: image)
-                let tileDefinition = SKTileDefinition(texture: texture)
-                rules = [SKTileGroupRule(adjacency: [], tileDefinitions: [tileDefinition])]
-            case .active, .locked:
-                rules = allAdjacencies.map { adjacency in
-                    let image = type.defaultImage(side: tileWidth, adjacency: adjacency)
-                    let texture = SKTexture(image: image)
-                    let definition = SKTileDefinition(texture: texture)
-                    definition.userData = ["adjacency" : adjacency]
-
-                    return SKTileGroupRule(adjacency: adjacency, tileDefinitions: [definition])
-                }
-            }
-            let tileGroup = SKTileGroup(rules: rules)
-            tileGroup.name = type.name
-            map[type] = tileGroup
+            map[type] = type.tileGroup(tileWidth: tileWidth, ghostOpacity: ghostOpacity)
         }
 
         DispatchQueue.main.async {
             self.target?.blockTileGroupMap = map
             self.target?.tileMapNode.tileSet = SKTileSet(tileGroups: Array(map.values))
+            self.target?.gridsNode.tileSet = SKTileSet(tileGroups: [map[.blank]!])
+            self.target?.gridsNode.fill(with: map[.blank]!)
         }
     }
 }
@@ -228,21 +209,6 @@ private final class UpdateGhostTexturesOperation: Operation {
     }
 }
 
-
-private func allAdjacencyOptionSets() -> [SKTileAdjacencyMask] {
-    let none: SKTileAdjacencyMask = []
-    var sets = [none]
-
-    for adjacency in [SKTileAdjacencyMask.adjacencyUp, .adjacencyDown, .adjacencyLeft, .adjacencyRight] {
-        sets = sets + sets.map {
-            var new = $0
-            new.insert(adjacency)
-            return new
-        }
-    }
-
-    return sets
-}
 
 
 

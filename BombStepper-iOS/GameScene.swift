@@ -53,7 +53,7 @@ private extension GameScene {
         addChild(node)
         node.run(.fadeIn(withDuration: 1))
         controllerNode = node
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             node.isUserInteractionEnabled = true
         }
     }

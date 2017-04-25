@@ -26,8 +26,9 @@ extension UIColor {
 
 enum ZPosition {
     static let controls: CGFloat = 10
-    static let playfieldInnerFrame: CGFloat = -1
-    static let playfieldOuterFrame: CGFloat = -2
+    static let playfieldInnerFrame: CGFloat = -2
+    static let playfieldOuterFrame: CGFloat = -3
+    static let playfieldGrids: CGFloat = -1
 }
 
 
