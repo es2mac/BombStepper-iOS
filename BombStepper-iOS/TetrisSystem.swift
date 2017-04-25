@@ -23,8 +23,8 @@ class TetrisSystem {
 
     fileprivate let field = Field()
     fileprivate let tetrominoRandomizer = TetrominoRandomizer()
-    fileprivate let gravityTimer = GravityTimer()
     fileprivate let dasManager = DASManager()
+    fileprivate let movementTimer = MovementTimer()
 
     init(delegate: TetrisSystemDelegate? = nil) {
         self.delegate = delegate
@@ -33,9 +33,10 @@ class TetrisSystem {
 
     private func setup() {
         field.delegate = self
-        gravityTimer.dropAction = { [weak self] dropBy in
-            self?.field.shiftPiece(.down, steps: dropBy)
+        movementTimer.moveAction = { [weak self] direction, steps in
+            self?.field.movePiece(direction, steps: steps)
         }
+            
         dasManager.performDAS = { [weak self] direction in
             self?.field.process(das: direction)
         }
@@ -58,7 +59,7 @@ extension TetrisSystem {
         field.reset()
         tetrominoRandomizer.reset()
         field.startPiece(type: tetrominoRandomizer.popNext())
-        gravityTimer.start()
+        movementTimer.startTiming(.gravity)
         isGameRunning = true
     }
 
@@ -68,7 +69,7 @@ extension TetrisSystem {
 extension TetrisSystem: GameSceneUpdatable {
     func update(_ currentTime: TimeInterval) {
         dasManager.update(currentTime)
-        gravityTimer.update(currentTime)
+        movementTimer.update(currentTime)
     }
 }
 
@@ -86,12 +87,12 @@ extension TetrisSystem: ControllerDelegate {
     func buttonDown(_ button: Button) {
 
 
-        /* debug */
+        /* Temporary game starter */
         if !isGameRunning, case .hold = button {
             startGame()
             return
         }
-        /* end debug */
+        /* end temp */
 
         
         field.process(input: button)
@@ -128,15 +129,14 @@ extension TetrisSystem: FieldDelegate {
     }
     
     func fieldActivePieceDidLock() {
-        // TODO: actual game logic component
-        gravityTimer.stop()
-        
+        movementTimer.stopTiming(.gravity)
+
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
             switch self.field.startPiece(type: self.tetrominoRandomizer.popNext()) {
             case .toppedOut:
                 self.isGameRunning = false
             case .success:
-                self.gravityTimer.start()
+                self.movementTimer.startTiming(.gravity)
             default:
                 break
             }

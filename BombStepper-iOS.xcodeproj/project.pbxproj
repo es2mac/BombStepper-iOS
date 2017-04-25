@@ -26,7 +26,7 @@
 		DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8324A91EA7F3060076AF4E /* DASManager.swift */; };
 		DA882A931EAE8FE50066A606 /* TetrisSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A921EAE8FE50066A606 /* TetrisSystem.swift */; };
 		DA882A951EAF024C0066A606 /* Directions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A941EAF024C0066A606 /* Directions.swift */; };
-		DA929D181EAE6D9800F652D5 /* GravityTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA929D171EAE6D9800F652D5 /* GravityTimer.swift */; };
+		DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A961EAF0D300066A606 /* MovementTimer.swift */; };
 		DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */; };
 		DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */; };
 		DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD280A61EA8C1930064CB4D /* ControllerNode.swift */; };
@@ -66,7 +66,7 @@
 		DA8324A91EA7F3060076AF4E /* DASManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DASManager.swift; sourceTree = "<group>"; };
 		DA882A921EAE8FE50066A606 /* TetrisSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrisSystem.swift; sourceTree = "<group>"; };
 		DA882A941EAF024C0066A606 /* Directions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Directions.swift; sourceTree = "<group>"; };
-		DA929D171EAE6D9800F652D5 /* GravityTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GravityTimer.swift; sourceTree = "<group>"; };
+		DA882A961EAF0D300066A606 /* MovementTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovementTimer.swift; sourceTree = "<group>"; };
 		DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrominoRandomizer.swift; sourceTree = "<group>"; };
 		DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayfieldNode.swift; sourceTree = "<group>"; };
 		DAD280A61EA8C1930064CB4D /* ControllerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerNode.swift; sourceTree = "<group>"; };
@@ -128,7 +128,7 @@
 				DA25F1C21EAB0D3C0031F833 /* Field.swift */,
 				DA882A941EAF024C0066A606 /* Directions.swift */,
 				DA882A921EAE8FE50066A606 /* TetrisSystem.swift */,
-				DA929D171EAE6D9800F652D5 /* GravityTimer.swift */,
+				DA882A961EAF0D300066A606 /* MovementTimer.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -304,7 +304,6 @@
 			files = (
 				DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */,
 				DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */,
-				DA929D181EAE6D9800F652D5 /* GravityTimer.swift in Sources */,
 				DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */,
 				DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */,
 				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,
@@ -314,6 +313,7 @@
 				DA4D28FE1EA4F6C5008F3BDF /* GameViewController.swift in Sources */,
 				DA25F1C71EAB39130031F833 /* Piece.swift in Sources */,
 				DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */,
+				DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */,
 				DA25F1C51EAB19110031F833 /* Block.swift in Sources */,
 				DA882A931EAE8FE50066A606 /* TetrisSystem.swift in Sources */,
 				DA4D28F61EA4F6C5008F3BDF /* AppDelegate.swift in Sources */,

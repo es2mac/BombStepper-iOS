@@ -109,12 +109,13 @@ extension Field {
         queue.async { self.processAsync(input: input) }
     }
 
+    // TODO: move timing to DASManager, use movePiece instead
     func process(das: XDirection) {
         queue.async { self.processAsync(das: das) }
     }
 
-    func shiftPiece(_ direction: Direction, steps: Int = 1) {
-        queue.async { self.shiftPieceAsync(direction, steps: steps) }
+    func movePiece(_ direction: Direction, steps: Int = 1) {
+        queue.async { self.movePieceAsync(direction, steps: steps) }
     }
 
     func reset() {
@@ -165,7 +166,7 @@ private extension Field {
         reportChanges()
     }
 
-    func shiftPieceAsync(_ direction: Direction, steps: Int) {
+    func movePieceAsync(_ direction: Direction, steps: Int = 1) {
         for _ in 0 ..< steps {
             if !moveActivePiece(direction.offset) { break }
         }
@@ -254,6 +255,10 @@ private extension Field {
         return canMove
     }
 
+    // TODO: extract rotation logic out, replace with e.g.:
+    // private(set) activePiece
+    // replacePieceWithFirstValidPiece(in pieces: [Piece])
+    // field.replacePieceWithFirstValidPiece(in: field.activePiece.kickCandidatesForRotatingRight()
     func rotateRight() {
         activePiece.map { rotateToFirstAvailablePosition(in: $0.kickCandidatesForRotatingRight()) }
     }
@@ -326,6 +331,11 @@ private extension Field {
         self.delegate?.updateField(blocks: blocks)
     }
 
+}
+
+
+private extension Int {
+    static var allTheWay = 40
 }
 
 
