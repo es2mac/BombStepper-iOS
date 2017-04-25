@@ -39,6 +39,17 @@ final class SinglePieceNode: SKTileMapNode {
             setTileGroup(tileGroup, forColumn: block.x, row: block.y)
         }
     }
+
+    func shiftPositionForType(_ type: Tetromino) {
+        switch type {
+        case .I:
+            position.y += tileWidth / 2
+        case .O:
+            break
+        case .J, .L, .S, .T, .Z:
+            position.x += tileWidth / 2
+        }
+    }
 }
 
 

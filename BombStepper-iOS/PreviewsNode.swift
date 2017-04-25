@@ -40,21 +40,9 @@ final class PreviewsNode: SKNode {
 
     func show(_ types: [Tetromino]) {
         for (index, (node, type)) in zip(pieceNodes, types).enumerated() {
-
             node.show(type)
-
-            var x = CGFloat(0)
-            var y = (tileWidth * 3) * CGFloat(2 - index)
-
-            switch type {
-            case .I:
-                y += tileWidth / 2
-            case .O:
-                break
-            case .J, .L, .S, .T, .Z:
-                x = tileWidth / 2
-            }
-            node.position = CGPoint(x: x, y: y)
+            node.position = CGPoint(x: 0, y: (tileWidth * 3) * CGFloat(2 - index))
+            node.shiftPositionForType(type)
         }
     }
 }
