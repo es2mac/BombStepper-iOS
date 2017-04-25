@@ -109,7 +109,7 @@ extension Field {
         queue.async { self.processAsync(input: input) }
     }
 
-    func process(das: DASManager.Direction) {
+    func process(das: XDirection) {
         queue.async { self.processAsync(das: das) }
     }
 
@@ -153,21 +153,13 @@ private extension Field {
         reportChanges()
     }
 
-    func processAsync(das: DASManager.Direction) {
+    func processAsync(das: XDirection) {
         dasFrameCounter += 1
         guard dasFrameCounter >= dasFrames else { return }
         dasFrameCounter = 0
 
-        let offset: Offset
-        switch das {
-        case .left:
-            offset = (x: -1, y: 0)
-        case .right:
-            offset = (x: 1, y: 0)
-        }
-
-        if moveActivePiece(offset), dasFrames == 0 {
-            while moveActivePiece(offset) { }
+        if moveActivePiece(das.offset), dasFrames == 0 {
+            while moveActivePiece(das.offset) { }
         }
 
         reportChanges()
@@ -221,7 +213,7 @@ private extension Field {
 
         clearCompletedLines()
 
-        // TODO: may be "tooped out" by locking completely outside of visible field
+        // TODO: may be "topped out" by locking completely outside of visible field
         // logically may be easiest to place an obstruction at the starting place
 
         self.delegate?.fieldActivePieceDidLock()

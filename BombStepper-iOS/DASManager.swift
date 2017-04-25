@@ -12,17 +12,13 @@ import Foundation
 /// The DAS Manager relies on being updated each frame for timing
 final class DASManager {
 
-    enum Direction {
-        case left, right
-    }
-
     fileprivate enum Status {
         case none
-        case pending(Direction, fire: MachAbsTime)
-        case imminent(Direction)   // Only when mach_waiting, within 1 frame time
-        case active(Direction)
+        case pending(XDirection, fire: MachAbsTime)
+        case imminent(XDirection)   // Only when mach_waiting, within 1 frame time
+        case active(XDirection)
 
-        var direction: Direction? {
+        var direction: XDirection? {
             switch self {
             case .pending(let d, _), .imminent(let d), .active(let d):
                 return d
@@ -33,7 +29,7 @@ final class DASManager {
     }
 
 
-    var performDAS: ((Direction) -> Void)?
+    var performDAS: ((XDirection) -> Void)?
 
     fileprivate var dasStatus: Status
     fileprivate var dasDelay: MachAbsTime
@@ -42,29 +38,24 @@ final class DASManager {
     
 
     /// Note: performDAS is usually called off the main thread
-    init(performDAS: ((Direction) -> Void)? = nil) {
+    init(performDAS: ((XDirection) -> Void)? = nil) {
         dasDelay = msToAbs(8 * 1000 / 60)   // Updates on settings manager callback
         dasStatus = Status.none
         self.performDAS = performDAS
     }
 
-    func inputBegan(_ direction: Direction) {
+    func inputBegan(_ direction: XDirection) {
         let dasFireTime = mach_absolute_time() + dasDelay
-        switch direction {
-        case .left:
-            dasStatus = Status.pending(Direction.left, fire: dasFireTime)
-        case .right:
-            dasStatus = Status.pending(Direction.right, fire: dasFireTime)
-        }
+        dasStatus = Status.pending(direction, fire: dasFireTime)
     }
 
-    func inputEnded(_ direction: Direction) {
+    func inputEnded(_ direction: XDirection) {
         if direction == dasStatus.direction {
             dasStatus = .none
         }
     }
 
-    fileprivate func activateDASIfNeeded(direction: Direction, fireTime: MachAbsTime) {
+    fileprivate func activateDASIfNeeded(direction: XDirection, fireTime: MachAbsTime) {
         let now = mach_absolute_time()
 
         guard fireTime < now + singleFrameTime else { return }

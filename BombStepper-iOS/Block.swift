@@ -10,9 +10,6 @@ import UIKit
 import SpriteKit
 
 
-typealias Offset = (x: Int, y: Int)
-
-
 /**
  A block is a single square on the playing field.  It has a position and knows
  how to it is displayed.
