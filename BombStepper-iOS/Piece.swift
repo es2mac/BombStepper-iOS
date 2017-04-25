@@ -35,6 +35,16 @@ struct Piece {
         }
     }
 
+    func isBlockwiseEqual(to piece: Piece) -> Bool {
+        var myBlocks = blocks
+        for otherBlock in piece.blocks {
+            if let index = myBlocks.index(of: otherBlock) {
+                myBlocks.remove(at: index)
+            }
+        }
+        return myBlocks.isEmpty
+    }
+
 }
 
 

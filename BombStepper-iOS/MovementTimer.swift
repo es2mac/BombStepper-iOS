@@ -9,15 +9,22 @@
 import Foundation
 
 
+/// DAS, gravity and soft drop fires continuously
+/// Delayed lock fires once and resets
 final class MovementTimer {
+
 
     enum TimedMoveType {
         case das(XDirection)
         case gravity
         case softDrop
+        case delayedLock(Field.BottomTouchingStatus)
     }
-    
+
+
     var moveAction: ((_ direction: Direction, _ steps: Int) -> Void)?
+    var lockAction: (() -> Void)?
+    
 
     fileprivate var lastUpdateTime: TimeInterval = 0
 
@@ -33,23 +40,41 @@ final class MovementTimer {
     fileprivate var dasFrames = 1
     fileprivate var dasFrameCounter = 0
 
+    fileprivate var lockDelayStarted = false
+    fileprivate var lockDelayQuota: TimeInterval = Timing.lockDelay
+    fileprivate var lockDelayExtensionQuota: TimeInterval = Timing.lockDelayExtension
+
     func startTiming(_ type: TimedMoveType) {
         switch type {
         case .das(let d): startDAS(d)
         case .gravity:    startGravity()
         case .softDrop:   startSoftDrop()
+        case .delayedLock(.floating): assertionFailure("This doesn't make sense")
+        case .delayedLock(.touching): startDelayedLock()
+        case .delayedLock(.touchingMoved): extendDelayedLock()
         }
     }
     
     func stopTiming(_ type: TimedMoveType) {
         switch type {
-        case .das(let d): stopDAS(d)
-        case .gravity:    stopGravity()
-        case .softDrop:   stopSoftDrop()
+        case .das(let d):  stopDAS(d)
+        case .gravity:     stopGravity()
+        case .softDrop:    stopSoftDrop()
+        case .delayedLock: stopDelayedLock(); extendDelayedLock()
         }
+    }
+    
+    // Soft locking is cumulative for one piece, so it can start/stop multiple times, and needs to be explicit reset.
+    // Resetting also stops.
+    func resetDelayedLock() {
+        lockDelayStarted = false
+        lockDelayQuota = Timing.lockDelay
+        lockDelayExtensionQuota = Timing.lockDelayExtension
     }
 
 }
+
+// TODO: when piece touch the ground and off again, gravity time should reset
 
 
 private extension MovementTimer {
@@ -84,16 +109,33 @@ private extension MovementTimer {
     func stopGravity() {
         gravityStarted = false
     }
+
+    func startDelayedLock() {
+        lockDelayStarted = true
+    }
+
+    func extendDelayedLock() {
+        let idealExtensionLength = Timing.lockDelay - lockDelayQuota
+        let grantedExtension = min(idealExtensionLength, lockDelayExtensionQuota)
+        lockDelayQuota += grantedExtension
+        lockDelayExtensionQuota -= grantedExtension
+    }
+
+    func stopDelayedLock() {
+        lockDelayStarted = false
+    }
 }
 
 
 extension MovementTimer: GameSceneUpdatable {
 
     func update(_ currentTime: TimeInterval) {
+        let elapsed = currentTime - lastUpdateTime
         lastUpdateTime = currentTime
-        updateGravity()
-        updateSoftDrop()
-        updateDAS()
+        if gravityStarted   { updateGravity() }
+        if softDropStarted  { updateSoftDrop() }
+        if lockDelayStarted { updateLockDelay(elapsed: elapsed) }
+        dasDirection.map(updateDAS)
     }
 }
 
@@ -101,7 +143,7 @@ private extension MovementTimer {
 
     func updateGravity() {
         let elapsed = lastUpdateTime - lastGravityDropTime
-        if gravityStarted, elapsed > 1 {
+        if elapsed > 1 {
             let dropBy = Int(elapsed)
             moveAction?(.down, dropBy)
             lastGravityDropTime += Double(dropBy)
@@ -109,7 +151,6 @@ private extension MovementTimer {
     }
 
     func updateSoftDrop() {
-        guard softDropStarted else { return }
         softDropFrameCounter += 1
         if softDropFrameCounter >= softDropFrames {
             softDropFrameCounter = 0
@@ -122,8 +163,7 @@ private extension MovementTimer {
         moveAction?(.down, dropBy)
     }
 
-    func updateDAS() {
-        guard let direction = dasDirection else { return }
+    func updateDAS(direction: XDirection) {
         dasFrameCounter += 1
         if dasFrameCounter >= dasFrames {
             dasFrameCounter = 0
@@ -135,6 +175,20 @@ private extension MovementTimer {
         let dasBy = (dasFrames == 0) ? Int.max : 1
         moveAction?(Direction(xDirection), dasBy)
     }
+
+    func updateLockDelay(elapsed: TimeInterval) {
+        lockDelayQuota -= elapsed
+        if lockDelayQuota < 0 {
+            lockDelayStarted = false
+            fireLock()
+        }
+    }
+
+    func fireLock() {
+        lockAction?()
+        resetDelayedLock()
+    }
+
 }
 
 extension MovementTimer: SettingsNotificationTarget {

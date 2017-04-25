@@ -39,4 +39,10 @@ enum Alpha {
 }
 
 
+enum Timing {
+    static let lockDelay: TimeInterval = 1.0
+    static let lockDelayExtension: TimeInterval = 3.0
+}
+
+
 

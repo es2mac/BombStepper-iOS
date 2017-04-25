@@ -48,6 +48,16 @@ extension Block.BlockType {
 }
 
 
+extension Block: Equatable {
+    public static func ==(lhs: Block, rhs: Block) -> Bool {
+        if lhs.type == rhs.type,
+            lhs.x == rhs.x,
+            lhs.y == rhs.y { return true }
+        else { return false }
+    }
+}
+
+
 extension Block.BlockType: Hashable, Equatable {
 
     var hashValue: Int {

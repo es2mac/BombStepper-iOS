@@ -12,8 +12,8 @@ import Foundation
 /// Field does work on a separate queue, so delegate might want to dispatch back to main
 protocol FieldDelegate: class {
     func updateField(blocks: [Block])
-    func fieldActivePieceDidTouchBottom(touching: Bool)
-    func fieldActivePieceDidLock(lockedOut: Bool)
+    func activePieceDidLock(lockedOut: Bool)
+    func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus)
 }
 
 
@@ -34,6 +34,12 @@ final class Field {
         case blockedOut
     }
 
+    enum BottomTouchingStatus {
+        case floating
+        case touching
+        case touchingMoved  // i.e. was touching, now moved but still touching
+    }
+
 
     weak var delegate: FieldDelegate?
 
@@ -41,11 +47,12 @@ final class Field {
     fileprivate var allBlocks: [Block.BlockType]
     // Changes are keyed by their index, so multiple changes on same place is overridden
     fileprivate var unreportedChanges: [Int : (newBlock: Block, oldType:Block.BlockType)] = [:]
+    fileprivate var isActivePieceTouchingBottom: Bool = false
     // Put most operations on a serial queue to make access on the two properties above atomic
     fileprivate let queue = DispatchQueue(label: "net.mathemusician.BombStepper.Field")
 
     fileprivate(set) var activePiece: Piece? {
-        didSet { updateActivePiece(current: activePiece, previous: oldValue) }
+        didSet { activePieceUpdated(current: activePiece, previous: oldValue) }
     }
 
     fileprivate var ghostPiece: Piece?
@@ -131,13 +138,50 @@ extension Field {
 
 private extension Field {
 
-    func updateActivePiece(current: Piece?, previous: Piece?) {
+    func activePieceUpdated(current: Piece?, previous: Piece?) {
+        // Only go forward if pieces are "blockwise different"
+        switch (current, previous) {
+        case (nil, nil): return
+        case (.some(let c), .some(let p)) where c.isBlockwiseEqual(to: p): return
+        default: break
+        }
+
+        // Update blocks
         previous?.blocks.forEach(clearBlock)
         ghostPiece?.blocks.forEach(clearBlock)
-
+        
         ghostPiece = hideGhost ? nil : current.map(positionedGhost)
         ghostPiece?.blocks.forEach(setBlock)
         current?.blocks.forEach(setBlock)
+
+        testSoftLock()
+    }
+
+    func testSoftLock() {
+
+        let wasTouching = isActivePieceTouchingBottom
+        let isTouching: Bool
+
+        switch activePiece {
+        case .some(var testPiece):
+            testPiece.y -= 1
+            isTouching = pieceIsObstructed(testPiece)
+        case nil:
+            isTouching = false
+        }
+
+        isActivePieceTouchingBottom = isTouching
+
+        let status: BottomTouchingStatus
+
+        switch (wasTouching, isTouching) {
+        case (true, false):  status = .floating
+        case (false, true):  status = .touching
+        case (true, true):   status = .touchingMoved
+        case (false, false): return
+        }
+
+        delegate?.activePieceBottomTouchingStatusChanged(touching: status)
     }
 
     func movePieceAsync(_ direction: Direction, steps: Int = 1) {
@@ -166,7 +210,7 @@ private extension Field {
 
         // Check lock out (http://tetris.wikia.com/wiki/Top_out)
         let lockedOut = piece.blocks.contains { $0.y >= 20 }
-        self.delegate?.fieldActivePieceDidLock(lockedOut: lockedOut)
+        self.delegate?.activePieceDidLock(lockedOut: lockedOut)
 
         if !lockedOut { clearCompletedLines() }
     }
@@ -197,15 +241,11 @@ private extension Field {
     func moveActivePiece(_ offset: Offset) -> Bool {
         guard var piece = activePiece else { return false }
 
-
-        // TODO: lock timing
-        // check if touching something below right after a move or rotate
-        
-
         piece.x += offset.x
         piece.y += offset.y
         let canMove = !pieceIsObstructed(piece)
         if canMove { activePiece = piece }
+
         return canMove
     }
 

@@ -36,6 +36,9 @@ class TetrisSystem {
         movementTimer.moveAction = { [weak self] direction, steps in
             self?.field.movePiece(direction, steps: steps)
         }
+        movementTimer.lockAction = { [weak self] in
+            self?.field.hardDrop()
+        }
             
         dasManager.activateDAS = { [weak self] active, direction in
             if active {
@@ -145,8 +148,9 @@ extension TetrisSystem: FieldDelegate {
         delegate?.updateFieldDisplay(blocks: blocks)
     }
     
-    func fieldActivePieceDidLock(lockedOut: Bool) {
+    func activePieceDidLock(lockedOut: Bool) {
         movementTimer.stopTiming(.gravity)
+        movementTimer.resetDelayedLock()
 
         guard !lockedOut else {
             isGameRunning = false
@@ -164,9 +168,14 @@ extension TetrisSystem: FieldDelegate {
             }
         }
     }
-    
-    func fieldActivePieceDidTouchBottom(touching: Bool) {
-        // TODO: lock timing
+
+    func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus) {
+        switch touching {
+        case .floating:
+            movementTimer.stopTiming(.delayedLock(touching))
+        default:
+            movementTimer.startTiming(.delayedLock(touching))
+        }
     }
 }
 
