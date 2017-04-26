@@ -43,8 +43,8 @@ final class ControllerNode: SKNode {
         self.sceneSize = sceneSize
         self.delegate = delegate
 
-        let buttonWidth = Int(sceneSize.height / 8) * 2     // Quarter height, rounded down to even number
-        buttonNodes = (0 ..< 12).map { ControllerNode.regularButton(width: buttonWidth, name:"\($0)") }
+        let size = ControllerNode.buttonSize(for: sceneSize)
+        buttonNodes = (0 ..< 12).map { ControllerNode.regularButton(size: size, name:"\($0)") }
         buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: SettingsManager.defaultButtons)
 
         super.init()
@@ -200,8 +200,16 @@ private extension ControllerNode {
 
 fileprivate extension ControllerNode {
 
-    class func regularButton(width: Int, name: String) -> SKShapeNode {
-        let node = SKShapeNode(rect: CGRect(x: -width/2, y: -width/2, width: width, height: width), cornerRadius: 4)
+    class func buttonSize(for sceneSize: CGSize) -> CGSize {
+        let xExpansion: CGFloat = 10
+        let baseUnit = CGFloat(Int(sceneSize.height / 8))
+        return CGSize(width: baseUnit * 2  + xExpansion,
+                      height: baseUnit * 2 * 0.9)
+    }
+
+    class func regularButton(size: CGSize, name: String) -> SKShapeNode {
+        let rect = CGRect(x: -size.width / 2, y: -size.height / 2, width: size.width, height: size.height)
+        let node = SKShapeNode(rect: rect, cornerRadius: 4)
         node.name = name
         node.fillColor = .white
         node.alpha = Alpha.releasedButton
@@ -216,23 +224,30 @@ fileprivate extension ControllerNode {
     }
 
     func layoutButtons(for sceneSize: CGSize) {
-        let margin = CGFloat(2)
-        let unit = CGFloat(Int(sceneSize.height / 8)) + margin   // let button be 2 x 2, and add margin
+        let margin: CGFloat = 4
+        let buttonSize = ControllerNode.buttonSize(for: sceneSize)
+        let xUnit = buttonSize.width + margin
+        let yUnit = buttonSize.height + margin
+        let leftSlant = -CGFloat.pi / 8
+        let button5FromLeftEdgeUnits: CGFloat = 1.5
+        let button5FromBottomEdgeUnits: CGFloat = 0.4
+        let rowShiftUnits: CGFloat = 1 / 3  // was 2 /3
 
-        // x = (1, 0), y = (0, 1)
+        // x = (xUnit, 0), y = (0, yUnit)
         // (x, y) => (u, v) rotation by -pi/8
-        let u = CGVector(dx: unit * cos(-CGFloat.pi/8), dy: unit * sin(-CGFloat.pi/8))
-        let v = CGVector(dx: -u.dy, dy: u.dx)
-        let shift = CGVector(dx: u.dx * 2 / 3, dy: u.dy * 2 / 3)
+        let u = CGVector(dx: xUnit * cos(leftSlant), dy: xUnit * sin(leftSlant))
+        let v = CGVector(dx: -yUnit * sin(leftSlant), dy: yUnit * cos(leftSlant))
+        let shift = CGVector(dx: u.dx * rowShiftUnits, dy: u.dy * rowShiftUnits)
 
-        let origin = CGPoint(x: -sceneSize.width / 2 + unit * 3, y: -sceneSize.height / 2 + unit * 1)
+        let origin = CGPoint(x: -sceneSize.width / 2 + xUnit * button5FromLeftEdgeUnits,
+                             y: -sceneSize.height / 2 + xUnit * button5FromBottomEdgeUnits)
         var p = [CGPoint](repeating: .zero, count: 12)
         p[5] = origin
-        p[4] = p[5] - u - u
-        p[3] = p[5] + v + v - shift
-        p[2] = p[3] - u - u
-        p[1] = p[3] + v + v - shift
-        p[0] = p[1] - u - u
+        p[4] = p[5] - u
+        p[3] = p[5] + v - shift
+        p[2] = p[3] - u
+        p[1] = p[3] + v - shift
+        p[0] = p[1] - u
         for (i, j) in zip([0, 1, 2, 3, 4, 5], [7, 6, 9, 8, 11, 10]) {
             p[j] = CGPoint(x: -p[i].x, y: p[i].y)
         }
