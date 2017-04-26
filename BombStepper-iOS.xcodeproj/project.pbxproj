@@ -33,6 +33,7 @@
 		DA882A9F1EAFC0910066A606 /* PreviewsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */; };
 		DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */; };
 		DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */; };
+		DACEAB521EB0298900939488 /* HeldPieceNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACEAB511EB0298900939488 /* HeldPieceNode.swift */; };
 		DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD280A61EA8C1930064CB4D /* ControllerNode.swift */; };
 /* End PBXBuildFile section */
 
@@ -77,6 +78,7 @@
 		DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewsNode.swift; sourceTree = "<group>"; };
 		DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrominoRandomizer.swift; sourceTree = "<group>"; };
 		DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayfieldNode.swift; sourceTree = "<group>"; };
+		DACEAB511EB0298900939488 /* HeldPieceNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeldPieceNode.swift; sourceTree = "<group>"; };
 		DAD280A61EA8C1930064CB4D /* ControllerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerNode.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -152,6 +154,7 @@
 				DAD280A61EA8C1930064CB4D /* ControllerNode.swift */,
 				DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */,
 				DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */,
+				DACEAB511EB0298900939488 /* HeldPieceNode.swift */,
 				DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */,
 			);
 			name = Nodes;
@@ -317,6 +320,7 @@
 				DA882A9B1EAF9EF60066A606 /* SinglePieceNode.swift in Sources */,
 				DA0ED9321EA7B71A008F3C61 /* Tetromino.swift in Sources */,
 				DA10B4421EA9D8E800C2C805 /* SettingsManager.swift in Sources */,
+				DACEAB521EB0298900939488 /* HeldPieceNode.swift in Sources */,
 				DA4D28FE1EA4F6C5008F3BDF /* GameViewController.swift in Sources */,
 				DA25F1C71EAB39130031F833 /* Piece.swift in Sources */,
 				DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */,

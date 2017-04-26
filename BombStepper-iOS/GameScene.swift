@@ -19,7 +19,7 @@ final class GameScene: SKScene {
     
     fileprivate var controllerNode: ControllerNode!
     fileprivate var playfieldNode: PlayfieldNode!
-    fileprivate var heldPieceNode: SinglePieceNode!
+    fileprivate var heldPieceNode: HeldPieceNode!
     fileprivate var previewsNode: PreviewsNode!
     fileprivate let settingsManager = SettingsManager()
     fileprivate let system = TetrisSystem()
@@ -73,8 +73,8 @@ private extension GameScene {
         previewsNode.position.y = tileWidth * 2
         addChild(previewsNode)
 
-        heldPieceNode = SinglePieceNode(tileWidth: tileWidth)
-        heldPieceNode.position.x = -tileWidth * (5 + 2) - CGFloat(Dimension.outerFrameWidth) + 5
+        heldPieceNode = HeldPieceNode(tileWidth: tileWidth)
+        heldPieceNode.position.x = -(tileWidth * (5 + 2) + CGFloat(Dimension.outerFrameWidth) + 5)
         heldPieceNode.position.y = tileWidth * 8
         addChild(heldPieceNode)
     }
