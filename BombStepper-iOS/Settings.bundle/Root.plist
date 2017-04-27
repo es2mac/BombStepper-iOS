@@ -170,7 +170,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>FooterText</key>
-			<string>When a button is tapped down and the finger moves outside of the button, the button will stay pressed. LR Swipe makes an exception for moving from a Move Left button to a Move Right button and vice versa, and treat the move like a new tap.</string>
+			<string>When a button is tapped down and the finger moves outside of the button, the button will stay pressed. But when LR Swipe is enabled, an exception is made for moving from a Move Left button to a Move Right button and vice versa, and treat the move like a new tap.</string>
 			<key>Title</key>
 			<string>LR Swipe</string>
 		</dict>

@@ -27,13 +27,16 @@ enum Button: String {
 }
 
 
+// WISHLIST: Swipe down enable for each individual button
+// WISHLIST: Button positioning settings, e.g. button size, slant, positions
+// WISHLIST: Subscribe to settings messengers for specific value changes only
 final class SettingsManager {
 
     fileprivate enum SettingKey: String {
         case dasValue
         case dasFrames
         case softDropFrames
-        case swipeDropEnabled   
+        case swipeDropEnabled
         case swipeDownThreshold
         case lrSwipeEnabled
         case ghostOpacity
