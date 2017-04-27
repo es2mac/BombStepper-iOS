@@ -70,7 +70,7 @@ final class ControllerNode: SKNode {
     }
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        touches.forEach(touchDown)
+        touches.forEach { touchDown($0) }
     }
 
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -147,12 +147,12 @@ private extension ControllerNode {
         }
     }
 
-    func touchDown(_ touch: UITouch) {
+    func touchDown(_ touch: UITouch, isLRSwipe: Bool = false) {
         let location = touch.location(in: self)
         if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
             let button = buttonMap[node] {
             touchesData[touch] = TouchData(node: node, button: button, time: touch.timestamp, location: location)
-            node.touchDown(touch)
+            node.touchDown(touch, warnIfOffCenter: !isLRSwipe)
             delegate?.buttonDown(button)
         }
     }
@@ -183,7 +183,7 @@ private extension ControllerNode {
             node != data.node,
             buttonMap[node]! == oppositeButton {
             touchUp(touch)
-            touchDown(touch)
+            touchDown(touch, isLRSwipe: true)
         }
 
     }

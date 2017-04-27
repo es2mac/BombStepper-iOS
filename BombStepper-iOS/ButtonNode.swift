@@ -22,6 +22,7 @@ final class ButtonNode: SKNode {
                                  float2(0, 0), float2(1, 0) ]
         let warpGeometryGridNoWarp = SKWarpGeometryGrid(columns: 1, rows: 1, sourcePositions: sourcePositions, destinationPositions: sourcePositions)
         let warpAction = SKAction.warp(to: warpGeometryGridNoWarp, duration: Timing.buttonFlipUpDuration)!
+        warpAction.timingMode = .easeIn
         return warpAction
     }()
     
@@ -35,19 +36,21 @@ final class ButtonNode: SKNode {
         baseNode.alpha = Alpha.releasedButton
         maskNode.alpha = 0
 
+        // Make touchable area that doesn't warp with the other stuff
+        let touchableNode = SKSpriteNode(color: .clear, size: CGSize(width: size.width + 2, height: size.height + 2))
+
         super.init()
 
         self.name = name
-        addChild(baseNode)
-        addChild(maskNode)
+        [baseNode, maskNode, touchableNode].forEach(addChild)
     }
 
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func touchDown(_ touch: UITouch)  {
-        displayButtonTapDown(touch.location(in: self))
+    func touchDown(_ touch: UITouch, warnIfOffCenter: Bool = true)  {
+        displayButtonTapDown(touch.location(in: self), warnIfOffCenter: warnIfOffCenter)
     }
 
     func touchUp(_ touch: UITouch) {
@@ -58,7 +61,7 @@ final class ButtonNode: SKNode {
 
 private extension ButtonNode {
 
-    func displayButtonTapDown(_ location: CGPoint) {
+    func displayButtonTapDown(_ location: CGPoint, warnIfOffCenter: Bool = true) {
         baseNode.alpha = Alpha.pressedButton
 
         let radius = size.width / 2
@@ -71,7 +74,7 @@ private extension ButtonNode {
         let weight = max(distance - safeDistance, 0) / (1 - safeDistance)
 
         // If the tap is close enough to the center then no jiggly warning is needed
-        guard weight > 0.1 else { return }
+        guard warnIfOffCenter, weight > 0.1 else { return }
         
         maskNode.alpha = Alpha.maxButtonWarning * CGFloat(weight)
         
@@ -101,13 +104,14 @@ private extension ButtonNode {
         let warpGeometryGrid = SKWarpGeometryGrid(columns: 1, rows: 1, sourcePositions: sourcePositions, destinationPositions: destinationPositions)
         let warpGeometryGridNoWarp = SKWarpGeometryGrid(columns: 1, rows: 1, sourcePositions: sourcePositions, destinationPositions: sourcePositions)
         let warpAction = SKAction.warp(to: warpGeometryGrid, duration: Timing.buttonFlipDownDuration)!
-        
+        warpAction.timingMode = .easeOut
+
         [baseNode, maskNode].forEach { node in
             node.warpGeometry = warpGeometryGridNoWarp
             node.removeAllActions()
             node.run(warpAction)
         }
-        
+
         buttonDownTime = Date()
     }
 
