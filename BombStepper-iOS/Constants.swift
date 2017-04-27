@@ -38,9 +38,11 @@ enum ZPosition {
 }
 
 
+// WISHLIST: Optionize all the things?
 enum Alpha {
-    static let pressedButton: CGFloat = 0.1
-    static let releasedButton: CGFloat = 0.03
+    static let pressedButton: CGFloat = 0.15
+    static let releasedButton: CGFloat = 0.04
+    static let maxButtonWarning: CGFloat = 0.2
     static let ghostDefault: CGFloat = 0.25
 }
 
@@ -48,6 +50,8 @@ enum Alpha {
 enum Timing {
     static let lockDelay: TimeInterval = 1.0
     static let lockDelayExtension: TimeInterval = 3.0
+    static let buttonFlipDownDuration: TimeInterval = 0.1
+    static let buttonFlipUpDuration: TimeInterval = 0.2
 }
 
 

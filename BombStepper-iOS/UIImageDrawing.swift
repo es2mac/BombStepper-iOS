@@ -67,7 +67,7 @@ extension UIImage {
         return UIGraphicsGetImageFromCurrentImageContext()!
     }
 
-    class func transparentRoundedRect(size: CGSize, strokeColor: UIColor) -> UIImage {
+    class func roundedRect(size: CGSize, cornerRadius: CGFloat, color: UIColor) -> UIImage {
         let rect = CGRect(origin: .zero, size: size)
 
         UIGraphicsBeginImageContextWithOptions(rect.size, false, UIScreen.main.scale)
@@ -75,9 +75,9 @@ extension UIImage {
 
         let context = UIGraphicsGetCurrentContext()!
 
-        context.addPath(UIBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5).offsetBy(dx: 1, dy: 1), cornerRadius: 4).cgPath)
-        strokeColor.setStroke()
-        context.strokePath()
+        context.addPath(UIBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5).offsetBy(dx: 1, dy: 1), cornerRadius: cornerRadius).cgPath)
+        color.setFill()
+        context.fillPath()
 
         return UIGraphicsGetImageFromCurrentImageContext()!
     }

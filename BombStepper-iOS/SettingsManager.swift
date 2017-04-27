@@ -30,6 +30,7 @@ enum Button: String {
 // WISHLIST: Swipe down enable for each individual button
 // WISHLIST: Button positioning settings, e.g. button size, slant, positions
 // WISHLIST: Subscribe to settings messengers for specific value changes only
+// WISHLIST: Holding on/off setting
 final class SettingsManager {
 
     fileprivate enum SettingKey: String {

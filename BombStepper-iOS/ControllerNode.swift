@@ -15,7 +15,7 @@ protocol ControllerDelegate: class {
 }
 
 
-typealias ButtonMap = [SKShapeNode : Button]
+typealias ButtonMap = [ButtonNode : Button]
 
 
 /**
@@ -30,7 +30,7 @@ final class ControllerNode: SKNode {
     weak var delegate: ControllerDelegate?
     
 
-    fileprivate let buttonNodes: [SKShapeNode]
+    fileprivate let buttonNodes: [ButtonNode]
     fileprivate var buttonMap: ButtonMap
 
     fileprivate var lrSwipeEnabled: Bool = true
@@ -44,13 +44,17 @@ final class ControllerNode: SKNode {
         self.delegate = delegate
 
         let size = ControllerNode.buttonSize(for: sceneSize)
-        buttonNodes = (0 ..< 12).map { ControllerNode.regularButton(size: size, name:"\($0)") }
+        buttonNodes = (0 ..< 12).map { ButtonNode(size: size, name: "\($0)") }
         buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: SettingsManager.defaultButtons)
 
         super.init()
 
         buttonNodes.forEach(addChild)
         layoutButtons(for: sceneSize)
+
+        // Make touchable area span the scene
+        let touchableNode = SKSpriteNode(color: .clear, size: sceneSize)
+        addChild(touchableNode)
 
         NotificationCenter.default.addObserver(forName: .UIApplicationWillResignActive, object: nil, queue: nil) { [weak self] _ in
             self?.stopAllTouches()
@@ -100,7 +104,7 @@ private extension ControllerNode {
         static var swipeDropEnabled = true
         static var swipeDownThreshold = 1000.0
 
-        let node: SKShapeNode
+        let node: ButtonNode
         let button: Button
         var lastTime: TimeInterval
         var lastLocation: CGPoint
@@ -108,7 +112,7 @@ private extension ControllerNode {
 
         var speeds: [Double] = []
 
-        init(node: SKShapeNode, button: Button, time: TimeInterval, location: CGPoint) {
+        init(node: ButtonNode, button: Button, time: TimeInterval, location: CGPoint) {
             self.node = node
             self.button = button
             self.lastTime = time
@@ -145,10 +149,10 @@ private extension ControllerNode {
 
     func touchDown(_ touch: UITouch) {
         let location = touch.location(in: self)
-        if let node = nodes(at: location).first as? SKShapeNode,
+        if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
             let button = buttonMap[node] {
             touchesData[touch] = TouchData(node: node, button: button, time: touch.timestamp, location: location)
-            node.alpha = Alpha.pressedButton
+            node.touchDown(touch)
             delegate?.buttonDown(button)
         }
     }
@@ -175,7 +179,7 @@ private extension ControllerNode {
         }
 
         let location = touch.location(in: self)
-        if let node = nodes(at: location).first as? SKShapeNode,
+        if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
             node != data.node,
             buttonMap[node]! == oppositeButton {
             touchUp(touch)
@@ -186,7 +190,7 @@ private extension ControllerNode {
 
     func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
-            node.alpha = Alpha.releasedButton
+            node.touchUp(touch)
             delegate?.buttonUp(buttonMap[node]!)
         }
     }
@@ -202,22 +206,14 @@ fileprivate extension ControllerNode {
 
     class func buttonSize(for sceneSize: CGSize) -> CGSize {
         let xExpansion: CGFloat = 10
-        let baseUnit = CGFloat(Int(sceneSize.height / 8))
-        return CGSize(width: baseUnit * 2  + xExpansion,
-                      height: baseUnit * 2 * 0.9)
+        let baseUnit = (sceneSize.height / 8).rounded()
+        let width = baseUnit * 2  + xExpansion
+        let height = (baseUnit * 2 * 0.9).rounded()
+        return CGSize(width: width,
+                      height: height)
     }
 
-    class func regularButton(size: CGSize, name: String) -> SKShapeNode {
-        let rect = CGRect(x: -size.width / 2, y: -size.height / 2, width: size.width, height: size.height)
-        let node = SKShapeNode(rect: rect, cornerRadius: 4)
-        node.name = name
-        node.fillColor = .white
-        node.alpha = Alpha.releasedButton
-        node.lineWidth = 0
-        return node
-    }
-
-    class func buildButtonMap(withButtons buttonNodes: [SKShapeNode], buttons: [Button]) -> ButtonMap {
+    class func buildButtonMap(withButtons buttonNodes: [ButtonNode], buttons: [Button]) -> ButtonMap {
         var map = ButtonMap()
         zip(buttonNodes, buttons).forEach { map[$0] = $1 }
         return map

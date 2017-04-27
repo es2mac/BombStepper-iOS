@@ -17,8 +17,6 @@ protocol TetrisSystemDelegate: class {
 }
 
 
-// WISHLIST: Holding on/off setting
-
 class TetrisSystem {
 
     weak var delegate: TetrisSystemDelegate?

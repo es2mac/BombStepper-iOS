@@ -23,6 +23,7 @@
 		DA4D29031EA4F6C5008F3BDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29021EA4F6C5008F3BDF /* Assets.xcassets */; };
 		DA4D29061EA4F6C5008F3BDF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29041EA4F6C5008F3BDF /* LaunchScreen.storyboard */; };
 		DA4D29111EA4F6C5008F3BDF /* BombStepper_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */; };
+		DA7417BA1EB1DBD000C0675D /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7417B91EB1DBD000C0675D /* ButtonNode.swift */; };
 		DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA8324A91EA7F3060076AF4E /* DASManager.swift */; };
 		DA882A931EAE8FE50066A606 /* TetrisSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A921EAE8FE50066A606 /* TetrisSystem.swift */; };
 		DA882A951EAF024C0066A606 /* Directions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A941EAF024C0066A606 /* Directions.swift */; };
@@ -68,6 +69,7 @@
 		DA4D290C1EA4F6C5008F3BDF /* BombStepper-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BombStepper-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombStepper_iOSTests.swift; sourceTree = "<group>"; };
 		DA4D29121EA4F6C5008F3BDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DA7417B91EB1DBD000C0675D /* ButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
 		DA8324A91EA7F3060076AF4E /* DASManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DASManager.swift; sourceTree = "<group>"; };
 		DA882A921EAE8FE50066A606 /* TetrisSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrisSystem.swift; sourceTree = "<group>"; };
 		DA882A941EAF024C0066A606 /* Directions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Directions.swift; sourceTree = "<group>"; };
@@ -152,6 +154,7 @@
 			isa = PBXGroup;
 			children = (
 				DAD280A61EA8C1930064CB4D /* ControllerNode.swift */,
+				DA7417B91EB1DBD000C0675D /* ButtonNode.swift */,
 				DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */,
 				DA882A9A1EAF9EF60066A606 /* SinglePieceNode.swift */,
 				DACEAB511EB0298900939488 /* HeldPieceNode.swift */,
@@ -327,6 +330,7 @@
 				DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */,
 				DA25F1C51EAB19110031F833 /* Block.swift in Sources */,
 				DA882A931EAE8FE50066A606 /* TetrisSystem.swift in Sources */,
+				DA7417BA1EB1DBD000C0675D /* ButtonNode.swift in Sources */,
 				DA882A991EAF20E80066A606 /* BlockDrawing.swift in Sources */,
 				DA4D28F61EA4F6C5008F3BDF /* AppDelegate.swift in Sources */,
 				DA882A951EAF024C0066A606 /* Directions.swift in Sources */,
