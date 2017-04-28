@@ -18,6 +18,7 @@ protocol BaseGameUIDisplay: class {
 
 protocol GameEventDelegate: class {
     func linesCleared(_ lineClear: LineClear)
+    var gameStartAction: (() -> Void)? { get set }
     var gameEndAction: (() -> Void)? { get set }
 }
 

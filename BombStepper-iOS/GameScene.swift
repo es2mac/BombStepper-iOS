@@ -39,6 +39,8 @@ final class GameScene: SKScene {
         system.displayDelegate = self
         system.eventDelegate = coordinator
 
+        coordinator.gameEndAction = { [weak system] in system?.stopGame() }
+
         controllerNode.delegate = system
         
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])

@@ -18,6 +18,9 @@ enum GameMode {
 }
 
 
+// TODO: Consider having view controllers as game coordinator
+
+
 class GameViewController: UIViewController {
 
     var gameMode: GameMode!
@@ -27,7 +30,7 @@ class GameViewController: UIViewController {
 
         // TODO: Setup the system for game scene here
 
-        let coordinator: GameCoordinator = DummyCoordinator()
+        let coordinator: GameCoordinator = SprintModeCoordinator(sceneSize: UIScreen.main.bounds.size)
         presentGameScene(with: coordinator)
     }
 
@@ -52,3 +55,12 @@ class GameViewController: UIViewController {
     override var shouldAutorotate: Bool { return false }
 
 }
+
+
+//extension GameViewController: GameCoordinator {
+//
+//    var gameEndAction: (() -> Void)?
+//    var gameStartAction: (() -> Void)?
+//    var exitGameAction: (() -> Void)?
+//
+//}

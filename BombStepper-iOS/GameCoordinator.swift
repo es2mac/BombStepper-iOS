@@ -18,6 +18,8 @@ enum LineClear {
 
 protocol GameCoordinator: GameEventDelegate {
     func modeSpecificNodes() -> [SKNode]
+    
+    var exitGameAction: (() -> Void)? { get set }
 }
 
 /*
@@ -38,6 +40,8 @@ protocol GameCoordinator: GameEventDelegate {
 class DummyCoordinator: GameCoordinator {
     
     var gameEndAction: (() -> Void)?
+    var gameStartAction: (() -> Void)?
+    var exitGameAction: (() -> Void)?
     
     func modeSpecificNodes() -> [SKNode] { return [] }
     
