@@ -88,6 +88,7 @@ extension FieldManipulator {
         }
     }
 
+    @discardableResult
     func extractActivePiece() -> Piece? {
         var piece: Piece?
         queue.sync {

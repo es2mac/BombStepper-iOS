@@ -17,8 +17,6 @@ protocol GameSceneUpdatable {
 
 final class GameScene: SKScene {
 
-    let coordinator: GameCoordinator
-
     fileprivate let settingsManager: SettingsManager
     fileprivate let system: TetrisSystem
 
@@ -27,8 +25,7 @@ final class GameScene: SKScene {
     fileprivate let heldPieceNode: HeldPieceNode
     fileprivate let previewsNode: PreviewsNode
 
-    init(size: CGSize, coordinator: GameCoordinator) {
-        self.coordinator = coordinator
+    init(size: CGSize, eventDelegate: GameEventDelegate) {
         settingsManager = SettingsManager()
         system = TetrisSystem()
 
@@ -37,16 +34,16 @@ final class GameScene: SKScene {
         super.init(size: size)
 
         system.displayDelegate = self
-        system.eventDelegate = coordinator
+        system.eventDelegate = eventDelegate
 
-        coordinator.gameEndAction = { [weak system] in system?.stopGame() }
+        eventDelegate.gameStartAction = { [weak system] in system?.startGame() }
+        eventDelegate.gameEndAction = { [weak system] in system?.stopGame() }
 
         controllerNode.delegate = system
         
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])
         
         [controllerNode, playfieldNode, heldPieceNode, previewsNode].forEach(addChild)
-        coordinator.modeSpecificNodes().forEach(addChild)
     }
 
     required init?(coder aDecoder: NSCoder) {

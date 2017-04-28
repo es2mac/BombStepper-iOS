@@ -16,12 +16,6 @@ enum LineClear {
 }
 
 
-protocol GameCoordinator: GameEventDelegate {
-    func modeSpecificNodes() -> [SKNode]
-    
-    var exitGameAction: (() -> Void)? { get set }
-}
-
 /*
  Coordinator handles the rules for game mode objectives
  Coordinator -> view controller:
@@ -37,17 +31,14 @@ protocol GameCoordinator: GameEventDelegate {
  System needs to tell the
  */
 
-class DummyCoordinator: GameCoordinator {
-    
-    var gameEndAction: (() -> Void)?
-    var gameStartAction: (() -> Void)?
-    var exitGameAction: (() -> Void)?
-    
-    func modeSpecificNodes() -> [SKNode] { return [] }
-    
-    func linesCleared(_ lineClear: LineClear) {
-        print(lineClear)
-    }
-    
-}
+//class DummyCoordinator: GameEventDelegate {
+//    
+//    var gameEndAction: (() -> Void)?
+//    var gameStartAction: (() -> Void)?
+//    
+//    func linesCleared(_ lineClear: LineClear) {
+//        print(lineClear)
+//    }
+//    
+//}
 

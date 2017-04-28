@@ -17,9 +17,13 @@ protocol BaseGameUIDisplay: class {
 }
 
 protocol GameEventDelegate: class {
-    func linesCleared(_ lineClear: LineClear)
+    // Game start/end closures are for the delegate to call, to tell the system to start/end
     var gameStartAction: (() -> Void)? { get set }
     var gameEndAction: (() -> Void)? { get set }
+
+    // Methods are feedback to the delegate of what happened
+    func linesCleared(_ lineClear: LineClear)
+    func toppedOut()
 }
 
 
@@ -73,8 +77,8 @@ extension TetrisSystem {
         heldPieceType = nil
         holdPieceLocked = false
         
-        playNextPiece()
         isGameRunning = true
+        playNextPiece()
     }
 
     func stopGame() {
@@ -109,10 +113,10 @@ extension TetrisSystem: ControllerDelegate {
 
         
         /* Temporary game starter */
-        if !isGameRunning, case .hold = button {
-            startGame()
-            return
-        }
+//        if !isGameRunning, case .hold = button {
+//            startGame()
+//            return
+//        }
         /* end temp */
 
         
@@ -173,6 +177,10 @@ extension TetrisSystem {
         movementTimer.stopTiming(.gravity)
         movementTimer.resetDelayedLock()
         holdPieceLocked = false
+
+        if let lines = lineClear {
+            eventDelegate?.linesCleared(lines)
+        }
         
 //            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
         DispatchQueue.main.async {
@@ -221,7 +229,8 @@ private extension TetrisSystem {
 
     func endGame() {
         isGameRunning = false
-        eventDelegate?.gameEndAction?()
+        // TODO: find out how this crashes, thread locked?
+//        manipulator.extractActivePiece()
     }
 }
 

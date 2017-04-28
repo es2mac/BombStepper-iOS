@@ -30,7 +30,7 @@
                                         <rect key="frame" x="0.0" y="0.0" width="667" height="332"/>
                                         <subviews>
                                             <stackView opaque="NO" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" axis="vertical" distribution="fillEqually" spacing="4" translatesAutoresizingMaskIntoConstraints="NO" id="Xg3-Ac-YdY">
-                                                <rect key="frame" x="183.5" y="0.0" width="300" height="332"/>
+                                                <rect key="frame" x="184" y="0.0" width="300" height="332"/>
                                                 <subviews>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="yca-gm-tuw">
                                                         <rect key="frame" x="8" y="8" width="284" height="60"/>
@@ -124,17 +124,38 @@
                                     <action selector="leaveGame:" destination="BV1-FR-VrT" eventType="touchUpInside" id="VoU-6I-dXb"/>
                                 </connections>
                             </button>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="00:00:00" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ntT-uh-CpP">
+                                <rect key="frame" x="20" y="164" width="156" height="48"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="40"/>
+                                <color key="textColor" red="0.85043728351593018" green="0.21816034615039825" blue="0.15920260548591614" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="40" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Kwd-Ib-z9U">
+                                <rect key="frame" x="76" y="220" width="45" height="48"/>
+                                <fontDescription key="fontDescription" name="HelveticaNeue-Bold" family="Helvetica Neue" pointSize="40"/>
+                                <color key="textColor" red="0.49744248390197754" green="0.64893847703933716" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="P2V-xV-ltg" firstAttribute="top" secondItem="8aa-yV-Osq" secondAttribute="bottom" id="005-JG-hgN"/>
+                            <constraint firstItem="ntT-uh-CpP" firstAttribute="leading" secondItem="3se-qz-xqx" secondAttribute="leadingMargin" id="5xO-ut-euZ"/>
+                            <constraint firstItem="Kwd-Ib-z9U" firstAttribute="centerX" secondItem="ntT-uh-CpP" secondAttribute="centerX" id="Y0S-YN-rRO"/>
+                            <constraint firstItem="ntT-uh-CpP" firstAttribute="centerY" secondItem="3se-qz-xqx" secondAttribute="centerY" id="bCa-QO-nn5"/>
                             <constraint firstItem="P2V-xV-ltg" firstAttribute="leading" secondItem="3se-qz-xqx" secondAttribute="leadingMargin" id="il9-LV-Tgy"/>
+                            <constraint firstItem="Kwd-Ib-z9U" firstAttribute="top" secondItem="ntT-uh-CpP" secondAttribute="bottom" constant="8" id="ruP-sr-4Nc"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
+                    <connections>
+                        <outlet property="linesLeftLabel" destination="Kwd-Ib-z9U" id="Poz-GW-nrm"/>
+                        <outlet property="timeElapsedLabel" destination="ntT-uh-CpP" id="LKC-r6-5kT"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="SZV-WD-TEh" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="138.98050974512745" y="125.59999999999999"/>
         </scene>
     </scenes>
 </document>
