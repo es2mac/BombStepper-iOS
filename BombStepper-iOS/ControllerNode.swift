@@ -34,6 +34,7 @@ final class ControllerNode: SKNode {
     fileprivate var buttonMap: ButtonMap
 
     fileprivate var lrSwipeEnabled: Bool = true
+    fileprivate var offCenterWarning: Bool = true
 
     // Stores touches that correspond to buttons to calculate swipe speed
     fileprivate var touchesData = [UITouch : TouchData]()
@@ -93,6 +94,7 @@ extension ControllerNode: SettingsNotificationTarget {
         TouchData.swipeDrops = settings.swipeDrops
         TouchData.swipeDownThreshold = settings.swipeDownThreshold
         lrSwipeEnabled = settings.lrSwipeEnabled
+        offCenterWarning = settings.offCenterWarning
         buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: settings.buttons)
     }
 }
@@ -154,7 +156,7 @@ private extension ControllerNode {
         if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
             let button = buttonMap[node] {
             touchesData[touch] = TouchData(node: node, button: button, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
-            node.touchDown(touch, warnIfOffCenter: !isLRSwipe)
+            node.touchDown(touch, warnIfOffCenter: (!isLRSwipe && offCenterWarning))
             delegate?.buttonDown(button)
         }
     }

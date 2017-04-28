@@ -24,6 +24,22 @@
 		</dict>
 		<dict>
 			<key>FooterText</key>
+			<string>Though the game is not intended to be fully controlled with gestures, some might help to reduce finger movements.</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Gestures</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSChildPaneSpecifier</string>
+			<key>Title</key>
+			<string>Gesture settings</string>
+			<key>File</key>
+			<string>Gestures</string>
+		</dict>
+		<dict>
+			<key>FooterText</key>
 			<string>Move a piece quickly by holding the left or right button. Delay is the amount of time (measured in frames, typically 1/60 second) one needs to hold down a button before autorepeat kicks in, and Shiftign Speed is how fast the piece will move on autorepeat.</string>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
@@ -89,6 +105,8 @@
 		<dict>
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
+			<key>FooterText</key>
+			<string>If soft drop speed is set to instant, the piece instantly hit the bottom but doesn&apos;t lock up right away. Otherwise, maximum speed is 1 tile per frame.</string>
 			<key>Title</key>
 			<string>Soft Drop Speed</string>
 		</dict>
@@ -117,70 +135,6 @@
 			<integer>1</integer>
 			<key>Key</key>
 			<string>softDropFrames</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>After tapping down on a button, swipe down quickly to perform a hard drop. Setting a lower minimum speed makes it easier to trigger.</string>
-			<key>Title</key>
-			<string>Swipe Drop</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSChildPaneSpecifier</string>
-			<key>Title</key>
-			<string>Enabled Buttons</string>
-			<key>File</key>
-			<string>SwipeDrop</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSMultiValueSpecifier</string>
-			<key>Title</key>
-			<string>Minimum Swipe Speed</string>
-			<key>Values</key>
-			<array>
-				<integer>400</integer>
-				<integer>600</integer>
-				<integer>800</integer>
-				<integer>1000</integer>
-				<integer>1200</integer>
-				<integer>1400</integer>
-				<integer>1600</integer>
-			</array>
-			<key>Titles</key>
-			<array>
-				<string>400</string>
-				<string>600</string>
-				<string>800</string>
-				<string>1000</string>
-				<string>1200</string>
-				<string>1400</string>
-				<string>1600</string>
-			</array>
-			<key>DefaultValue</key>
-			<integer>1000</integer>
-			<key>Key</key>
-			<string>swipeDownThreshold</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSGroupSpecifier</string>
-			<key>FooterText</key>
-			<string>When a button is tapped down and the finger moves outside of the button, the button will stay pressed. But when LR Swipe is enabled, an exception is made for moving from a Move Left button to a Move Right button and vice versa, and treat the move like a new tap.</string>
-			<key>Title</key>
-			<string>LR Swipe</string>
-		</dict>
-		<dict>
-			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
-			<key>Title</key>
-			<string>Enabled</string>
-			<key>Key</key>
-			<string>lrSwipeEnabled</string>
-			<key>DefaultValue</key>
-			<true/>
 		</dict>
 		<dict>
 			<key>FooterText</key>
@@ -231,6 +185,24 @@
 			<integer>0</integer>
 			<key>MaximumValue</key>
 			<integer>1</integer>
+		</dict>
+		<dict>
+			<key>FooterText</key>
+			<string>One of the biggest challenges of touch control is the lack of a tactile feedback.  Off-center tap warning tries to ameliorate that by giving a visual cue when you tap on a button near its edge.</string>
+			<key>Type</key>
+			<string>PSGroupSpecifier</string>
+			<key>Title</key>
+			<string>Off-Center Tap Warning</string>
+		</dict>
+		<dict>
+			<key>Type</key>
+			<string>PSToggleSwitchSpecifier</string>
+			<key>Title</key>
+			<string>Enabled</string>
+			<key>Key</key>
+			<string>offCenterWarning</string>
+			<key>DefaultValue</key>
+			<true/>
 		</dict>
 	</array>
 </dict>

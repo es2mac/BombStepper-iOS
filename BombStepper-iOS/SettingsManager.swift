@@ -42,6 +42,7 @@ final class SettingsManager {
         case ghostOpacity
         case hideGhost
         case gridsOpacity
+        case offCenterWarning
         case button00, button01, button02, button03, button04, button05
         case button06, button07, button08, button09, button10, button11
         case swipeDrop00, swipeDrop01, swipeDrop02, swipeDrop03, swipeDrop04, swipeDrop05
@@ -65,6 +66,7 @@ final class SettingsManager {
     fileprivate(set) var ghostOpacity: Double       = 0.25
     fileprivate(set) var hideGhost: Bool            = false
     fileprivate(set) var gridsOpacity: Double       = 1.0
+    fileprivate(set) var offCenterWarning: Bool      = true
     fileprivate(set) var buttons: [Button]          = SettingsManager.defaultButtons
     fileprivate(set) var swipeDrops: [Bool]         = [Bool](repeating: true, count: 12)
 
@@ -147,7 +149,8 @@ private extension SettingsManager {
                                            SettingKey.lrSwipeEnabled.rawValue     : lrSwipeEnabled,
                                            SettingKey.ghostOpacity.rawValue       : ghostOpacity,
                                            SettingKey.hideGhost.rawValue          : hideGhost,
-                                           SettingKey.gridsOpacity.rawValue       : gridsOpacity ]
+                                           SettingKey.gridsOpacity.rawValue       : gridsOpacity,
+                                           SettingKey.offCenterWarning.rawValue   : offCenterWarning ]
 
         for (key, button) in zip(SettingKey.buttonKeys, buttons) { dictionary[key] = button.rawValue }
         for (key, swipeDrop) in zip(SettingKey.swipeDropKeys, swipeDrops) { dictionary[key] = swipeDrop}
@@ -164,6 +167,7 @@ private extension SettingsManager {
         ghostOpacity       = dictionary[SettingKey.ghostOpacity.rawValue] as! Double
         hideGhost          = dictionary[SettingKey.hideGhost.rawValue] as! Bool
         gridsOpacity       = dictionary[SettingKey.gridsOpacity.rawValue] as! Double
+        offCenterWarning   = dictionary[SettingKey.offCenterWarning.rawValue] as! Bool
         buttons            = SettingKey.buttonKeys.map { Button(rawValue: dictionary[$0] as! String)! }
         swipeDrops         = SettingKey.swipeDropKeys.map { dictionary[$0] as! Bool }
     }
