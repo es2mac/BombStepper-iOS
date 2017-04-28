@@ -18,9 +18,7 @@ final class ButtonNode: SKNode {
     fileprivate var buttonDownTime = Date()
 
     fileprivate let warpBackAction: SKAction = {
-        let sourcePositions  = [ float2(0, 1), float2(1, 1),
-                                 float2(0, 0), float2(1, 0) ]
-        let warpGeometryGridNoWarp = SKWarpGeometryGrid(columns: 1, rows: 1, sourcePositions: sourcePositions, destinationPositions: sourcePositions)
+        let warpGeometryGridNoWarp = SKWarpGeometryGrid(columns: 1, rows: 1)
         let warpAction = SKAction.warp(to: warpGeometryGridNoWarp, duration: Timing.buttonFlipUpDuration)!
         warpAction.timingMode = .easeIn
         return warpAction
@@ -77,32 +75,56 @@ private extension ButtonNode {
         guard warnIfOffCenter, weight > 0.1 else { return }
         
         maskNode.alpha = Alpha.maxButtonWarning * CGFloat(weight)
+
         
         // Calculate rotation
         // https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
-        let maxRotation = Float.pi / 3
+        // https://www.scratchapixel.com/lessons/3d-basic-rendering/perspective-and-orthographic-projection-matrix/building-basic-perspective-projection-matrix
+        // http://metalbyexample.com/linear-algebra/
+
+        let maxRotation = Float.pi / 4
         let angle = -weight * maxRotation
         let s = sin(angle)
         let c = cos(angle)
 
         // Axis unit vector
-        let u = normalize(float2(x:  Float(location.y),
-                                 y: -Float(location.x)))
-        
-        let m = float2x3(rows: [float2(c + pow(u.x, 2) * (1 - c), u.x * u.y * (1 - c)),
-                                float2(u.y * u.x * (1 - c),       c + pow(u.y, 2) * (1 - c)),
-                                float2(-u.y * s,                  u.x * s)])
-        
-        let sourcePositions  = [ float2(0, 1), float2(1, 1),
-                                 float2(0, 0), float2(1, 0) ]
-        
-        let destinationPositions = sourcePositions.map { source -> float2 in
-            let rotated = m * (source - float2(0.5, 0.5))
-            return float2(0.5 + rotated.x, 0.5 + rotated.y)
+        let u = normalize(float4(x: -Float(location.y),
+                                 y:  Float(location.x),
+                                 z: 0, w: 1))
+
+        // Rotation in 3D space
+        // https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
+        let rotation = float4x4(rows: [float4(    c + pow(u.x, 2) * (1 - c),    u.x * u.y * (1 - c) - u.z * s,    u.x * u.z * (1 - c) + u.y * s, 0),
+                                       float4(u.y * u.x * (1 - c) + u.z * s,        c + pow(u.y, 2) * (1 - c),    u.y * u.z * (1 - c) - u.x * s, 0),
+                                       float4(u.z * u.x * (1 - c) - u.y * s,    u.z * u.y * (1 - c) + u.x * s,        c + pow(u.z, 2) * (1 - c), 0),
+                                       float4(0, 0, 0, 1)])
+
+        // Projection matrix
+
+        let n: Float = 1
+        let f: Float = 3
+        let projection = float4x4(rows: [float4(1, 0,            0,                0),
+                                         float4(0, 1,            0,                0),
+                                         float4(0, 0, -f / (f - n), -f * n / (f - n)),
+                                         float4(0, 0,           -1,                0)])
+
+        let sourcePoints = [ float4(-1, -1, 0, 1), float4(1, -1, 0, 1), float4(-1, 1, 0, 1), float4(1, 1, 0, 1) ]
+        let destinationPoints = sourcePoints.map { source -> float4 in
+            let rotated = rotation * source
+            let repositioned = rotated * float4(2, 2, 1, 1) + float4(0, 0, 2, 0)
+            let projected = projection * repositioned
+            return projected
+        }
+
+        let sourcePositions = [ float2(0, 0), float2(0, 1), float2(1, 0), float2(1, 1) ]
+        let destinationPositions = destinationPoints.map { p -> float2 in
+            let x = -p.x / p.w
+            let y = -p.y / p.w
+            return float2((x + 1) / 2, (y + 1) / 2)
         }
 
         let warpGeometryGrid = SKWarpGeometryGrid(columns: 1, rows: 1, sourcePositions: sourcePositions, destinationPositions: destinationPositions)
-        let warpGeometryGridNoWarp = SKWarpGeometryGrid(columns: 1, rows: 1, sourcePositions: sourcePositions, destinationPositions: sourcePositions)
+        let warpGeometryGridNoWarp = SKWarpGeometryGrid(columns: 1, rows: 1)
         let warpAction = SKAction.warp(to: warpGeometryGrid, duration: Timing.buttonFlipDownDuration)!
         warpAction.timingMode = .easeOut
 
