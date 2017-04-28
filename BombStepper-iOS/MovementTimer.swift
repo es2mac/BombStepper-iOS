@@ -18,7 +18,7 @@ final class MovementTimer {
         case das(XDirection)
         case gravity
         case softDrop
-        case delayedLock(Field.BottomTouchingStatus)
+        case delayedLock(FieldManipulator.PieceLandingStatus)
     }
 
 
@@ -50,8 +50,8 @@ final class MovementTimer {
         case .gravity:    startGravity()
         case .softDrop:   startSoftDrop()
         case .delayedLock(.floating): assertionFailure("This doesn't make sense")
-        case .delayedLock(.touching): startDelayedLock()
-        case .delayedLock(.touchingMoved): extendDelayedLock()
+        case .delayedLock(.landed): startDelayedLock()
+        case .delayedLock(.landedMoved): extendDelayedLock()
         }
     }
     

@@ -119,13 +119,9 @@ extension TetrisSystem: ControllerDelegate {
         case .hold:
             holdPiece()
         case .rotateLeft:
-            manipulator.activePiece.map {
-                manipulator.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingLeft())
-            }
+            manipulator.rotatePiece(.left)
         case .rotateRight:
-            manipulator.activePiece.map {
-                manipulator.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingRight())
-            }
+            manipulator.rotatePiece(.right)
         case .none:
             break
         }
@@ -176,12 +172,12 @@ extension TetrisSystem: FieldManipulatorDelegate {
         endGame()
     }
 
-    func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus) {
-        switch touching {
+    func activePieceLandingStatusChanged(landed: FieldManipulator.PieceLandingStatus) {
+        switch landed {
         case .floating:
-            movementTimer.stopTiming(.delayedLock(touching))
+            movementTimer.stopTiming(.delayedLock(landed))
         default:
-            movementTimer.startTiming(.delayedLock(touching))
+            movementTimer.startTiming(.delayedLock(landed))
         }
     }
 
@@ -205,9 +201,9 @@ private extension TetrisSystem {
     }
 
     func holdPiece() {
-        guard !holdPieceLocked, let piece = manipulator.activePiece else { return }
+        guard !holdPieceLocked else { return }
+        guard let piece = manipulator.extractActivePiece() else { return }
 
-        manipulator.clearActivePiece()
         playNextPiece(heldPieceType)
         heldPieceType = piece.type
         holdPieceLocked = true

@@ -52,3 +52,9 @@ enum XDirection {
     }
 }
 
+
+enum RotationDirection {
+    case left   // i.e. counterclockwise
+    case right  // i.e. clockwise
+}
+

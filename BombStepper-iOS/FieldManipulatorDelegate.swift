@@ -15,7 +15,7 @@ protocol FieldManipulatorDelegate: class {
     func updateField(blocks: [Block])
     func activePieceDidLock()
     func fieldDidTopOut()
-    func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus)
+    func activePieceLandingStatusChanged(landed: FieldManipulator.PieceLandingStatus)
 
     // Assume "covered T corners count" > 0 only for T-clears
     func linesCleared(_ count: Int, coveredTCornersCount: Int, isImmobile: Bool)

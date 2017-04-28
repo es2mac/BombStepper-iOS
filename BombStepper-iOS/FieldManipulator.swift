@@ -16,30 +16,32 @@ import Foundation
  */
 final class FieldManipulator {
 
+
+    enum PieceLandingStatus {
+        case floating
+        case landed
+        case landedMoved  // i.e. was landed, now moved but still landed
+    }
+
+
     weak var delegate: FieldManipulatorDelegate?
 
     fileprivate let field: Field
     fileprivate var hideGhost = false
+    fileprivate var isActivePieceLanded: Bool = false
 
     // Put most operations on a serial queue to make access on the two properties above atomic
     fileprivate let queue = DispatchQueue(label: "net.mathemusician.BombStepper.Field")
 
-    var activePiece: Piece? { return field.activePiece }
+    fileprivate(set) var activePiece: Piece? {
+        didSet { activePieceUpdated(current: activePiece, previous: oldValue) }
+    }
+    fileprivate var ghostPiece: Piece?
 
     init(field: Field) {
         self.field = field
     }
 
-}
-
-
-extension FieldManipulator {
-    func startPiece(type: Tetromino) -> Bool { return field.startPiece(type: type) }
-    func movePiece(_ direction: Direction, steps: Int = 1) { field.movePiece(direction, steps: steps) }
-    func replacePieceWithFirstValidPiece(in candidates: [Piece]) { field.replacePieceWithFirstValidPiece(in: candidates) }
-    func clearActivePiece() { field.clearActivePiece() }
-    func hardDrop() { field.hardDrop() }
-    func reset() { field.reset() }
 }
 
 
@@ -50,17 +52,188 @@ extension FieldManipulator: SettingsNotificationTarget {
 }
 
 
-private extension FieldManipulator {
+extension FieldManipulator {
     
+    // Returns if piece successfully started
+    @discardableResult
+    func startPiece(type: Tetromino) -> Bool {
+        var result = true
+        queue.sync {
+            guard activePiece == nil else {
+                result = false
+                return
+            }
+            
+            let piece = Piece(type: type, x: 4, y: 20)
+            
+            guard !field.pieceIsObstructed(piece) else {
+                result = false
+                defer {
+                    self.delegate?.fieldDidTopOut()
+                }
+                return
+            }
+            
+            self.activePiece = piece
+            reportChanges()
+        }
+        return result
+    }
+    
+    func movePiece(_ direction: Direction, steps: Int = 1) {
+        queue.async {
+            self.movePieceAsync(direction, steps: steps)
+            self.reportChanges()
+        }
+    }
+    
+    func extractActivePiece() -> Piece? {
+        var piece: Piece?
+        queue.sync {
+            piece = activePiece
+            activePiece = nil
+        }
+        return piece
+    }
+
+    func rotatePiece(_ direction: RotationDirection) {
+        guard let piece = activePiece else { return }
+        
+        let kickCandidates: [Piece]
+        switch direction {
+        case .left:
+            kickCandidates = piece.kickCandidatesForRotatingLeft()
+        case .right:
+            kickCandidates = piece.kickCandidatesForRotatingRight()
+        }
+        
+        replacePieceWithFirstValidPiece(in: kickCandidates)
+    }
+    
+    func hardDrop() {
+        queue.async {
+            while self.moveActivePiece(.down) { }
+            self.lockDown()
+            self.reportChanges()
+        }
+    }
+    
+    func reset() {
+        queue.async {
+            self.field.reset()
+            self.activePiece = nil
+            self.ghostPiece = nil
+        }
+    }
 }
 
 
 private extension FieldManipulator {
+
+    func activePieceUpdated(current: Piece?, previous: Piece?) {
+        // Only go forward if pieces are "blockwise different"
+        switch (current, previous) {
+        case (nil, nil): return
+        case (.some(let c), .some(let p)) where c.isBlockwiseEqual(to: p): return
+        default: break
+        }
+
+        // Update blocks
+        previous.map(field.clearPiece)
+        ghostPiece.map(field.clearPiece)
+        
+        ghostPiece = hideGhost ? nil : current.map(positionedGhost)
+        ghostPiece.map(field.setPiece)
+        current.map(field.setPiece)
+
+        testSoftLock()
+    }
+
+    func testSoftLock() {
+
+        let wasLanded = isActivePieceLanded
+        let isLanded = field.isPieceLanded(activePiece)
+        isActivePieceLanded = isLanded
+
+        let status: FieldManipulator.PieceLandingStatus
+
+        switch (wasLanded, isLanded) {
+        case (true, false):  status = .floating
+        case (false, true):  status = .landed
+        case (true, true):   status = .landedMoved
+        case (false, false): return
+        }
+
+        delegate?.activePieceLandingStatusChanged(landed: status)
+    }
     
+    func lockDown() {
+        guard let piece = activePiece else { return }
+        activePiece = nil
+        field.setLockedBlocks(for: piece)
+
+        // Check lock out (http://tetris.wikia.com/wiki/Top_out)
+        let lockedOut = !piece.blocks.contains { $0.y < 20 }
+        if lockedOut {
+            self.delegate?.fieldDidTopOut()
+        }
+        else {
+            // TODO: delegate call return line clear status?
+            _ = field.clearCompletedLines(spannedBy: piece)
+            self.delegate?.activePieceDidLock()
+        }
+    }
+
+    func movePieceAsync(_ direction: Direction, steps: Int = 1) {
+        for _ in 0 ..< steps {
+            if !moveActivePiece(direction) { break }
+        }
+    }
+    
+    func replacePieceWithFirstValidPiece(in candidates: [Piece]) {
+        queue.async {
+            for candidate in candidates {
+                if !self.field.pieceIsObstructed(candidate) {
+                    self.activePiece = candidate
+                    self.reportChanges()
+                    break
+                }
+            }
+        }
+    }
+
+    // Returns whether move was successful
+    // Remember to manually reportChanges()
+    func moveActivePiece(_ direction: Direction) -> Bool {
+        guard var piece = activePiece else { return false }
+
+        let offset = direction.offset
+
+        if offset.x != 0 { piece.x += offset.x }
+        if offset.y != 0 { piece.y += offset.y }
+        
+        let canMove = !field.pieceIsObstructed(piece)
+        if canMove { activePiece = piece }
+
+        return canMove
+    }
+ 
+    func reportChanges() {
+        let blocks = field.dumpUnreportedChanges()
+        delegate?.updateField(blocks: blocks)
+    }
+
 }
 
 
+private extension FieldManipulator {
 
+    func positionedGhost(for piece: Piece) -> Piece {
+        var ghost = piece.ghost
+        while !field.pieceIsObstructed(ghost) { ghost.y -= 1 }
+        ghost.y += 1
+        return ghost
+    }
 
-
+}
 
