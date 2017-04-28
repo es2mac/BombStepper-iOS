@@ -24,7 +24,8 @@ final class FieldManipulator {
     }
 
 
-    weak var delegate: FieldManipulatorDelegate?
+    /// FieldManipulator does work on a separate queue, so UI stuff might want to be dispatched back to main
+    weak var system: TetrisSystem?
 
     fileprivate let field: Field
     fileprivate var hideGhost = false
@@ -65,15 +66,15 @@ extension FieldManipulator {
             }
             
             let piece = Piece(type: type, x: 4, y: 20)
-            
+
             guard !field.pieceIsObstructed(piece) else {
                 result = false
                 defer {
-                    self.delegate?.fieldDidTopOut()
+                    self.system?.fieldDidTopOut()
                 }
                 return
             }
-            
+
             self.activePiece = piece
             reportChanges()
         }
@@ -86,7 +87,7 @@ extension FieldManipulator {
             self.reportChanges()
         }
     }
-    
+
     func extractActivePiece() -> Piece? {
         var piece: Piece?
         queue.sync {
@@ -98,7 +99,7 @@ extension FieldManipulator {
 
     func rotatePiece(_ direction: RotationDirection) {
         guard let piece = activePiece else { return }
-        
+
         let kickCandidates: [Piece]
         switch direction {
         case .left:
@@ -141,7 +142,7 @@ private extension FieldManipulator {
         // Update blocks
         previous.map(field.clearPiece)
         ghostPiece.map(field.clearPiece)
-        
+
         ghostPiece = hideGhost ? nil : current.map(positionedGhost)
         ghostPiece.map(field.setPiece)
         current.map(field.setPiece)
@@ -164,7 +165,7 @@ private extension FieldManipulator {
         case (false, false): return
         }
 
-        delegate?.activePieceLandingStatusChanged(landed: status)
+        system?.activePieceLandingStatusChanged(landed: status)
     }
     
     func lockDown() {
@@ -175,12 +176,11 @@ private extension FieldManipulator {
         // Check lock out (http://tetris.wikia.com/wiki/Top_out)
         let lockedOut = !piece.blocks.contains { $0.y < 20 }
         if lockedOut {
-            self.delegate?.fieldDidTopOut()
+            self.system?.fieldDidTopOut()
         }
         else {
-            // TODO: delegate call return line clear status?
-            _ = field.clearCompletedLines(spannedBy: piece)
-            self.delegate?.activePieceDidLock()
+            let clearedLines = field.clearCompletedLines(spannedBy: piece)
+            self.system?.activePieceDidLock(lineClear: .normal(lines: clearedLines))
         }
     }
 
@@ -220,7 +220,7 @@ private extension FieldManipulator {
  
     func reportChanges() {
         let blocks = field.dumpUnreportedChanges()
-        delegate?.updateField(blocks: blocks)
+        system?.updateField(blocks: blocks)
     }
 
 }

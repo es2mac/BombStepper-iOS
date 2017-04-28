@@ -18,7 +18,7 @@ protocol BaseGameUIDisplay: class {
 
 protocol GameEventDelegate: class {
     func linesCleared(_ lineClear: LineClear)
-    func gameDidEnd()
+    var gameEndAction: (() -> Void)? { get set }
 }
 
 
@@ -38,7 +38,7 @@ class TetrisSystem {
     fileprivate var holdPieceLocked = false
     
     init() {
-        manipulator.delegate = self
+        manipulator.system = self
         movementTimer.moveAction = { [weak self] direction, steps in
             self?.manipulator.movePiece(direction, steps: steps)
         }
@@ -143,10 +143,10 @@ extension TetrisSystem: ControllerDelegate {
     }
 }
 
-extension TetrisSystem: FieldManipulatorDelegate {
+extension TetrisSystem {
 
 
-    // TODO: Expand FieldManipulatorDelegate to include event reporting, and the system relay them to eventDelegate
+    // TODO: Event reporting, and the system relay them to eventDelegate
     // Think about what the outside user of TetrisSystem needs to be able to tell it to do
     // e.g., start game, play next piece (future: bomb rise?)
     
@@ -155,7 +155,7 @@ extension TetrisSystem: FieldManipulatorDelegate {
         displayDelegate?.updateFieldDisplay(blocks: blocks)
     }
     
-    func activePieceDidLock() {
+    func activePieceDidLock(lineClear: LineClear?) {
         movementTimer.stopTiming(.gravity)
         movementTimer.resetDelayedLock()
         holdPieceLocked = false
@@ -212,7 +212,7 @@ private extension TetrisSystem {
 
     func endGame() {
         isGameRunning = false
-        eventDelegate?.gameDidEnd()
+        eventDelegate?.gameEndAction?()
     }
 }
 
