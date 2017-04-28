@@ -42,12 +42,18 @@ final class SettingsManager {
         case ghostOpacity
         case hideGhost
         case gridsOpacity
-        case button00, button01, button02, button03
-        case button04, button05, button06, button07
-        case button08, button09, button10, button11
-        case swipeDrop00, swipeDrop01, swipeDrop02, swipeDrop03
-        case swipeDrop04, swipeDrop05, swipeDrop06, swipeDrop07
-        case swipeDrop08, swipeDrop09, swipeDrop10, swipeDrop11
+        case button00, button01, button02, button03, button04, button05
+        case button06, button07, button08, button09, button10, button11
+        case swipeDrop00, swipeDrop01, swipeDrop02, swipeDrop03, swipeDrop04, swipeDrop05
+        case swipeDrop06, swipeDrop07, swipeDrop08, swipeDrop09, swipeDrop10, swipeDrop11
+
+        static let buttonKeys: [String] = [SettingKey.button00, .button01, .button02, .button03,
+                                           .button04, .button05, .button06, .button07,
+                                           .button08, .button09, .button10, .button11].map { $0.rawValue }
+
+        static let swipeDropKeys: [String] = [SettingKey.swipeDrop00, .swipeDrop01, .swipeDrop02, .swipeDrop03,
+                                              .swipeDrop04, .swipeDrop05, .swipeDrop06, .swipeDrop07,
+                                              .swipeDrop08, .swipeDrop09, .swipeDrop10, .swipeDrop11].map { $0.rawValue }
     }
 
     // Initial values here match the actual default settings
@@ -60,18 +66,7 @@ final class SettingsManager {
     fileprivate(set) var hideGhost: Bool            = false
     fileprivate(set) var gridsOpacity: Double       = 1.0
     fileprivate(set) var buttons: [Button]          = SettingsManager.defaultButtons
-    fileprivate(set) var swipeDrop00: Bool          = true
-    fileprivate(set) var swipeDrop01: Bool          = true
-    fileprivate(set) var swipeDrop02: Bool          = true
-    fileprivate(set) var swipeDrop03: Bool          = true
-    fileprivate(set) var swipeDrop04: Bool          = true
-    fileprivate(set) var swipeDrop05: Bool          = true
-    fileprivate(set) var swipeDrop06: Bool          = true
-    fileprivate(set) var swipeDrop07: Bool          = true
-    fileprivate(set) var swipeDrop08: Bool          = true
-    fileprivate(set) var swipeDrop09: Bool          = true
-    fileprivate(set) var swipeDrop10: Bool          = true
-    fileprivate(set) var swipeDrop11: Bool          = true
+    fileprivate(set) var swipeDrops: [Bool]         = [Bool](repeating: true, count: 12)
 
     static var defaultButtons: [Button] = [ .hardDrop, .hardDrop, .moveLeft, .moveRight,
                                             .softDrop, .softDrop, .hold, .hold,
@@ -145,38 +140,19 @@ private extension SettingsManager {
 
 private extension SettingsManager {
     func serializeValuesToDictionary() -> [String : Any] {
-        return [ SettingKey.dasValue.rawValue           : dasValue,
-                 SettingKey.dasFrames.rawValue          : dasFrames,
-                 SettingKey.softDropFrames.rawValue     : softDropFrames,
-                 SettingKey.swipeDownThreshold.rawValue : swipeDownThreshold,
-                 SettingKey.lrSwipeEnabled.rawValue     : lrSwipeEnabled,
-                 SettingKey.ghostOpacity.rawValue       : ghostOpacity,
-                 SettingKey.hideGhost.rawValue          : hideGhost,
-                 SettingKey.gridsOpacity.rawValue       : gridsOpacity,
-                 SettingKey.button00.rawValue           : buttons[0].rawValue,
-                 SettingKey.button01.rawValue           : buttons[1].rawValue,
-                 SettingKey.button02.rawValue           : buttons[2].rawValue,
-                 SettingKey.button03.rawValue           : buttons[3].rawValue,
-                 SettingKey.button04.rawValue           : buttons[4].rawValue,
-                 SettingKey.button05.rawValue           : buttons[5].rawValue,
-                 SettingKey.button06.rawValue           : buttons[6].rawValue,
-                 SettingKey.button07.rawValue           : buttons[7].rawValue,
-                 SettingKey.button08.rawValue           : buttons[8].rawValue,
-                 SettingKey.button09.rawValue           : buttons[9].rawValue,
-                 SettingKey.button10.rawValue           : buttons[10].rawValue,
-                 SettingKey.button11.rawValue           : buttons[11].rawValue,
-                 SettingKey.swipeDrop00.rawValue        : swipeDrop00,
-                 SettingKey.swipeDrop01.rawValue        : swipeDrop01,
-                 SettingKey.swipeDrop02.rawValue        : swipeDrop02,
-                 SettingKey.swipeDrop03.rawValue        : swipeDrop03,
-                 SettingKey.swipeDrop04.rawValue        : swipeDrop04,
-                 SettingKey.swipeDrop05.rawValue        : swipeDrop05,
-                 SettingKey.swipeDrop06.rawValue        : swipeDrop06,
-                 SettingKey.swipeDrop07.rawValue        : swipeDrop07,
-                 SettingKey.swipeDrop08.rawValue        : swipeDrop08,
-                 SettingKey.swipeDrop09.rawValue        : swipeDrop09,
-                 SettingKey.swipeDrop10.rawValue        : swipeDrop10,
-                 SettingKey.swipeDrop11.rawValue        : swipeDrop11]
+        var dictionary: [String : Any] = [ SettingKey.dasValue.rawValue           : dasValue,
+                                           SettingKey.dasFrames.rawValue          : dasFrames,
+                                           SettingKey.softDropFrames.rawValue     : softDropFrames,
+                                           SettingKey.swipeDownThreshold.rawValue : swipeDownThreshold,
+                                           SettingKey.lrSwipeEnabled.rawValue     : lrSwipeEnabled,
+                                           SettingKey.ghostOpacity.rawValue       : ghostOpacity,
+                                           SettingKey.hideGhost.rawValue          : hideGhost,
+                                           SettingKey.gridsOpacity.rawValue       : gridsOpacity ]
+
+        for (key, button) in zip(SettingKey.buttonKeys, buttons) { dictionary[key] = button.rawValue }
+        for (key, swipeDrop) in zip(SettingKey.swipeDropKeys, swipeDrops) { dictionary[key] = swipeDrop}
+
+        return dictionary
     }
 
     func setValues(from dictionary: NSDictionary) {
@@ -188,31 +164,9 @@ private extension SettingsManager {
         ghostOpacity       = dictionary[SettingKey.ghostOpacity.rawValue] as! Double
         hideGhost          = dictionary[SettingKey.hideGhost.rawValue] as! Bool
         gridsOpacity       = dictionary[SettingKey.gridsOpacity.rawValue] as! Double
-        buttons[00]        = Button(rawValue: dictionary[SettingKey.button00.rawValue] as! String)!
-        buttons[01]        = Button(rawValue: dictionary[SettingKey.button01.rawValue] as! String)!
-        buttons[02]        = Button(rawValue: dictionary[SettingKey.button02.rawValue] as! String)!
-        buttons[03]        = Button(rawValue: dictionary[SettingKey.button03.rawValue] as! String)!
-        buttons[04]        = Button(rawValue: dictionary[SettingKey.button04.rawValue] as! String)!
-        buttons[05]        = Button(rawValue: dictionary[SettingKey.button05.rawValue] as! String)!
-        buttons[06]        = Button(rawValue: dictionary[SettingKey.button06.rawValue] as! String)!
-        buttons[07]        = Button(rawValue: dictionary[SettingKey.button07.rawValue] as! String)!
-        buttons[08]        = Button(rawValue: dictionary[SettingKey.button08.rawValue] as! String)!
-        buttons[09]        = Button(rawValue: dictionary[SettingKey.button09.rawValue] as! String)!
-        buttons[10]        = Button(rawValue: dictionary[SettingKey.button10.rawValue] as! String)!
-        buttons[11]        = Button(rawValue: dictionary[SettingKey.button11.rawValue] as! String)!
-        swipeDrop00        = dictionary[SettingKey.swipeDrop00.rawValue] as! Bool
-        swipeDrop01        = dictionary[SettingKey.swipeDrop01.rawValue] as! Bool
-        swipeDrop02        = dictionary[SettingKey.swipeDrop02.rawValue] as! Bool
-        swipeDrop03        = dictionary[SettingKey.swipeDrop03.rawValue] as! Bool
-        swipeDrop04        = dictionary[SettingKey.swipeDrop04.rawValue] as! Bool
-        swipeDrop05        = dictionary[SettingKey.swipeDrop05.rawValue] as! Bool
-        swipeDrop06        = dictionary[SettingKey.swipeDrop06.rawValue] as! Bool
-        swipeDrop07        = dictionary[SettingKey.swipeDrop07.rawValue] as! Bool
-        swipeDrop08        = dictionary[SettingKey.swipeDrop08.rawValue] as! Bool
-        swipeDrop09        = dictionary[SettingKey.swipeDrop09.rawValue] as! Bool
-        swipeDrop10        = dictionary[SettingKey.swipeDrop10.rawValue] as! Bool
-        swipeDrop11        = dictionary[SettingKey.swipeDrop11.rawValue] as! Bool
-    }                                                
+        buttons            = SettingKey.buttonKeys.map { Button(rawValue: dictionary[$0] as! String)! }
+        swipeDrops         = SettingKey.swipeDropKeys.map { dictionary[$0] as! Bool }
+    }
 }
 
 

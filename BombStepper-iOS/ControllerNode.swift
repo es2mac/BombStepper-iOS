@@ -90,8 +90,7 @@ final class ControllerNode: SKNode {
 
 extension ControllerNode: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
-        // TODO: new per-button settings
-//        TouchData.swipeDropEnabled = settings.swipeDropEnabled
+        TouchData.swipeDrops = settings.swipeDrops
         TouchData.swipeDownThreshold = settings.swipeDownThreshold
         lrSwipeEnabled = settings.lrSwipeEnabled
         buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: settings.buttons)
@@ -102,27 +101,29 @@ extension ControllerNode: SettingsNotificationTarget {
 private extension ControllerNode {
 
     final class TouchData {
-        static var swipeDropEnabled = true
+        static var swipeDrops = [Bool](repeating: true, count: 12)
         static var swipeDownThreshold = 1000.0
 
         let node: ButtonNode
         let button: Button
         var lastTime: TimeInterval
         var lastLocation: CGPoint
-        let isLeft: Bool
+        let isOnLeftHalf: Bool
+        let swipeDropEnabled: Bool
 
         var speeds: [Double] = []
 
-        init(node: ButtonNode, button: Button, time: TimeInterval, location: CGPoint) {
+        init(node: ButtonNode, button: Button, buttonIndex: Int, time: TimeInterval, location: CGPoint) {
             self.node = node
             self.button = button
             self.lastTime = time
             self.lastLocation = location
-            self.isLeft = location.x < 0
+            self.isOnLeftHalf = location.x < 0
+            self.swipeDropEnabled = TouchData.swipeDrops[buttonIndex]
         }
 
         func recordSpeed(time: TimeInterval, location: CGPoint) {
-            guard TouchData.swipeDropEnabled else { return }
+            guard swipeDropEnabled else { return }
 
             // Calculate speed by taking account to slanted directions
             // (Buttons are slanted pi/8, detection slant goes half way at pi/16)
@@ -130,7 +131,7 @@ private extension ControllerNode {
 
             let c = cos(Double.pi / 16)
             let s = sin(Double.pi / 16)
-            let rotation = isLeft ? (c, -s, s, c) : (c, s, -s, c) 
+            let rotation = isOnLeftHalf ? (c, -s, s, c) : (c, s, -s, c) 
             let delta = (Double(location.x - lastLocation.x),
                          Double(location.y - lastLocation.y))
             let rotatedY = delta.0 * rotation.2 + delta.1 * rotation.3
@@ -152,7 +153,7 @@ private extension ControllerNode {
         let location = touch.location(in: self)
         if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
             let button = buttonMap[node] {
-            touchesData[touch] = TouchData(node: node, button: button, time: touch.timestamp, location: location)
+            touchesData[touch] = TouchData(node: node, button: button, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
             node.touchDown(touch, warnIfOffCenter: !isLRSwipe)
             delegate?.buttonDown(button)
         }
