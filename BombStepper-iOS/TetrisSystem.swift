@@ -62,14 +62,24 @@ extension TetrisSystem {
 
     func startGame() {
         guard !isGameRunning else { return }
+
         displayDelegate?.clearFieldDisplay()
         displayDelegate?.updateHeldPiece(nil)
         manipulator.reset()
         tetrominoRandomizer.reset()
-        holdPieceLocked = false
+        dasManager.reset()
+        movementTimer.resetAll()
         heldPieceType = nil
+        holdPieceLocked = false
+        
         playNextPiece()
         isGameRunning = true
+    }
+
+    func stopGame() {
+        movementTimer.resetAll()
+        dasManager.reset()
+        isGameRunning = false
     }
 
 }
@@ -96,7 +106,7 @@ extension TetrisSystem: ControllerDelegate {
 
     func buttonDown(_ button: Button) {
 
-
+        
         /* Temporary game starter */
         if !isGameRunning, case .hold = button {
             startGame()
@@ -104,6 +114,8 @@ extension TetrisSystem: ControllerDelegate {
         }
         /* end temp */
 
+        
+        guard isGameRunning else { return }
         
         switch button {
         case .moveLeft:
@@ -143,6 +155,7 @@ extension TetrisSystem: ControllerDelegate {
     }
 }
 
+/// Communication with Field
 extension TetrisSystem {
 
 
@@ -151,7 +164,7 @@ extension TetrisSystem {
     // e.g., start game, play next piece (future: bomb rise?)
     
     
-    func updateField(blocks: [Block]) {
+    func updatePlayField(blocks: [Block]) {
         displayDelegate?.updateFieldDisplay(blocks: blocks)
     }
     
@@ -167,8 +180,6 @@ extension TetrisSystem {
     }
 
     func fieldDidTopOut() {
-        // TODO
-        
         endGame()
     }
 
@@ -181,18 +192,14 @@ extension TetrisSystem {
         }
     }
 
-    func linesCleared(_ count: Int, coveredTCornersCount: Int, isImmobile: Bool) {
-        // TODO: keep track of rotation for spin-detection
-
-        
-        eventDelegate?.linesCleared(.normal(lines: count))
-    }
 }
 
 
 private extension TetrisSystem {
 
     func playNextPiece(_ nextPiece: Tetromino? = nil) {
+        guard isGameRunning else { return }
+
         let piece = nextPiece ?? tetrominoRandomizer.popNext()
         if manipulator.startPiece(type: piece) {
             movementTimer.startTiming(.gravity)
@@ -201,6 +208,7 @@ private extension TetrisSystem {
     }
 
     func holdPiece() {
+        guard isGameRunning else { return }
         guard !holdPieceLocked else { return }
         guard let piece = manipulator.extractActivePiece() else { return }
 

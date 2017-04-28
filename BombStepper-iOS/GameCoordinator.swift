@@ -16,14 +16,34 @@ enum LineClear {
 }
 
 
-protocol GameCoordinator {
+protocol GameCoordinator: GameEventDelegate {
     func modeSpecificNodes() -> [SKNode]
-    func linesDidClear(_ type: LineClear)
 }
 
+/*
+ Coordinator handles the rules for game mode objectives
+ Coordinator -> view controller:
+ - Dismiss
+ 
+ Coordinator -> tetris system:
+ - Stop game, objective reached
+ 
+ Coordinator -> game scene:
+ - hand over the nodes, but keeping a reference and manipulate itself
+ 
+ It needs to be able to tell the system to end
+ System needs to tell the
+ */
 
 class DummyCoordinator: GameCoordinator {
+    
+    var gameEndAction: (() -> Void)?
+    
     func modeSpecificNodes() -> [SKNode] { return [] }
-    func linesDidClear(_ type: LineClear) { }
+    
+    func linesCleared(_ lineClear: LineClear) {
+        print(lineClear)
+    }
+    
 }
 

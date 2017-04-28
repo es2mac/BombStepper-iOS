@@ -72,6 +72,13 @@ final class MovementTimer {
         lockDelayExtensionQuota = Timing.lockDelayExtension
     }
 
+    func resetAll() {
+        gravityStarted = false
+        softDropStarted = false
+        resetDelayedLock()
+        dasFrameCounter = 0
+    }
+
 }
 
 

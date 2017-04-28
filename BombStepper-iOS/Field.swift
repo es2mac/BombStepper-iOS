@@ -48,7 +48,7 @@ extension Field {
         }
     }
 
-    func setLockedBlocks(for piece: Piece) {
+    func setLockedPiece(_ piece: Piece) {
         maxRowOfLockedBlocks = max(maxRowOfLockedBlocks, piece.blocks.map({$0.y}).max()!)
         piece.blocks.forEach { setBlock($0.locked) }
     }
@@ -62,8 +62,6 @@ extension Field {
     }
 
     func clearCompletedLines(spannedBy piece: Piece) -> Int {
-
-        // TODO: T-spin detection?
 
         let pieceYMin = piece.blocks.map({$0.y}).min()!
         let pieceYMmax = piece.blocks.map({$0.y}).max()!

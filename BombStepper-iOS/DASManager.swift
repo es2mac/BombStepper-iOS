@@ -56,6 +56,10 @@ final class DASManager {
         }
     }
 
+    func reset() {
+        dasStatus = .none
+    }
+
     fileprivate func activateDASIfNeeded(direction: XDirection, fireTime: MachAbsTime) {
         let now = mach_absolute_time()
 

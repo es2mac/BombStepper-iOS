@@ -34,7 +34,7 @@ final class FieldManipulator {
     // Put most operations on a serial queue to make access on the two properties above atomic
     fileprivate let queue = DispatchQueue(label: "net.mathemusician.BombStepper.Field")
 
-    fileprivate(set) var activePiece: Piece? {
+    fileprivate var activePiece: Piece? {
         didSet { activePieceUpdated(current: activePiece, previous: oldValue) }
     }
     fileprivate var ghostPiece: Piece?
@@ -171,7 +171,7 @@ private extension FieldManipulator {
     func lockDown() {
         guard let piece = activePiece else { return }
         activePiece = nil
-        field.setLockedBlocks(for: piece)
+        field.setLockedPiece(piece)
 
         // Check lock out (http://tetris.wikia.com/wiki/Top_out)
         let lockedOut = !piece.blocks.contains { $0.y < 20 }
@@ -180,6 +180,9 @@ private extension FieldManipulator {
         }
         else {
             let clearedLines = field.clearCompletedLines(spannedBy: piece)
+            
+            // TODO: T-spin detection and reporting
+            
             self.system?.activePieceDidLock(lineClear: .normal(lines: clearedLines))
         }
     }
@@ -220,7 +223,7 @@ private extension FieldManipulator {
  
     func reportChanges() {
         let blocks = field.dumpUnreportedChanges()
-        system?.updateField(blocks: blocks)
+        system?.updatePlayField(blocks: blocks)
     }
 
 }

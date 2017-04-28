@@ -26,18 +26,19 @@ class GameViewController: UIViewController {
         super.viewDidLoad()
 
         // TODO: Setup the system for game scene here
-        
-        presentGameScene()
+
+        let coordinator: GameCoordinator = DummyCoordinator()
+        presentGameScene(with: coordinator)
     }
 
-    func presentGameScene() {
+    func presentGameScene(with coordinator: GameCoordinator) {
 
         let skView = self.view as! SKView
         skView.ignoresSiblingOrder = true
         skView.showsFPS = true
         skView.showsNodeCount = true
 
-        let scene = GameScene(size: view.bounds.size, coordinator: DummyCoordinator())
+        let scene = GameScene(size: view.bounds.size, coordinator: coordinator)
         scene.backgroundColor = .lightFlatBlack
         scene.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         scene.scaleMode = .resizeFill
