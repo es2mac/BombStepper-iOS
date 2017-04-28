@@ -67,7 +67,7 @@ extension Block.BlockType {
     func defaultImage(side: CGFloat, adjacency: SKTileAdjacencyMask = []) -> UIImage {
         switch self {
         case .blank:
-            return UIImage.borderedSquare(side: side, color: .blankTile, edgeColor: .playfieldBorder)
+            return UIImage.borderedSquare(side: side, color: .lightFlatBlack, edgeColor: .playfieldBorder)
         case .active(let t), .locked(let t):
             return UIImage.borderedSquare(side: side, color: t.color, edgeColor: t.edgeColor, adjacency: adjacency)
         case .ghost:

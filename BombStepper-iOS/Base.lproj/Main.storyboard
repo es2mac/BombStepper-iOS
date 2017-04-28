@@ -48,9 +48,9 @@
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="YKN-zs-1PC">
                                                         <rect key="frame" x="8" y="136" width="284" height="60"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <state key="normal" title="Practice"/>
+                                                        <state key="normal" title="Free Play"/>
                                                         <connections>
-                                                            <segue destination="BV1-FR-VrT" kind="show" id="DN1-y1-nww"/>
+                                                            <segue destination="BV1-FR-VrT" kind="show" identifier="Free Play" customClass="FreePlaySegue" customModule="BombStepper" customModuleProvider="target" id="DN1-y1-nww"/>
                                                         </connections>
                                                     </button>
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3mQ-pw-93r">
@@ -98,7 +98,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="GMH-re-h37" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-772" y="139"/>
+            <point key="canvasLocation" x="-771" y="28"/>
         </scene>
         <!--Game View Controller-->
         <scene sceneID="tXr-a1-R10">

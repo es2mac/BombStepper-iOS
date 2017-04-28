@@ -11,10 +11,22 @@ import SpriteKit
 import GameplayKit
 
 
+enum GameMode {
+    case sprint
+    case bombStepper
+    case freePlay
+}
+
+
 class GameViewController: UIViewController {
+
+    var gameMode: GameMode!
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        // TODO: Setup the system for game scene here
+        
         presentGameScene()
     }
 
@@ -25,7 +37,9 @@ class GameViewController: UIViewController {
         skView.showsFPS = true
         skView.showsNodeCount = true
 
-        let scene = SKScene(fileNamed: "GameScene")!
+        let scene = GameScene(size: view.bounds.size)
+        scene.backgroundColor = .lightFlatBlack
+        scene.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         scene.scaleMode = .resizeFill
         skView.presentScene(scene)
     }

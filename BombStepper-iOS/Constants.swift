@@ -19,8 +19,7 @@ extension UIColor {
     static let tileL = #colorLiteral(red: 0.8879843354, green: 0.5014117956, blue: 0, alpha: 1)
     static let playfieldOuterFrame = #colorLiteral(red: 0.7242990732, green: 0.7850584388, blue: 0.9598841071, alpha: 1)
     static let playfieldBorder = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-    static let blankTile = #colorLiteral(red: 0.1686089337, green: 0.1686392725, blue: 0.1686022878, alpha: 1)
-
+    static let lightFlatBlack = #colorLiteral(red: 0.1686089337, green: 0.1686392725, blue: 0.1686022878, alpha: 1)
 }
 
 
