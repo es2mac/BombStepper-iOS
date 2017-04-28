@@ -29,9 +29,7 @@ class TetrisSystem {
     
     fileprivate(set) var isGameRunning = false
 
-    // TODO
-//    fileprivate let field = FieldManipulator()
-    fileprivate let field = Field()
+    fileprivate let manipulator = FieldManipulator(field: Field())
     fileprivate let tetrominoRandomizer = TetrominoRandomizer()
     fileprivate let dasManager = DASManager()
     fileprivate let movementTimer = MovementTimer()
@@ -40,12 +38,12 @@ class TetrisSystem {
     fileprivate var holdPieceLocked = false
     
     init() {
-        field.delegate = self
+        manipulator.delegate = self
         movementTimer.moveAction = { [weak self] direction, steps in
-            self?.field.movePiece(direction, steps: steps)
+            self?.manipulator.movePiece(direction, steps: steps)
         }
         movementTimer.lockAction = { [weak self] in
-            self?.field.hardDrop()
+            self?.manipulator.hardDrop()
         }
         
         dasManager.activateDAS = { [weak self] active, direction in
@@ -66,7 +64,7 @@ extension TetrisSystem {
         guard !isGameRunning else { return }
         displayDelegate?.clearFieldDisplay()
         displayDelegate?.updateHeldPiece(nil)
-        field.reset()
+        manipulator.reset()
         tetrominoRandomizer.reset()
         holdPieceLocked = false
         heldPieceType = nil
@@ -87,7 +85,7 @@ extension TetrisSystem: GameSceneUpdatable {
 
 extension TetrisSystem: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
-        field.settingsDidUpdate(settings)
+        manipulator.settingsDidUpdate(settings)
         dasManager.settingsDidUpdate(settings)
         movementTimer.settingsDidUpdate(settings)
     }
@@ -109,24 +107,24 @@ extension TetrisSystem: ControllerDelegate {
         
         switch button {
         case .moveLeft:
-            field.movePiece(.left)
+            manipulator.movePiece(.left)
             dasManager.inputBegan(.left)
         case .moveRight:
-            field.movePiece(.right)
+            manipulator.movePiece(.right)
             dasManager.inputBegan(.right)
         case .hardDrop:
-            field.hardDrop()
+            manipulator.hardDrop()
         case .softDrop:
             movementTimer.startTiming(.softDrop)
         case .hold:
             holdPiece()
         case .rotateLeft:
-            field.activePiece.map {
-                field.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingLeft())
+            manipulator.activePiece.map {
+                manipulator.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingLeft())
             }
         case .rotateRight:
-            field.activePiece.map {
-                field.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingRight())
+            manipulator.activePiece.map {
+                manipulator.replacePieceWithFirstValidPiece(in: $0.kickCandidatesForRotatingRight())
             }
         case .none:
             break
@@ -200,16 +198,16 @@ private extension TetrisSystem {
 
     func playNextPiece(_ nextPiece: Tetromino? = nil) {
         let piece = nextPiece ?? tetrominoRandomizer.popNext()
-        if field.startPiece(type: piece) {
+        if manipulator.startPiece(type: piece) {
             movementTimer.startTiming(.gravity)
             displayDelegate?.updatePreviews(tetrominoRandomizer.previews())
         }
     }
 
     func holdPiece() {
-        guard !holdPieceLocked, let piece = field.activePiece else { return }
+        guard !holdPieceLocked, let piece = manipulator.activePiece else { return }
 
-        field.clearActivePiece()
+        manipulator.clearActivePiece()
         playNextPiece(heldPieceType)
         heldPieceType = piece.type
         holdPieceLocked = true

@@ -9,6 +9,11 @@
 import Foundation
 
 
+/**
+ A field is a model of what is presently on the playfield.  The field size is
+ 40 x 10, twice as high as the visible part. Only changes in the visible half
+ is tracked for UI update purposes.
+ */
 final class Field {
 
 
@@ -35,7 +40,6 @@ final class Field {
 
     fileprivate var ghostPiece: Piece?
 
-    fileprivate var hideGhost = false
 
     fileprivate var maxRowOfLockedBlocks = 0
 
@@ -44,13 +48,6 @@ final class Field {
         allBlocks = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
     }
 
-}
-
-
-extension Field: SettingsNotificationTarget {
-    func settingsDidUpdate(_ settings: SettingsManager) {
-        hideGhost = settings.hideGhost
-    }
 }
 
 
@@ -136,7 +133,7 @@ private extension Field {
         previous?.blocks.forEach(clearBlock)
         ghostPiece?.blocks.forEach(clearBlock)
         
-        ghostPiece = hideGhost ? nil : current.map(positionedGhost)
+//        ghostPiece = hideGhost ? nil : current.map(positionedGhost)
         ghostPiece?.blocks.forEach(setBlock)
         current?.blocks.forEach(setBlock)
 
@@ -276,6 +273,15 @@ private extension Field {
 }
 
 
+extension Field {
+    func dumpUnreportedChanges() -> [Block] {
+        let blocks = unreportedChanges.map { $0.value.newBlock }
+        unreportedChanges.removeAll(keepingCapacity: true)
+        return blocks
+    }
+}
+
+
 private extension Field {
 
     func setBlock(_ block: Block) {
@@ -287,14 +293,14 @@ private extension Field {
     }
 
     private func setBlock(_ block: Block, clear: Bool) {
+        guard block.y < 20 else { return }
+
         let i = block.x + block.y * 10
         let type = clear ? .blank : block.type
 
-        guard allBlocks[i] != type else { return }
         let previousType = allBlocks[i]
+        guard previousType != type else { return }
         allBlocks[i] = type
-
-        guard i < 10 * 20 else { return }
 
         // Change changeset as smartly as possible
         let newBlock = clear ? Block(type: .blank, x: block.x, y: block.y) : block
