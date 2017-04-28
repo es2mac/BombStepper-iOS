@@ -12,8 +12,10 @@ import Foundation
 /// Field does work on a separate queue, so delegate might want to dispatch back to main
 protocol FieldDelegate: class {
     func updateField(blocks: [Block])
-    func activePieceDidLock(lockedOut: Bool)
+    func activePieceDidLock()
+    func fieldDidTopOut()
     func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus)
+    func linesCleared(_ count: Int)
 }
 
 
@@ -27,12 +29,6 @@ protocol FieldDelegate: class {
  */
 final class Field {
 
-
-    enum StartPieceResult {
-        case success
-        case stillHasActivePiece
-        case blockedOut
-    }
 
     enum BottomTouchingStatus {
         case floating
@@ -59,6 +55,8 @@ final class Field {
 
     fileprivate var hideGhost = false
 
+    fileprivate var maxRowOfLockedBlocks = 0
+
     init(delegate: FieldDelegate? = nil) {
         self.delegate = delegate
         allBlocks = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
@@ -76,41 +74,43 @@ extension Field: SettingsNotificationTarget {
 
 extension Field {
 
-    
+
     // WISHLIST: gravity setting
 
-    
-    /// Top out is reported here
+
+    // Returns if piece successfully started
     @discardableResult
-    func startPiece(type: Tetromino) -> StartPieceResult {
-        var result: StartPieceResult = .success
+    func startPiece(type: Tetromino) -> Bool {
+        var result = true
         queue.sync {
             guard activePiece == nil else {
-                result = .stillHasActivePiece
+                result = false
                 return
             }
-
+            
             let piece = Piece(type: type, x: 4, y: 20)
-
+            
             guard !pieceIsObstructed(piece) else {
-                result = .blockedOut
+                result = false
+                self.delegate?.fieldDidTopOut()
                 return
             }
-
-            defer {
-                self.activePiece = piece
-                reportChanges()
-            }
+            
+            self.activePiece = piece
+            reportChanges()
         }
         return result
     }
 
     func clearActivePiece() {
-        activePiece = nil
+        activePiece = nil   // generally this is called when holding, so no need to report just yet
     }
 
     func movePiece(_ direction: Direction, steps: Int = 1) {
-        queue.async { self.movePieceAsync(direction, steps: steps) }
+        queue.async {
+            self.movePieceAsync(direction, steps: steps)
+            self.reportChanges()
+        }
     }
 
     func replacePieceWithFirstValidPiece(in candidates: [Piece]) {
@@ -192,7 +192,6 @@ private extension Field {
         for _ in 0 ..< steps {
             if !moveActivePiece(direction.offset) { break }
         }
-        reportChanges()
     }
 
 }
@@ -214,28 +213,59 @@ private extension Field {
 
         // Check lock out (http://tetris.wikia.com/wiki/Top_out)
         let lockedOut = !piece.blocks.contains { $0.y < 20 }
-        self.delegate?.activePieceDidLock(lockedOut: lockedOut)
+        if lockedOut {
+            self.delegate?.fieldDidTopOut()
+        }
+        else {
+            maxRowOfLockedBlocks = max(maxRowOfLockedBlocks, piece.blocks.map({$0.y}).max()!)
+            clearCompletedLines(clearingPiece: piece)
+            self.delegate?.activePieceDidLock()
+        }
 
-        if !lockedOut { clearCompletedLines() }
     }
 
     // Temporary.  May be more complicated (e.g. bombs)
-    func clearCompletedLines() {
+    func clearCompletedLines(clearingPiece piece: Piece) {
+
+        // TODO: T-spin detection?
+
+        let pieceYMin = piece.blocks.map({$0.y}).min()!
+        let pieceYMmax = piece.blocks.map({$0.y}).max()!
+
         var clearedLinesCount = 0
-        for y in 0 ..< 24 {
+
+        // Check lines possibly cleared by this piece
+        for y in pieceYMin ... pieceYMmax {
             let currentLine = allBlocks[(y * 10) ..< ((y + 1) * 10)]
             if !currentLine.contains(where: { type in
                 if case .locked = type { return false }
-                return true
+                else { return true }
             }) {
                 clearedLinesCount += 1
             }
             else if clearedLinesCount > 0 { // Shift this incomplete line down by the number of lines cleared so far
-                for (index, type) in currentLine.enumerated() {
-                    let block = Block(type: type, x: index % 10, y: y - clearedLinesCount)
-                    setBlock(block)
-                }
+                shiftRow(y, downBy: clearedLinesCount)
             }
+        }
+
+        // Shift the rest of the lines if needed
+        if clearedLinesCount > 0 {
+            for y in (pieceYMmax + 1) ... (maxRowOfLockedBlocks + clearedLinesCount) {
+                shiftRow(y, downBy: clearedLinesCount)
+            }
+            maxRowOfLockedBlocks -= clearedLinesCount
+            delegate?.linesCleared(clearedLinesCount)
+        }
+    }
+
+    func shiftRow(_ row: Int, downBy lines: Int) {
+        let destinationRow = row - lines
+        guard destinationRow >= 0 else { return }
+        print("Shift row", row, "by", lines)
+        let currentLine = allBlocks[(row * 10) ..< ((row + 1) * 10)]
+        for (index, type) in currentLine.enumerated() {
+            let block = Block(type: type, x: index % 10, y: destinationRow)
+            setBlock(block)
         }
     }
 
@@ -312,6 +342,7 @@ private extension Field {
     }
 
 }
+
 
 
 

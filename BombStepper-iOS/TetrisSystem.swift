@@ -17,7 +17,8 @@ protocol BaseGameUIDisplay: class {
 }
 
 protocol GameEventDelegate: class {
-
+    func linesCleared(_ lineClear: LineClear)
+    func gameDidEnd()
 }
 
 
@@ -158,19 +159,21 @@ extension TetrisSystem: FieldDelegate {
         displayDelegate?.updateFieldDisplay(blocks: blocks)
     }
     
-    func activePieceDidLock(lockedOut: Bool) {
+    func activePieceDidLock() {
         movementTimer.stopTiming(.gravity)
         movementTimer.resetDelayedLock()
         holdPieceLocked = false
-
-        guard !lockedOut else {
-            isGameRunning = false
-            return
-        }
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+        
+//            DispatchQueue.main.asyncAfter(deadline: .now() + 0.05) {
+        DispatchQueue.main.async {
             self.playNextPiece()
         }
+    }
+
+    func fieldDidTopOut() {
+        // TODO
+        
+        endGame()
     }
 
     func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus) {
@@ -181,6 +184,11 @@ extension TetrisSystem: FieldDelegate {
             movementTimer.startTiming(.delayedLock(touching))
         }
     }
+
+    func linesCleared(_ count: Int) {
+        // TODO: also keep track of rotation for spin-detection
+        eventDelegate?.linesCleared(.normal(lines: count))
+    }
 }
 
 
@@ -188,14 +196,9 @@ private extension TetrisSystem {
 
     func playNextPiece(_ nextPiece: Tetromino? = nil) {
         let piece = nextPiece ?? tetrominoRandomizer.popNext()
-        switch field.startPiece(type: piece) {
-        case .blockedOut:
-            isGameRunning = false
-        case .success:
+        if field.startPiece(type: piece) {
             movementTimer.startTiming(.gravity)
             displayDelegate?.updatePreviews(tetrominoRandomizer.previews())
-        default:
-            break
         }
     }
 
@@ -207,6 +210,11 @@ private extension TetrisSystem {
         heldPieceType = piece.type
         holdPieceLocked = true
         displayDelegate?.updateHeldPiece(piece.type)
+    }
+
+    func endGame() {
+        isGameRunning = false
+        eventDelegate?.gameDidEnd()
     }
 }
 
