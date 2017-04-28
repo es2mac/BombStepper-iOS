@@ -40,7 +40,7 @@ final class ControllerNode: SKNode {
     fileprivate var touchesData = [UITouch : TouchData]()
 
 
-    init(sceneSize: CGSize, delegate: ControllerDelegate?) {
+    init(sceneSize: CGSize, delegate: ControllerDelegate? = nil) {
         self.sceneSize = sceneSize
         self.delegate = delegate
 

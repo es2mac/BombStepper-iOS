@@ -15,6 +15,7 @@
 		DA25F1C31EAB0D3C0031F833 /* Field.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C21EAB0D3C0031F833 /* Field.swift */; };
 		DA25F1C51EAB19110031F833 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C41EAB19110031F833 /* Block.swift */; };
 		DA25F1C71EAB39130031F833 /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C61EAB39130031F833 /* Piece.swift */; };
+		DA44EA201EB343F500E0C406 /* GameCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA44EA1F1EB343F500E0C406 /* GameCoordinator.swift */; };
 		DA4D28F61EA4F6C5008F3BDF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D28F51EA4F6C5008F3BDF /* AppDelegate.swift */; };
 		DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D28FB1EA4F6C5008F3BDF /* GameScene.swift */; };
 		DA4D28FE1EA4F6C5008F3BDF /* GameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D28FD1EA4F6C5008F3BDF /* GameViewController.swift */; };
@@ -56,6 +57,7 @@
 		DA25F1C21EAB0D3C0031F833 /* Field.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Field.swift; sourceTree = "<group>"; };
 		DA25F1C41EAB19110031F833 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		DA25F1C61EAB39130031F833 /* Piece.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Piece.swift; sourceTree = "<group>"; };
+		DA44EA1F1EB343F500E0C406 /* GameCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCoordinator.swift; sourceTree = "<group>"; };
 		DA4D28F21EA4F6C5008F3BDF /* BombStepper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BombStepper.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA4D28F51EA4F6C5008F3BDF /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DA4D28FB1EA4F6C5008F3BDF /* GameScene.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GameScene.swift; sourceTree = "<group>"; };
@@ -143,6 +145,7 @@
 				DA882A961EAF0D300066A606 /* MovementTimer.swift */,
 				DA8324A91EA7F3060076AF4E /* DASManager.swift */,
 				DA882A941EAF024C0066A606 /* Directions.swift */,
+				DA44EA1F1EB343F500E0C406 /* GameCoordinator.swift */,
 			);
 			name = Models;
 			sourceTree = "<group>";
@@ -314,6 +317,7 @@
 				DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */,
 				DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */,
 				DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */,
+				DA44EA201EB343F500E0C406 /* GameCoordinator.swift in Sources */,
 				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,
 				DA25F1C31EAB0D3C0031F833 /* Field.swift in Sources */,
 				DA882A9B1EAF9EF60066A606 /* SinglePieceNode.swift in Sources */,

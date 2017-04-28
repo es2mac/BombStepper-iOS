@@ -37,7 +37,7 @@ class GameViewController: UIViewController {
         skView.showsFPS = true
         skView.showsNodeCount = true
 
-        let scene = GameScene(size: view.bounds.size)
+        let scene = GameScene(size: view.bounds.size, coordinator: DummyCoordinator())
         scene.backgroundColor = .lightFlatBlack
         scene.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         scene.scaleMode = .resizeFill

@@ -16,67 +16,70 @@ protocol GameSceneUpdatable {
 
 
 final class GameScene: SKScene {
-    
-    fileprivate var controllerNode: ControllerNode!
-    fileprivate var playfieldNode: PlayfieldNode!
-    fileprivate var heldPieceNode: HeldPieceNode!
-    fileprivate var previewsNode: PreviewsNode!
-    fileprivate let settingsManager = SettingsManager()
-    fileprivate let system = TetrisSystem()
 
-    override func didMove(to view: SKView) {
-        setupControllerNode()
-        setupDisplayNodes()
+    let coordinator: GameCoordinator
+
+    fileprivate let settingsManager: SettingsManager
+    fileprivate let system: TetrisSystem
+
+    fileprivate let controllerNode: ControllerNode
+    fileprivate let playfieldNode: PlayfieldNode
+    fileprivate let heldPieceNode: HeldPieceNode
+    fileprivate let previewsNode: PreviewsNode
+
+    init(size: CGSize, coordinator: GameCoordinator) {
+        self.coordinator = coordinator
+        settingsManager = SettingsManager()
+        system = TetrisSystem()
+
+        (controllerNode, playfieldNode, heldPieceNode, previewsNode) = GameScene.standardNodes(sceneSize: size)
+
+        super.init(size: size)
+
         system.delegate = self
+        controllerNode.delegate = system
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])
+        [controllerNode, playfieldNode, heldPieceNode, previewsNode].forEach(addChild)
     }
-    
+
+    required init?(coder aDecoder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
     override func update(_ currentTime: TimeInterval) {
         system.update(currentTime)
     }
+
 }
 
 
 private extension GameScene {
 
-    // Create or (if size changed) recreate the controller node
-    // Treat controllerNode as regular optional here
-    func setupControllerNode() {
-        guard controllerNode?.sceneSize != size else { return }
-        controllerNode?.removeFromParent()
-        let node = ControllerNode(sceneSize: size, delegate: system)
-        node.alpha = 0
-        node.zPosition = ZPosition.controls
-        addChild(node)
-        node.run(.fadeIn(withDuration: 1))
-        controllerNode = node
+    class func standardNodes(sceneSize size: CGSize) -> (controller: ControllerNode, playField: PlayfieldNode, heldPiece: HeldPieceNode, previews: PreviewsNode) {
+        let controllerNode = ControllerNode(sceneSize: size)
+        controllerNode.alpha = 0
+        controllerNode.zPosition = ZPosition.controls
+        controllerNode.run(.fadeIn(withDuration: 1))
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
-            node.isUserInteractionEnabled = true
+            controllerNode.isUserInteractionEnabled = true
         }
-    }
-    
-    // Create or (if size changed) recreate the playfield node
-    // Treat playfieldNode as regular optional here
-    func setupDisplayNodes() {
-        guard playfieldNode?.sceneSize != size else { return }
-        playfieldNode?.removeFromParent()
 
-        playfieldNode = PlayfieldNode(sceneSize: size)
+        let playfieldNode = PlayfieldNode(sceneSize: size)
         playfieldNode.alpha = 0
-        addChild(playfieldNode)
         playfieldNode.fadeIn()
 
         let tileWidth = playfieldNode.tileWidth
 
-        previewsNode = PreviewsNode(tileWidth: tileWidth)
+        let previewsNode = PreviewsNode(tileWidth: tileWidth)
         previewsNode.position.x = tileWidth * (5 + 2) + CGFloat(Dimension.outerFrameWidth) + 5
         previewsNode.position.y = tileWidth * 2
-        addChild(previewsNode)
 
-        heldPieceNode = HeldPieceNode(tileWidth: tileWidth)
+        let heldPieceNode = HeldPieceNode(tileWidth: tileWidth)
         heldPieceNode.position.x = -(tileWidth * (5 + 2) + CGFloat(Dimension.outerFrameWidth) + 5)
         heldPieceNode.position.y = tileWidth * 8
-        addChild(heldPieceNode)
+
+        return (controller: controllerNode, playField: playfieldNode, heldPiece: heldPieceNode, previews: previewsNode)
+
     }
 
 }
