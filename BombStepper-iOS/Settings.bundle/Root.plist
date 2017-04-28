@@ -12,7 +12,7 @@
 			<key>Type</key>
 			<string>PSGroupSpecifier</string>
 			<key>Title</key>
-			<string>Controls</string>
+			<string>Buttons</string>
 		</dict>
 		<dict>
 			<key>Type</key>
@@ -128,13 +128,11 @@
 		</dict>
 		<dict>
 			<key>Type</key>
-			<string>PSToggleSwitchSpecifier</string>
+			<string>PSChildPaneSpecifier</string>
 			<key>Title</key>
-			<string>Enabled</string>
-			<key>Key</key>
-			<string>swipeDropEnabled</string>
-			<key>DefaultValue</key>
-			<true/>
+			<string>Enabled Buttons</string>
+			<key>File</key>
+			<string>SwipeDrop</string>
 		</dict>
 		<dict>
 			<key>Type</key>

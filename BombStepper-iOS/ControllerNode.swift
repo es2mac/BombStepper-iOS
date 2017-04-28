@@ -90,10 +90,11 @@ final class ControllerNode: SKNode {
 
 extension ControllerNode: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
-        TouchData.swipeDropEnabled = settings.swipeDropEnabled
+        // TODO: new per-button settings
+//        TouchData.swipeDropEnabled = settings.swipeDropEnabled
         TouchData.swipeDownThreshold = settings.swipeDownThreshold
         lrSwipeEnabled = settings.lrSwipeEnabled
-        buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: settings.buttonsArray)
+        buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: settings.buttons)
     }
 }
 
