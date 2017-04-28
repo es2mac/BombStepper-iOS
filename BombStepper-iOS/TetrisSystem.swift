@@ -9,34 +9,34 @@
 import Foundation
 
 
-protocol TetrisSystemDelegate: class {
+protocol BaseGameUIDisplay: class {
     func updateFieldDisplay(blocks: [Block])
     func updatePreviews(_ types: [Tetromino])
     func updateHeldPiece(_ type: Tetromino?)
     func clearFieldDisplay()
 }
 
+protocol GameEventDelegate: class {
+
+}
+
 
 class TetrisSystem {
-
-    weak var delegate: TetrisSystemDelegate?
-
+    
+    weak var displayDelegate: BaseGameUIDisplay?
+    weak var eventDelegate: GameEventDelegate?
+    
     fileprivate(set) var isGameRunning = false
-
+    
     fileprivate let field = Field()
     fileprivate let tetrominoRandomizer = TetrominoRandomizer()
     fileprivate let dasManager = DASManager()
     fileprivate let movementTimer = MovementTimer()
-
+    
     fileprivate var heldPieceType: Tetromino?
     fileprivate var holdPieceLocked = false
-
-    init(delegate: TetrisSystemDelegate? = nil) {
-        self.delegate = delegate
-        defer { setup() }
-    }
-
-    private func setup() {
+    
+    init() {
         field.delegate = self
         movementTimer.moveAction = { [weak self] direction, steps in
             self?.field.movePiece(direction, steps: steps)
@@ -44,7 +44,7 @@ class TetrisSystem {
         movementTimer.lockAction = { [weak self] in
             self?.field.hardDrop()
         }
-            
+        
         dasManager.activateDAS = { [weak self] active, direction in
             if active {
                 self?.movementTimer.startTiming(.das(direction))
@@ -61,8 +61,8 @@ extension TetrisSystem {
 
     func startGame() {
         guard !isGameRunning else { return }
-        delegate?.clearFieldDisplay()
-        delegate?.updateHeldPiece(nil)
+        displayDelegate?.clearFieldDisplay()
+        displayDelegate?.updateHeldPiece(nil)
         field.reset()
         tetrominoRandomizer.reset()
         holdPieceLocked = false
@@ -147,9 +147,15 @@ extension TetrisSystem: ControllerDelegate {
 }
 
 extension TetrisSystem: FieldDelegate {
+
+
+    // TODO: Expand FieldDelegate to include event reporting, and the system relay them to eventDelegate
+    // Think about what the outside user of TetrisSystem needs to be able to tell it to do
+    // e.g., start game, play next piece (future: bomb rise?)
+    
     
     func updateField(blocks: [Block]) {
-        delegate?.updateFieldDisplay(blocks: blocks)
+        displayDelegate?.updateFieldDisplay(blocks: blocks)
     }
     
     func activePieceDidLock(lockedOut: Bool) {
@@ -187,7 +193,7 @@ private extension TetrisSystem {
             isGameRunning = false
         case .success:
             movementTimer.startTiming(.gravity)
-            delegate?.updatePreviews(tetrominoRandomizer.previews())
+            displayDelegate?.updatePreviews(tetrominoRandomizer.previews())
         default:
             break
         }
@@ -200,7 +206,7 @@ private extension TetrisSystem {
         playNextPiece(heldPieceType)
         heldPieceType = piece.type
         holdPieceLocked = true
-        delegate?.updateHeldPiece(piece.type)
+        displayDelegate?.updateHeldPiece(piece.type)
     }
 }
 

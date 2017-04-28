@@ -36,10 +36,13 @@ final class GameScene: SKScene {
 
         super.init(size: size)
 
-        system.delegate = self
+        system.displayDelegate = self
+//        system.eventDelegate = ...
         controllerNode.delegate = system
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])
+        
         [controllerNode, playfieldNode, heldPieceNode, previewsNode].forEach(addChild)
+        coordinator.modeSpecificNodes().forEach(addChild)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -85,7 +88,7 @@ private extension GameScene {
 }
 
 
-extension GameScene: TetrisSystemDelegate {
+extension GameScene: BaseGameUIDisplay {
     func updateFieldDisplay(blocks: [Block]) {
         self.playfieldNode.place(blocks: blocks)
     }
