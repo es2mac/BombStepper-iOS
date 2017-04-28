@@ -37,6 +37,7 @@ final class GameScene: SKScene {
         super.init(size: size)
 
         system.displayDelegate = self
+        // TODO
 //        system.eventDelegate = ...
         controllerNode.delegate = system
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])

@@ -185,8 +185,10 @@ extension TetrisSystem: FieldDelegate {
         }
     }
 
-    func linesCleared(_ count: Int) {
-        // TODO: also keep track of rotation for spin-detection
+    func linesCleared(_ count: Int, coveredTCornersCount: Int, isImmobile: Bool) {
+        // TODO: keep track of rotation for spin-detection
+
+        
         eventDelegate?.linesCleared(.normal(lines: count))
     }
 }

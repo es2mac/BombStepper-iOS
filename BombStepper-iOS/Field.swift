@@ -15,7 +15,14 @@ protocol FieldDelegate: class {
     func activePieceDidLock()
     func fieldDidTopOut()
     func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus)
-    func linesCleared(_ count: Int)
+    // Assume "covered T corners count" > 0 only for T-clears
+    func linesCleared(_ count: Int, coveredTCornersCount: Int, isImmobile: Bool)
+}
+
+extension FieldDelegate {
+    func linesCleared(_ count: Int) {
+        linesCleared(count, coveredTCornersCount: 0, isImmobile: false)
+    }
 }
 
 
@@ -193,7 +200,6 @@ private extension Field {
             if !moveActivePiece(direction.offset) { break }
         }
     }
-
 }
 
 
@@ -224,7 +230,6 @@ private extension Field {
 
     }
 
-    // Temporary.  May be more complicated (e.g. bombs)
     func clearCompletedLines(clearingPiece piece: Piece) {
 
         // TODO: T-spin detection?

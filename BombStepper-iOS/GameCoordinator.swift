@@ -11,8 +11,8 @@ import SpriteKit
 
 enum LineClear {
     case normal(lines: Int)
-    case TSpin(lines: Int)
-    case TSpinMini
+    case TSpin(lines: Int)  // 3+ corners, clears 1+ lines except those matching mini rule
+    case TSpinMini          // Exactly 3 corners, clears one line, not immobile
 }
 
 
