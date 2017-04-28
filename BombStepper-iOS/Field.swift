@@ -9,31 +9,6 @@
 import Foundation
 
 
-/// Field does work on a separate queue, so delegate might want to dispatch back to main
-protocol FieldDelegate: class {
-    func updateField(blocks: [Block])
-    func activePieceDidLock()
-    func fieldDidTopOut()
-    func activePieceBottomTouchingStatusChanged(touching: Field.BottomTouchingStatus)
-    // Assume "covered T corners count" > 0 only for T-clears
-    func linesCleared(_ count: Int, coveredTCornersCount: Int, isImmobile: Bool)
-}
-
-extension FieldDelegate {
-    func linesCleared(_ count: Int) {
-        linesCleared(count, coveredTCornersCount: 0, isImmobile: false)
-    }
-}
-
-
-/**
- A field is a model of what is presently on the playfield.  It handles the logic
- of how the playing piece behave on the field, reports how field changes at the
- individual blocks level, and handles things like piece locking, line clears, 
- and top out. The field size is 40 x 10, twice as high as the visible part.
- Only changes in the visible half is reported.  For soft drop lock timing,
- call update for each scene tick.
- */
 final class Field {
 
 
@@ -44,7 +19,7 @@ final class Field {
     }
 
 
-    weak var delegate: FieldDelegate?
+    weak var delegate: FieldManipulatorDelegate?
 
     // Data for the whole 40 x 10 field
     fileprivate var allBlocks: [Block.BlockType]
@@ -64,7 +39,7 @@ final class Field {
 
     fileprivate var maxRowOfLockedBlocks = 0
 
-    init(delegate: FieldDelegate? = nil) {
+    init(delegate: FieldManipulatorDelegate? = nil) {
         self.delegate = delegate
         allBlocks = Array<Block.BlockType>(repeating: Block.BlockType.blank, count: 10 * 40)
     }

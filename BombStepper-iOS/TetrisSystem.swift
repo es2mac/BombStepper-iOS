@@ -28,7 +28,9 @@ class TetrisSystem {
     weak var eventDelegate: GameEventDelegate?
     
     fileprivate(set) var isGameRunning = false
-    
+
+    // TODO
+//    fileprivate let field = FieldManipulator()
     fileprivate let field = Field()
     fileprivate let tetrominoRandomizer = TetrominoRandomizer()
     fileprivate let dasManager = DASManager()
@@ -147,10 +149,10 @@ extension TetrisSystem: ControllerDelegate {
     }
 }
 
-extension TetrisSystem: FieldDelegate {
+extension TetrisSystem: FieldManipulatorDelegate {
 
 
-    // TODO: Expand FieldDelegate to include event reporting, and the system relay them to eventDelegate
+    // TODO: Expand FieldManipulatorDelegate to include event reporting, and the system relay them to eventDelegate
     // Think about what the outside user of TetrisSystem needs to be able to tell it to do
     // e.g., start game, play next piece (future: bomb rise?)
     
