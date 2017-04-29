@@ -28,17 +28,3 @@ final class MenuViewController: UIViewController {
 }
 
 
-final class FreePlaySegue: UIStoryboardSegue {
-
-    override func perform() {
-        guard let gameViewController = destination as? GameViewController else {
-            assertionFailure("Segue destination should be GameViewController")
-            return
-        }
-        gameViewController.gameMode = .freePlay
-        super.perform()
-    }
-    
-}
-
-

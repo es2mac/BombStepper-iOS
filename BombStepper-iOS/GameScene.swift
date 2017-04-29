@@ -19,13 +19,16 @@ final class GameScene: SKScene {
 
     fileprivate let settingsManager: SettingsManager
     fileprivate let system: TetrisSystem
+    fileprivate var eventDelegate: (GameEventDelegate & GameSceneUpdatable)?
 
     fileprivate let controllerNode: ControllerNode
     fileprivate let playfieldNode: PlayfieldNode
     fileprivate let heldPieceNode: HeldPieceNode
     fileprivate let previewsNode: PreviewsNode
 
-    init(size: CGSize, eventDelegate: GameEventDelegate) {
+    init(size: CGSize, eventDelegate: (GameEventDelegate & GameSceneUpdatable)) {
+        self.eventDelegate = eventDelegate
+        
         settingsManager = SettingsManager()
         system = TetrisSystem()
 
@@ -52,6 +55,7 @@ final class GameScene: SKScene {
 
     override func update(_ currentTime: TimeInterval) {
         system.update(currentTime)
+        eventDelegate?.update(currentTime)
     }
 
 }
