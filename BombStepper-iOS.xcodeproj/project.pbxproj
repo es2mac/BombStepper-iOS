@@ -15,6 +15,7 @@
 		DA25F1C31EAB0D3C0031F833 /* Field.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C21EAB0D3C0031F833 /* Field.swift */; };
 		DA25F1C51EAB19110031F833 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C41EAB19110031F833 /* Block.swift */; };
 		DA25F1C71EAB39130031F833 /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C61EAB39130031F833 /* Piece.swift */; };
+		DA29F62A1EB4D9280095F4D5 /* GameModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA29F6291EB4D9280095F4D5 /* GameModeController.swift */; };
 		DA3DA35B1EB47C9100A7AED3 /* SprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3DA35A1EB47C9100A7AED3 /* SprintViewController.swift */; };
 		DA44EA201EB343F500E0C406 /* GameCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA44EA1F1EB343F500E0C406 /* GameCoordinator.swift */; };
 		DA4D28F61EA4F6C5008F3BDF /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D28F51EA4F6C5008F3BDF /* AppDelegate.swift */; };
@@ -59,6 +60,7 @@
 		DA25F1C21EAB0D3C0031F833 /* Field.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Field.swift; sourceTree = "<group>"; };
 		DA25F1C41EAB19110031F833 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		DA25F1C61EAB39130031F833 /* Piece.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Piece.swift; sourceTree = "<group>"; };
+		DA29F6291EB4D9280095F4D5 /* GameModeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameModeController.swift; sourceTree = "<group>"; };
 		DA3DA35A1EB47C9100A7AED3 /* SprintViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SprintViewController.swift; sourceTree = "<group>"; };
 		DA44EA1F1EB343F500E0C406 /* GameCoordinator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameCoordinator.swift; sourceTree = "<group>"; };
 		DA4D28F21EA4F6C5008F3BDF /* BombStepper.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BombStepper.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -151,6 +153,7 @@
 				DA8324A91EA7F3060076AF4E /* DASManager.swift */,
 				DA882A941EAF024C0066A606 /* Directions.swift */,
 				DA44EA1F1EB343F500E0C406 /* GameCoordinator.swift */,
+				DA29F6291EB4D9280095F4D5 /* GameModeController.swift */,
 				DA7998051EB3D24700A773E2 /* MachTiming.swift */,
 			);
 			name = Models;
@@ -317,6 +320,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DA29F62A1EB4D9280095F4D5 /* GameModeController.swift in Sources */,
 				DA882A9D1EAFBDCA0066A606 /* UIImageDrawing.swift in Sources */,
 				DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */,
 				DA882A9F1EAFC0910066A606 /* PreviewsNode.swift in Sources */,

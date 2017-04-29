@@ -16,29 +16,4 @@ enum LineClear {
 }
 
 
-/*
- Coordinator handles the rules for game mode objectives
- Coordinator -> view controller:
- - Dismiss
- 
- Coordinator -> tetris system:
- - Stop game, objective reached
- 
- Coordinator -> game scene:
- - hand over the nodes, but keeping a reference and manipulate itself
- 
- It needs to be able to tell the system to end
- System needs to tell the
- */
-
-//class DummyCoordinator: GameEventDelegate {
-//    
-//    var gameEndAction: (() -> Void)?
-//    var gameStartAction: (() -> Void)?
-//    
-//    func linesCleared(_ lineClear: LineClear) {
-//        print(lineClear)
-//    }
-//    
-//}
 

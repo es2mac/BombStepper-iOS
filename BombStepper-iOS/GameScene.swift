@@ -19,34 +19,35 @@ final class GameScene: SKScene {
 
     fileprivate let settingsManager: SettingsManager
     fileprivate let system: TetrisSystem
-    fileprivate var eventDelegate: (GameEventDelegate & GameSceneUpdatable)?
+    fileprivate let updateTargets: [GameSceneUpdatable]
 
     fileprivate let controllerNode: ControllerNode
     fileprivate let playfieldNode: PlayfieldNode
     fileprivate let heldPieceNode: HeldPieceNode
     fileprivate let previewsNode: PreviewsNode
 
-    init(size: CGSize, eventDelegate: (GameEventDelegate & GameSceneUpdatable)) {
-        self.eventDelegate = eventDelegate
-        
+    init(size: CGSize, modeController: GameModeController) {
         settingsManager = SettingsManager()
         system = TetrisSystem()
-
+        updateTargets = [system, modeController.updateReceiver].flatMap({$0})
+        
         (controllerNode, playfieldNode, heldPieceNode, previewsNode) = GameScene.standardNodes(sceneSize: size)
 
         super.init(size: size)
 
         system.displayDelegate = self
-        system.eventDelegate = eventDelegate
+        system.eventDelegate = modeController
 
-        eventDelegate.gameStartAction = { [weak system] in system?.startGame() }
-        eventDelegate.gameEndAction = { [weak system] in system?.stopGame() }
+        modeController.signalGamePrepare = { [weak system] in system?.prepareGame() }
+        modeController.signalGameStart = { [weak system] in system?.startGame() }
+        modeController.signalGameEnd = { [weak system] in system?.stopGame() }
 
         controllerNode.delegate = system
         
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])
         
         [controllerNode, playfieldNode, heldPieceNode, previewsNode].forEach(addChild)
+        modeController.modeSpecificDisplayNode.map(addChild)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -54,8 +55,7 @@ final class GameScene: SKScene {
     }
 
     override func update(_ currentTime: TimeInterval) {
-        system.update(currentTime)
-        eventDelegate?.update(currentTime)
+        updateTargets.forEach { $0.update(currentTime) }
     }
 
 }

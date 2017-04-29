@@ -6,7 +6,7 @@
 //  Copyright © 2017 Mathemusician.net. All rights reserved.
 //
 
-import Foundation
+import SpriteKit
 
 
 protocol BaseGameUIDisplay: class {
@@ -16,12 +16,8 @@ protocol BaseGameUIDisplay: class {
     func clearFieldDisplay()
 }
 
-protocol GameEventDelegate: class {
-    // Game start/end closures are for the delegate to call, to tell the system to start/end
-    var gameStartAction: (() -> Void)? { get set }
-    var gameEndAction: (() -> Void)? { get set }
 
-    // Methods are feedback to the delegate of what happened
+protocol GameEventDelegate: class {
     func linesCleared(_ lineClear: LineClear)
     func toppedOut()
 }
@@ -30,11 +26,11 @@ protocol GameEventDelegate: class {
 class TetrisSystem {
     
     weak var displayDelegate: BaseGameUIDisplay?
-    weak var eventDelegate: GameEventDelegate?
+    weak var eventDelegate: GameModeController?
     
     fileprivate(set) var isGameRunning = false
 
-    fileprivate let manipulator = FieldManipulator(field: Field())
+    fileprivate let filedManipulator = FieldManipulator(field: Field())
     fileprivate let tetrominoRandomizer = TetrominoRandomizer()
     fileprivate let dasManager = DASManager()
     fileprivate let movementTimer = MovementTimer()
@@ -43,12 +39,12 @@ class TetrisSystem {
     fileprivate var holdPieceLocked = false
     
     init() {
-        manipulator.system = self
+        filedManipulator.system = self
         movementTimer.moveAction = { [weak self] direction, steps in
-            self?.manipulator.movePiece(direction, steps: steps)
+            self?.filedManipulator.movePiece(direction, steps: steps)
         }
         movementTimer.lockAction = { [weak self] in
-            self?.manipulator.hardDrop()
+            self?.filedManipulator.hardDrop()
         }
         
         dasManager.activateDAS = { [weak self] active, direction in
@@ -59,24 +55,31 @@ class TetrisSystem {
                 self?.movementTimer.stopTiming(.das(direction))
             }
         }
+        prepareGame()
     }
 }
 
 
 extension TetrisSystem {
 
-    func startGame() {
+    func prepareGame() {
         guard !isGameRunning else { return }
 
         displayDelegate?.clearFieldDisplay()
         displayDelegate?.updateHeldPiece(nil)
-        manipulator.reset()
+        filedManipulator.reset()
         tetrominoRandomizer.reset()
         dasManager.reset()
         movementTimer.resetAll()
         heldPieceType = nil
         holdPieceLocked = false
         
+        displayDelegate?.updatePreviews(tetrominoRandomizer.previews())
+    }
+
+    func startGame() {
+        guard !isGameRunning else { return }
+
         isGameRunning = true
         playNextPiece()
     }
@@ -100,7 +103,7 @@ extension TetrisSystem: GameSceneUpdatable {
 
 extension TetrisSystem: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
-        manipulator.settingsDidUpdate(settings)
+        filedManipulator.settingsDidUpdate(settings)
         dasManager.settingsDidUpdate(settings)
         movementTimer.settingsDidUpdate(settings)
     }
@@ -110,35 +113,25 @@ extension TetrisSystem: SettingsNotificationTarget {
 extension TetrisSystem: ControllerDelegate {
 
     func buttonDown(_ button: Button) {
-
-        
-        /* Temporary game starter */
-//        if !isGameRunning, case .hold = button {
-//            startGame()
-//            return
-//        }
-        /* end temp */
-
-        
         guard isGameRunning else { return }
         
         switch button {
         case .moveLeft:
-            manipulator.movePiece(.left)
+            filedManipulator.movePiece(.left)
             dasManager.inputBegan(.left)
         case .moveRight:
-            manipulator.movePiece(.right)
+            filedManipulator.movePiece(.right)
             dasManager.inputBegan(.right)
         case .hardDrop:
-            manipulator.hardDrop()
+            filedManipulator.hardDrop()
         case .softDrop:
             movementTimer.startTiming(.softDrop)
         case .hold:
             holdPiece()
         case .rotateLeft:
-            manipulator.rotatePiece(.left)
+            filedManipulator.rotatePiece(.left)
         case .rotateRight:
-            manipulator.rotatePiece(.right)
+            filedManipulator.rotatePiece(.right)
         case .none:
             break
         }
@@ -163,12 +156,6 @@ extension TetrisSystem: ControllerDelegate {
 /// Communication with Field
 extension TetrisSystem {
 
-
-    // TODO: Event reporting, and the system relay them to eventDelegate
-    // Think about what the outside user of TetrisSystem needs to be able to tell it to do
-    // e.g., start game, play next piece (future: bomb rise?)
-    
-    
     func updatePlayField(blocks: [Block]) {
         displayDelegate?.updateFieldDisplay(blocks: blocks)
     }
@@ -190,6 +177,7 @@ extension TetrisSystem {
 
     func fieldDidTopOut() {
         endGame()
+        eventDelegate?.toppedOut()
     }
 
     func activePieceLandingStatusChanged(landed: FieldManipulator.PieceLandingStatus) {
@@ -210,7 +198,7 @@ private extension TetrisSystem {
         guard isGameRunning else { return }
 
         let piece = nextPiece ?? tetrominoRandomizer.popNext()
-        if manipulator.startPiece(type: piece) {
+        if filedManipulator.startPiece(type: piece) {
             movementTimer.startTiming(.gravity)
             displayDelegate?.updatePreviews(tetrominoRandomizer.previews())
         }
@@ -219,7 +207,7 @@ private extension TetrisSystem {
     func holdPiece() {
         guard isGameRunning else { return }
         guard !holdPieceLocked else { return }
-        guard let piece = manipulator.extractActivePiece() else { return }
+        guard let piece = filedManipulator.extractActivePiece() else { return }
 
         playNextPiece(heldPieceType)
         heldPieceType = piece.type
@@ -227,10 +215,9 @@ private extension TetrisSystem {
         displayDelegate?.updateHeldPiece(piece.type)
     }
 
+    // WISHLIST: Animate blur and/or dim game field when game ends?
     func endGame() {
         isGameRunning = false
-        // TODO: find out how this crashes, thread locked?
-//        manipulator.extractActivePiece()
     }
 }
 

@@ -30,10 +30,11 @@ enum Dimension {
 
 
 enum ZPosition {
+    static let gameModeOverlay: CGFloat = 20
     static let controls: CGFloat = 10
+    static let playfieldGrids: CGFloat = -1
     static let playfieldInnerFrame: CGFloat = -2
     static let playfieldOuterFrame: CGFloat = -3
-    static let playfieldGrids: CGFloat = -1
 }
 
 
