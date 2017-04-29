@@ -24,6 +24,7 @@
 		DA4D29031EA4F6C5008F3BDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29021EA4F6C5008F3BDF /* Assets.xcassets */; };
 		DA4D29061EA4F6C5008F3BDF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29041EA4F6C5008F3BDF /* LaunchScreen.storyboard */; };
 		DA4D29111EA4F6C5008F3BDF /* BombStepper_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */; };
+		DA729B3F1EB5053700620824 /* SprintDisplayNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA729B3E1EB5053700620824 /* SprintDisplayNode.swift */; };
 		DA7417BA1EB1DBD000C0675D /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7417B91EB1DBD000C0675D /* ButtonNode.swift */; };
 		DA7998001EB3902700A773E2 /* FieldManipulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7997FF1EB3902700A773E2 /* FieldManipulator.swift */; };
 		DA7998061EB3D24700A773E2 /* MachTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7998051EB3D24700A773E2 /* MachTiming.swift */; };
@@ -73,6 +74,7 @@
 		DA4D290C1EA4F6C5008F3BDF /* BombStepper-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BombStepper-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombStepper_iOSTests.swift; sourceTree = "<group>"; };
 		DA4D29121EA4F6C5008F3BDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DA729B3E1EB5053700620824 /* SprintDisplayNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SprintDisplayNode.swift; sourceTree = "<group>"; };
 		DA7417B91EB1DBD000C0675D /* ButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
 		DA7997FF1EB3902700A773E2 /* FieldManipulator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldManipulator.swift; sourceTree = "<group>"; };
 		DA7998051EB3D24700A773E2 /* MachTiming.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MachTiming.swift; sourceTree = "<group>"; };
@@ -113,6 +115,7 @@
 			children = (
 				DA0ED92D1EA7AA11008F3C61 /* MenuViewController.swift */,
 				DA3DA35A1EB47C9100A7AED3 /* SprintViewController.swift */,
+				DA729B3E1EB5053700620824 /* SprintDisplayNode.swift */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -322,6 +325,7 @@
 			files = (
 				DA29F62A1EB4D9280095F4D5 /* GameModeController.swift in Sources */,
 				DA882A9D1EAFBDCA0066A606 /* UIImageDrawing.swift in Sources */,
+				DA729B3F1EB5053700620824 /* SprintDisplayNode.swift in Sources */,
 				DA8324AA1EA7F3060076AF4E /* DASManager.swift in Sources */,
 				DA882A9F1EAFC0910066A606 /* PreviewsNode.swift in Sources */,
 				DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */,
