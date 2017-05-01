@@ -50,7 +50,7 @@ final class ControllerNode: SKNode {
 
         super.init()
 
-        buttonNodes.forEach(addChild)
+        buttonNodes.forEach(self.addChild)
         layoutButtons(for: sceneSize)
 
         // Make touchable area span the scene

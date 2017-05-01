@@ -46,7 +46,7 @@ final class GameScene: SKScene {
         
         settingsManager.addNotificationTargets([controllerNode, playfieldNode, system])
         
-        [controllerNode, playfieldNode, heldPieceNode, previewsNode].forEach(addChild)
+        [controllerNode, playfieldNode, heldPieceNode, previewsNode].forEach(self.addChild)
         modeController.modeSpecificDisplayNode.map(addChild)
     }
 

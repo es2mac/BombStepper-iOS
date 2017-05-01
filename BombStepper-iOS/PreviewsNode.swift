@@ -32,7 +32,7 @@ final class PreviewsNode: SKNode {
         
         super.init()
         
-        pieceNodes.forEach(addChild)
+        pieceNodes.forEach(self.addChild)
     }
     
     required init?(coder aDecoder: NSCoder) {

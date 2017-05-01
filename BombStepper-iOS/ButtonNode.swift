@@ -40,7 +40,7 @@ final class ButtonNode: SKNode {
         super.init()
 
         self.name = name
-        [baseNode, maskNode, touchableNode].forEach(addChild)
+        [baseNode, maskNode, touchableNode].forEach(self.addChild)
     }
 
     required init?(coder aDecoder: NSCoder) {

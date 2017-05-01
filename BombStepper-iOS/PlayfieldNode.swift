@@ -37,7 +37,7 @@ final class PlayfieldNode: SKNode {
 
         cropNode.addChild(tileMapNode)
         cropNode.addChild(gridsNode)
-        [outerFrameNode, innerFrameNode, cropNode].forEach(addChild)
+        [outerFrameNode, innerFrameNode, cropNode].forEach(self.addChild)
 
         let operation = GenerateTileSetOperation(tileWidth: tileWidth, ghostOpacity: ghostOpacity, doneTarget: self)
         textureGenerationQueue.addOperation(operation)
