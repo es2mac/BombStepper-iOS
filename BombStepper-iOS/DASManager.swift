@@ -9,6 +9,10 @@
 import Foundation
 
 
+// TODO: This might be more aptly called a DASTimer instead
+// TODO: The roles of DASManager and MovementTimer are confusing
+
+
 /// The DAS Manager relies on being updated each frame for timing
 final class DASManager {
 

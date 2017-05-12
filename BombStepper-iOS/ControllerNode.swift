@@ -60,6 +60,12 @@ final class ControllerNode: SKNode {
         NotificationCenter.default.addObserver(forName: .UIApplicationWillResignActive, object: nil, queue: nil) { [weak self] _ in
             self?.stopAllTouches()
         }
+
+        // Test timing
+        labelNode.fontColor = .red
+        labelNode.fontSize = 20
+        labelNode.position.y = 100
+        addChild(labelNode)
     }
 
     deinit {
@@ -70,7 +76,11 @@ final class ControllerNode: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
 
+    var startTime: MachAbsTime = 0
+    let labelNode = SKLabelNode()
+
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        startTime = mach_absolute_time()
         touches.forEach { touchDown($0) }
     }
 
@@ -79,6 +89,8 @@ final class ControllerNode: SKNode {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        let endTime = mach_absolute_time()
+        labelNode.text = String(absToMs(endTime - startTime).rounded())
         touches.forEach(touchUp)
     }
 

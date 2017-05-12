@@ -151,9 +151,8 @@ private extension MovementTimer {
     func updateGravity() {
         let elapsed = lastUpdateTime - lastGravityDropTime
         if elapsed > 1 {
-            let dropBy = Int(elapsed)
-            moveAction?(.down, dropBy)
-            lastGravityDropTime += Double(dropBy)
+            moveAction?(.down, 1)
+            lastGravityDropTime += elapsed.rounded(.down)   // If the app's been inactive, just drop once
         }
     }
 
