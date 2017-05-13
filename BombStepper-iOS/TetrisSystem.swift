@@ -32,7 +32,6 @@ class TetrisSystem {
 
     fileprivate let filedManipulator = FieldManipulator(field: Field())
     fileprivate let tetrominoRandomizer = TetrominoRandomizer()
-    fileprivate let dasManager = DASManager()
     fileprivate let movementTimer = MovementTimer()
     
     fileprivate var heldPieceType: Tetromino?
@@ -45,15 +44,6 @@ class TetrisSystem {
         }
         movementTimer.lockAction = { [weak self] in
             self?.filedManipulator.hardDrop()
-        }
-        
-        dasManager.activateDAS = { [weak self] active, direction in
-            if active {
-                self?.movementTimer.startTiming(.das(direction))
-            }
-            else {
-                self?.movementTimer.stopTiming(.das(direction))
-            }
         }
         prepareGame()
     }
@@ -69,7 +59,6 @@ extension TetrisSystem {
         displayDelegate?.updateHeldPiece(nil)
         filedManipulator.reset()
         tetrominoRandomizer.reset()
-        dasManager.reset()
         movementTimer.resetAll()
         heldPieceType = nil
         holdPieceLocked = false
@@ -86,7 +75,6 @@ extension TetrisSystem {
 
     func stopGame() {
         movementTimer.resetAll()
-        dasManager.reset()
         isGameRunning = false
     }
 
@@ -95,7 +83,6 @@ extension TetrisSystem {
 
 extension TetrisSystem: GameSceneUpdatable {
     func update(_ currentTime: TimeInterval) {
-        dasManager.update(currentTime)
         movementTimer.update(currentTime)
     }
 }
@@ -104,7 +91,6 @@ extension TetrisSystem: GameSceneUpdatable {
 extension TetrisSystem: SettingsNotificationTarget {
     func settingsDidUpdate(_ settings: SettingsManager) {
         filedManipulator.settingsDidUpdate(settings)
-        dasManager.settingsDidUpdate(settings)
         movementTimer.settingsDidUpdate(settings)
     }
 }
@@ -118,10 +104,10 @@ extension TetrisSystem: ControllerDelegate {
         switch button {
         case .moveLeft:
             filedManipulator.movePiece(.left)
-            dasManager.inputBegan(.left)
+            movementTimer.startTiming(.das(.left))
         case .moveRight:
             filedManipulator.movePiece(.right)
-            dasManager.inputBegan(.right)
+            movementTimer.startTiming(.das(.right))
         case .hardDrop:
             filedManipulator.hardDrop()
         case .softDrop:
@@ -142,9 +128,9 @@ extension TetrisSystem: ControllerDelegate {
 
         switch button {
         case .moveLeft:
-            dasManager.inputEnded(.left)
+            movementTimer.stopTiming(.das(.left))
         case .moveRight:
-            dasManager.inputEnded(.right)
+            movementTimer.stopTiming(.das(.right))
         case .softDrop:
             movementTimer.stopTiming(.softDrop)
         default:
