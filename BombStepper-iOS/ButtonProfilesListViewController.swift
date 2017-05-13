@@ -12,12 +12,22 @@ import UIKit
 class ButtonProfilesListViewController: UIViewController {
 
     @IBOutlet var collectionView: UICollectionView!
+    @IBOutlet var addButton: UIBarButtonItem!
+    @IBOutlet var editButton: UIBarButtonItem!
+    @IBOutlet var trashButton: UIBarButtonItem!
+
+    var selectedIndexPath: IndexPath? {
+        didSet { enableEditButtons(selectedIndexPath != nil) }
+    }
 
     override func viewDidLoad() {
         super.viewDidLoad()
 
 
-        // Setup collection view data source & delegate
+    }
+
+    @IBAction func done(_ sender: UIBarButtonItem) {
+        presentingViewController?.dismiss(animated: true, completion: nil)
     }
 
 }
@@ -26,7 +36,7 @@ class ButtonProfilesListViewController: UIViewController {
 extension ButtonProfilesListViewController: UICollectionViewDataSource {
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 4
+        return 10
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -44,8 +54,19 @@ extension ButtonProfilesListViewController: UICollectionViewDelegate, UICollecti
     }
 
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        self.presentingViewController?.dismiss(animated: true, completion: nil)
+        if indexPath == selectedIndexPath {
+            collectionView.deselectItem(at: indexPath, animated: true)
+            selectedIndexPath = nil
+        }
+        else {
+            selectedIndexPath = indexPath
+        }
     }
-    
+
+    func enableEditButtons(_ isEnabled: Bool) {
+        editButton.isEnabled = isEnabled
+        trashButton.isEnabled = isEnabled
+    }
+
 }
 

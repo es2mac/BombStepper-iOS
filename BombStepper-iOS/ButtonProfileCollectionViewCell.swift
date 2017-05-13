@@ -10,7 +10,19 @@ import UIKit
 
 
 final class ButtonProfileCollectionViewCell: UICollectionViewCell {
-    
+
+    override func awakeFromNib() {
+        super.awakeFromNib()
+
+        backgroundView = UIView()
+    }
+
+    override var isSelected: Bool {
+        didSet {
+            backgroundView!.backgroundColor = isSelected ? .green : .clear
+        }
+    }
+
 }
 
 

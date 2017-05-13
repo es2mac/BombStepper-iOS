@@ -7,7 +7,7 @@
 //
 
 import UIKit
-import RealmSwift
+import SafariServices
 
 
 final class MenuViewController: UIViewController {
@@ -21,10 +21,15 @@ final class MenuViewController: UIViewController {
 
     }
 
-    @IBAction func linkToSettings(_ sender: UIButton) {
+    @IBAction func showSettings(_ sender: UIButton) {
         if let appSettings = URL(string: UIApplicationOpenSettingsURLString) {
             UIApplication.shared.open(appSettings, options: [:], completionHandler: nil)
         }
+    }
+
+    @IBAction func showAbout(_ sender: UIButton) {
+        let browser = SFSafariViewController(url: URL(string: "http://mathemusician.net/about/")!)
+        show(browser, sender: nil)
     }
 
 }

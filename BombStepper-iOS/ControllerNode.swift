@@ -62,11 +62,12 @@ final class ControllerNode: SKNode {
         }
 
         // Test timing
-        labelNode.fontColor = .red
-        labelNode.fontSize = 20
-        labelNode.position.y = 100
-        addChild(labelNode)
+//        labelNode.fontColor = .red
+//        labelNode.fontSize = 20
+//        labelNode.position.y = 100
+//        addChild(labelNode)
     }
+//    let labelNode = SKLabelNode()
 
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -77,7 +78,6 @@ final class ControllerNode: SKNode {
     }
 
     var startTime: MachAbsTime = 0
-    let labelNode = SKLabelNode()
 
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         startTime = mach_absolute_time()
@@ -89,8 +89,8 @@ final class ControllerNode: SKNode {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-        let endTime = mach_absolute_time()
-        labelNode.text = String(absToMs(endTime - startTime).rounded())
+//        let endTime = mach_absolute_time()
+//        labelNode.text = String(absToMs(endTime - startTime))
         touches.forEach(touchUp)
     }
 
