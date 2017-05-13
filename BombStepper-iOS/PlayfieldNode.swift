@@ -12,6 +12,8 @@ import SpriteKit
 typealias BlockTileGroupMap = [Block.BlockType : SKTileGroup]
 
 
+// WISHLIST: Animated line clear
+
 final class PlayfieldNode: SKNode {
 
     let sceneSize: CGSize

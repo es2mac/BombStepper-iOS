@@ -9,6 +9,7 @@
 import SpriteKit
 
 
+/// Displays a single piece not on the playing field, e.g. hold and preview displays
 final class SinglePieceNode: SKTileMapNode {
 
     fileprivate let tileWidth: CGFloat

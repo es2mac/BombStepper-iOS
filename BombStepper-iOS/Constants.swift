@@ -48,8 +48,8 @@ enum Alpha {
 
 
 enum Timing {
-    static let lockDelay: TimeInterval = 1.0
-    static let lockDelayExtension: TimeInterval = 3.0
+    static let lockDelay: TimeInterval = 0.5
+    static let lockDelayExtension: TimeInterval = 4.0
     static let buttonFlipDownDuration: TimeInterval = 0
     static let buttonFlipUpDuration: TimeInterval = 0.1
 }
