@@ -11,6 +11,8 @@ import SpriteKit
 
 final class ButtonNode: SKNode {
 
+    var type: Button
+
     fileprivate let size: CGSize
     fileprivate let baseNode: SKSpriteNode
 
@@ -22,21 +24,19 @@ final class ButtonNode: SKNode {
         warpAction.timingMode = .easeIn
         return warpAction
     }()
-    
 
-    init(size: CGSize, name: String) {
+
+    init(size: CGSize, type: Button) {
         self.size = size
+        self.type = type
         let baseImage = UIImage.roundedRect(size: size, cornerRadius: 4, color: .white)
         baseNode = SKSpriteNode(texture: SKTexture(image: baseImage))
         baseNode.alpha = Alpha.releasedButton
 
-        // Make touchable area that doesn't warp with the other stuff
-        let touchableNode = SKSpriteNode(color: .clear, size: CGSize(width: size.width + 2, height: size.height + 2))
 
         super.init()
 
-        self.name = name
-        [baseNode, touchableNode].forEach(self.addChild)
+        addChild(baseNode)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -49,6 +49,10 @@ final class ButtonNode: SKNode {
 
     func touchUp(_ touch: UITouch) {
         resetDisplay()
+    }
+
+    override func contains(_ p: CGPoint) -> Bool {
+        return baseNode.contains(p)
     }
 }
 

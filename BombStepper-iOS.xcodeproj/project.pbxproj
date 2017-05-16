@@ -32,6 +32,7 @@
 		DA7417BA1EB1DBD000C0675D /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7417B91EB1DBD000C0675D /* ButtonNode.swift */; };
 		DA7998001EB3902700A773E2 /* FieldManipulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7997FF1EB3902700A773E2 /* FieldManipulator.swift */; };
 		DA7998061EB3D24700A773E2 /* MachTiming.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7998051EB3D24700A773E2 /* MachTiming.swift */; };
+		DA7E711E1ECAC89D00144944 /* TiltingButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7E711D1ECAC89D00144944 /* TiltingButtonNode.swift */; };
 		DA882A931EAE8FE50066A606 /* TetrisSystem.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A921EAE8FE50066A606 /* TetrisSystem.swift */; };
 		DA882A951EAF024C0066A606 /* Directions.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A941EAF024C0066A606 /* Directions.swift */; };
 		DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A961EAF0D300066A606 /* MovementTimer.swift */; };
@@ -85,6 +86,7 @@
 		DA7417B91EB1DBD000C0675D /* ButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
 		DA7997FF1EB3902700A773E2 /* FieldManipulator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldManipulator.swift; sourceTree = "<group>"; };
 		DA7998051EB3D24700A773E2 /* MachTiming.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MachTiming.swift; sourceTree = "<group>"; };
+		DA7E711D1ECAC89D00144944 /* TiltingButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TiltingButtonNode.swift; sourceTree = "<group>"; };
 		DA882A921EAE8FE50066A606 /* TetrisSystem.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrisSystem.swift; sourceTree = "<group>"; };
 		DA882A941EAF024C0066A606 /* Directions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Directions.swift; sourceTree = "<group>"; };
 		DA882A961EAF0D300066A606 /* MovementTimer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MovementTimer.swift; sourceTree = "<group>"; };
@@ -140,6 +142,7 @@
 		DA25F1CA1EAB7EAE0031F833 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				DA7E711D1ECAC89D00144944 /* TiltingButtonNode.swift */,
 				DA330B4D1EB9D10A0030D436 /* Realm.framework */,
 				DA330B4E1EB9D10A0030D436 /* RealmSwift.framework */,
 				DA4D29071EA4F6C5008F3BDF /* Info.plist */,
@@ -360,6 +363,7 @@
 				DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */,
 				DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */,
 				DA7998061EB3D24700A773E2 /* MachTiming.swift in Sources */,
+				DA7E711E1ECAC89D00144944 /* TiltingButtonNode.swift in Sources */,
 				DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */,
 				DA44EA201EB343F500E0C406 /* GameCoordinator.swift in Sources */,
 				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,

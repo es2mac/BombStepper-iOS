@@ -15,8 +15,6 @@ protocol ControllerDelegate: class {
 }
 
 
-typealias ButtonMap = [ButtonNode : Button]
-
 
 /**
  Buttons layout:
@@ -31,7 +29,6 @@ final class ControllerNode: SKNode {
     
 
     fileprivate let buttonNodes: [ButtonNode]
-    fileprivate var buttonMap: ButtonMap
 
     fileprivate var lrSwipeEnabled: Bool = true
     fileprivate var offCenterWarning: Bool = true
@@ -45,8 +42,7 @@ final class ControllerNode: SKNode {
         self.delegate = delegate
 
         let size = ControllerNode.buttonSize(for: sceneSize)
-        buttonNodes = (0 ..< 12).map { ButtonNode(size: size, name: "\($0)") }
-        buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: SettingsManager.defaultButtons)
+        buttonNodes = SettingsManager.defaultButtons.map { ButtonNode(size: size, type: $0) }
 
         super.init()
 
@@ -107,7 +103,7 @@ extension ControllerNode: SettingsNotificationTarget {
         TouchData.swipeDownThreshold = settings.swipeDownThreshold
         lrSwipeEnabled = settings.lrSwipeEnabled
         offCenterWarning = settings.offCenterWarning
-        buttonMap = ControllerNode.buildButtonMap(withButtons: buttonNodes, buttons: settings.buttons)
+        for (node, type) in zip(buttonNodes, settings.buttons) { node.type = type }
     }
 }
 
@@ -119,7 +115,6 @@ private extension ControllerNode {
         static var swipeDownThreshold = 1000.0
 
         let node: ButtonNode
-        let button: Button
         var lastTime: TimeInterval
         var lastLocation: CGPoint
         let isOnLeftHalf: Bool
@@ -127,9 +122,8 @@ private extension ControllerNode {
 
         var speeds: [Double] = []
 
-        init(node: ButtonNode, button: Button, buttonIndex: Int, time: TimeInterval, location: CGPoint) {
+        init(node: ButtonNode, buttonIndex: Int, time: TimeInterval, location: CGPoint) {
             self.node = node
-            self.button = button
             self.lastTime = time
             self.lastLocation = location
             self.isOnLeftHalf = location.x < 0
@@ -165,13 +159,28 @@ private extension ControllerNode {
 
     func touchDown(_ touch: UITouch, isLRSwipe: Bool = false) {
         let location = touch.location(in: self)
-        if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
-            let button = buttonMap[node] {
-            touchesData[touch] = TouchData(node: node, button: button, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
+
+        if let node = buttonNodes.first(where: { node in
+            node.contains(node.convert(location, from: self))
+        }) {
+            touchesData[touch] = TouchData(node: node, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
             node.touchDown(touch, warnIfOffCenter: (!isLRSwipe && offCenterWarning))
-            delegate?.buttonDown(button)
+            delegate?.buttonDown(node.type)
         }
+
+//        if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
+//            let button = buttonMap[node] {
+//            touchesData[touch] = TouchData(node: node, button: button, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
+//            node.touchDown(touch, warnIfOffCenter: (!isLRSwipe && offCenterWarning))
+//            delegate?.buttonDown(button)
+//        }
     }
+
+//    private func buttons(at location: CGPoint) -> [Button] {
+//        return buttonNodes
+//            .filter { node in node.contains(node.convert(location, from: self)) }
+//            .flatMap { buttonMap[$0] }
+//    }
 
     func touchMoved(_ touch: UITouch) {
         guard let data = touchesData[touch] else { return }
@@ -186,7 +195,7 @@ private extension ControllerNode {
         // LR swipe test
         guard lrSwipeEnabled else { return }
         
-        let button = data.button
+        let button = data.node.type
         let oppositeButton: Button
         switch button {
         case .moveLeft: oppositeButton = .moveRight
@@ -197,7 +206,7 @@ private extension ControllerNode {
         let location = touch.location(in: self)
         if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
             node != data.node,
-            buttonMap[node]! == oppositeButton {
+            node.type == oppositeButton {
             touchUp(touch)
             touchDown(touch, isLRSwipe: true)
         }
@@ -207,7 +216,7 @@ private extension ControllerNode {
     func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
             node.touchUp(touch)
-            delegate?.buttonUp(buttonMap[node]!)
+            delegate?.buttonUp(node.type)
         }
     }
 
@@ -227,12 +236,6 @@ fileprivate extension ControllerNode {
         let height = (baseUnit * 2 * 0.9).rounded()
         return CGSize(width: width,
                       height: height)
-    }
-
-    class func buildButtonMap(withButtons buttonNodes: [ButtonNode], buttons: [Button]) -> ButtonMap {
-        var map = ButtonMap()
-        zip(buttonNodes, buttons).forEach { map[$0] = $1 }
-        return map
     }
 
     func layoutButtons(for sceneSize: CGSize) {
