@@ -11,11 +11,11 @@ import SpriteKit
 
 final class ButtonNode: SKNode {
 
-    var type: Button
+    var type: ButtonType
 
     fileprivate let baseNode: SKSpriteNode
 
-    init(size: CGSize, type: Button) {
+    init(size: CGSize, type: ButtonType) {
         self.type = type
         let baseImage = UIImage.roundedRect(size: size, cornerRadius: 4, color: .white)
         baseNode = SKSpriteNode(texture: SKTexture(image: baseImage))

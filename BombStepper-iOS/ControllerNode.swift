@@ -10,8 +10,8 @@ import SpriteKit
 
 
 protocol ControllerDelegate: class {
-    func buttonDown(_ button: Button)
-    func buttonUp(_ button: Button)
+    func buttonDown(_ button: ButtonType)
+    func buttonUp(_ button: ButtonType)
 }
 
 
@@ -196,7 +196,7 @@ private extension ControllerNode {
         guard lrSwipeEnabled else { return }
         
         let button = data.node.type
-        let oppositeButton: Button
+        let oppositeButton: ButtonType
         switch button {
         case .moveLeft: oppositeButton = .moveRight
         case .moveRight: oppositeButton = .moveLeft

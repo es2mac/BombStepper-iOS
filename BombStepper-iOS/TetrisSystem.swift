@@ -98,10 +98,10 @@ extension TetrisSystem: SettingsNotificationTarget {
 
 extension TetrisSystem: ControllerDelegate {
 
-    func buttonDown(_ button: Button) {
+    func buttonDown(_ type: ButtonType) {
         guard isGameRunning else { return }
         
-        switch button {
+        switch type {
         case .moveLeft:
             filedManipulator.movePiece(.left)
             movementTimer.startTiming(.das(.left))
@@ -124,9 +124,9 @@ extension TetrisSystem: ControllerDelegate {
 
     }
 
-    func buttonUp(_ button: Button) {
+    func buttonUp(_ type: ButtonType) {
 
-        switch button {
+        switch type {
         case .moveLeft:
             movementTimer.stopTiming(.das(.left))
         case .moveRight:

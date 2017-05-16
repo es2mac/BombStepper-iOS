@@ -28,6 +28,10 @@
 		DA4D29031EA4F6C5008F3BDF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29021EA4F6C5008F3BDF /* Assets.xcassets */; };
 		DA4D29061EA4F6C5008F3BDF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = DA4D29041EA4F6C5008F3BDF /* LaunchScreen.storyboard */; };
 		DA4D29111EA4F6C5008F3BDF /* BombStepper_iOSTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */; };
+		DA4FCC0F1ECAED5D00EE6515 /* ButtonProfilesManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4FCC0E1ECAED5D00EE6515 /* ButtonProfilesManager.swift */; };
+		DA4FCC111ECAEF4C00EE6515 /* ButtonConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4FCC101ECAEF4C00EE6515 /* ButtonConfiguration.swift */; };
+		DA4FCC131ECAF07800EE6515 /* ButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4FCC121ECAF07800EE6515 /* ButtonType.swift */; };
+		DA4FCC161ECAF14800EE6515 /* ButtonLayoutProfile.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA4FCC151ECAF14800EE6515 /* ButtonLayoutProfile.swift */; };
 		DA729B3F1EB5053700620824 /* SprintDisplayNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA729B3E1EB5053700620824 /* SprintDisplayNode.swift */; };
 		DA7417BA1EB1DBD000C0675D /* ButtonNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7417B91EB1DBD000C0675D /* ButtonNode.swift */; };
 		DA7998001EB3902700A773E2 /* FieldManipulator.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA7997FF1EB3902700A773E2 /* FieldManipulator.swift */; };
@@ -82,6 +86,10 @@
 		DA4D290C1EA4F6C5008F3BDF /* BombStepper-iOSTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "BombStepper-iOSTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		DA4D29101EA4F6C5008F3BDF /* BombStepper_iOSTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BombStepper_iOSTests.swift; sourceTree = "<group>"; };
 		DA4D29121EA4F6C5008F3BDF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DA4FCC0E1ECAED5D00EE6515 /* ButtonProfilesManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ButtonProfilesManager.swift; path = ../ButtonProfilesManager.swift; sourceTree = "<group>"; };
+		DA4FCC101ECAEF4C00EE6515 /* ButtonConfiguration.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonConfiguration.swift; sourceTree = "<group>"; };
+		DA4FCC121ECAF07800EE6515 /* ButtonType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonType.swift; sourceTree = "<group>"; };
+		DA4FCC151ECAF14800EE6515 /* ButtonLayoutProfile.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonLayoutProfile.swift; sourceTree = "<group>"; };
 		DA729B3E1EB5053700620824 /* SprintDisplayNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SprintDisplayNode.swift; sourceTree = "<group>"; };
 		DA7417B91EB1DBD000C0675D /* ButtonNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonNode.swift; sourceTree = "<group>"; };
 		DA7997FF1EB3902700A773E2 /* FieldManipulator.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FieldManipulator.swift; sourceTree = "<group>"; };
@@ -153,7 +161,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		DA25F1CB1EAB7EEE0031F833 /* Models */ = {
+		DA25F1CB1EAB7EEE0031F833 /* Game Models */ = {
 			isa = PBXGroup;
 			children = (
 				DA882A921EAE8FE50066A606 /* TetrisSystem.swift */,
@@ -172,7 +180,7 @@
 				DA29F6291EB4D9280095F4D5 /* GameModeController.swift */,
 				DA7998051EB3D24700A773E2 /* MachTiming.swift */,
 			);
-			name = Models;
+			name = "Game Models";
 			sourceTree = "<group>";
 		};
 		DA25F1CD1EAB81150031F833 /* Nodes */ = {
@@ -215,7 +223,8 @@
 				DA25F1C81EAB7E4A0031F833 /* View Controllers */,
 				DA25F1C91EAB7E620031F833 /* Scenes */,
 				DA25F1CD1EAB81150031F833 /* Nodes */,
-				DA25F1CB1EAB7EEE0031F833 /* Models */,
+				DA25F1CB1EAB7EEE0031F833 /* Game Models */,
+				DA4FCC141ECAF0D500EE6515 /* Button Layout Models */,
 				DA0ED9291EA7A5EA008F3C61 /* Constants.swift */,
 				DA25F1CA1EAB7EAE0031F833 /* Supporting Files */,
 			);
@@ -229,6 +238,17 @@
 				DA4D29121EA4F6C5008F3BDF /* Info.plist */,
 			);
 			path = "BombStepper-iOSTests";
+			sourceTree = "<group>";
+		};
+		DA4FCC141ECAF0D500EE6515 /* Button Layout Models */ = {
+			isa = PBXGroup;
+			children = (
+				DA4FCC121ECAF07800EE6515 /* ButtonType.swift */,
+				DA4FCC101ECAEF4C00EE6515 /* ButtonConfiguration.swift */,
+				DA4FCC151ECAF14800EE6515 /* ButtonLayoutProfile.swift */,
+				DA4FCC0E1ECAED5D00EE6515 /* ButtonProfilesManager.swift */,
+			);
+			name = "Button Layout Models";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -364,18 +384,22 @@
 				DA4D28FC1EA4F6C5008F3BDF /* GameScene.swift in Sources */,
 				DA7998061EB3D24700A773E2 /* MachTiming.swift in Sources */,
 				DA7E711E1ECAC89D00144944 /* TiltingButtonNode.swift in Sources */,
+				DA4FCC111ECAEF4C00EE6515 /* ButtonConfiguration.swift in Sources */,
 				DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */,
 				DA44EA201EB343F500E0C406 /* GameCoordinator.swift in Sources */,
 				DA0ED92E1EA7AA11008F3C61 /* MenuViewController.swift in Sources */,
 				DA25F1C31EAB0D3C0031F833 /* Field.swift in Sources */,
+				DA4FCC131ECAF07800EE6515 /* ButtonType.swift in Sources */,
 				DA882A9B1EAF9EF60066A606 /* SinglePieceNode.swift in Sources */,
 				DA0ED9321EA7B71A008F3C61 /* Tetromino.swift in Sources */,
 				DA330B551EB9D8650030D436 /* ButtonProfileCollectionViewCell.swift in Sources */,
+				DA4FCC161ECAF14800EE6515 /* ButtonLayoutProfile.swift in Sources */,
 				DA10B4421EA9D8E800C2C805 /* SettingsManager.swift in Sources */,
 				DA330B531EB9D7C60030D436 /* ButtonProfilesListViewController.swift in Sources */,
 				DACEAB521EB0298900939488 /* HeldPieceNode.swift in Sources */,
 				DA3DA35B1EB47C9100A7AED3 /* SprintViewController.swift in Sources */,
 				DA25F1C71EAB39130031F833 /* Piece.swift in Sources */,
+				DA4FCC0F1ECAED5D00EE6515 /* ButtonProfilesManager.swift in Sources */,
 				DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */,
 				DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */,
 				DA25F1C51EAB19110031F833 /* Block.swift in Sources */,

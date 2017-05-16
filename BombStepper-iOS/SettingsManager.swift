@@ -15,17 +15,6 @@ protocol SettingsNotificationTarget: class {
 }
 
 
-enum Button: String {
-    case moveLeft
-    case moveRight
-    case hardDrop
-    case softDrop
-    case hold
-    case rotateLeft
-    case rotateRight
-    case none
-}
-
 
 // WISHLIST: Swipe down enable for each individual button
 // WISHLIST: Button positioning settings, e.g. button size, slant, positions
@@ -67,10 +56,10 @@ final class SettingsManager {
     fileprivate(set) var hideGhost: Bool            = false
     fileprivate(set) var gridsOpacity: Double       = 1.0
     fileprivate(set) var offCenterWarning: Bool      = true
-    fileprivate(set) var buttons: [Button]          = SettingsManager.defaultButtons
+    fileprivate(set) var buttons: [ButtonType]          = SettingsManager.defaultButtons
     fileprivate(set) var swipeDrops: [Bool]         = [Bool](repeating: true, count: 12)
 
-    static var defaultButtons: [Button] = [ .hardDrop, .hardDrop, .moveLeft, .moveRight,
+    static var defaultButtons: [ButtonType] = [ .hardDrop, .hardDrop, .moveLeft, .moveRight,
                                             .softDrop, .softDrop, .hold, .hold,
                                             .rotateLeft, .rotateRight, .none, .none ]
 
@@ -168,7 +157,7 @@ private extension SettingsManager {
         hideGhost          = dictionary[SettingKey.hideGhost.rawValue] as! Bool
         gridsOpacity       = dictionary[SettingKey.gridsOpacity.rawValue] as! Double
         offCenterWarning   = dictionary[SettingKey.offCenterWarning.rawValue] as! Bool
-        buttons            = SettingKey.buttonKeys.map { Button(rawValue: dictionary[$0] as! String)! }
+        buttons            = SettingKey.buttonKeys.map { ButtonType(rawValue: dictionary[$0] as! String)! }
         swipeDrops         = SettingKey.swipeDropKeys.map { dictionary[$0] as! Bool }
     }
 }

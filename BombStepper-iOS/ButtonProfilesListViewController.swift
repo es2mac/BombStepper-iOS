@@ -24,10 +24,26 @@ class ButtonProfilesListViewController: UIViewController {
         super.viewDidLoad()
 
 
+        print(ButtonLayoutProfile.listProfileNames())
     }
 
     @IBAction func done(_ sender: UIBarButtonItem) {
         presentingViewController?.dismiss(animated: true, completion: nil)
+    }
+
+    @IBAction func createOrCloneProfile(_ sender: UIBarButtonItem) {
+        let randomName = String(arc4random() % 10)
+        let profile = ButtonLayoutProfile(name: randomName)
+
+        switch profile.save() {
+        case .duplicateName:
+            print("duplicate name")
+        case .success:
+            print("success")
+        case .failed:
+            print("failed")
+        }
+        
     }
 
 }
