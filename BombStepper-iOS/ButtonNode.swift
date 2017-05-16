@@ -13,26 +13,13 @@ final class ButtonNode: SKNode {
 
     var type: Button
 
-    fileprivate let size: CGSize
     fileprivate let baseNode: SKSpriteNode
 
-    fileprivate var buttonDownTime = Date()
-
-    fileprivate let warpBackAction: SKAction = {
-        let warpGeometryGridNoWarp = SKWarpGeometryGrid(columns: 1, rows: 1)
-        let warpAction = SKAction.warp(to: warpGeometryGridNoWarp, duration: Timing.buttonFlipUpDuration)!
-        warpAction.timingMode = .easeIn
-        return warpAction
-    }()
-
-
     init(size: CGSize, type: Button) {
-        self.size = size
         self.type = type
         let baseImage = UIImage.roundedRect(size: size, cornerRadius: 4, color: .white)
         baseNode = SKSpriteNode(texture: SKTexture(image: baseImage))
         baseNode.alpha = Alpha.releasedButton
-
 
         super.init()
 
@@ -43,12 +30,12 @@ final class ButtonNode: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    func touchDown(_ touch: UITouch, warnIfOffCenter: Bool = true)  {
-        displayButtonTapDown(touch.location(in: self))
+    func touchDown(_ touch: UITouch)  {
+        baseNode.alpha = Alpha.pressedButton
     }
 
     func touchUp(_ touch: UITouch) {
-        resetDisplay()
+        baseNode.alpha = Alpha.releasedButton
     }
 
     override func contains(_ p: CGPoint) -> Bool {
@@ -56,17 +43,5 @@ final class ButtonNode: SKNode {
     }
 }
 
-
-private extension ButtonNode {
-
-    func displayButtonTapDown(_ location: CGPoint) {
-        baseNode.alpha = Alpha.pressedButton
-    }
-
-    func resetDisplay() {
-        baseNode.alpha = Alpha.releasedButton
-    }
-
-}
 
 

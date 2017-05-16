@@ -164,7 +164,7 @@ private extension ControllerNode {
             node.contains(node.convert(location, from: self))
         }) {
             touchesData[touch] = TouchData(node: node, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
-            node.touchDown(touch, warnIfOffCenter: (!isLRSwipe && offCenterWarning))
+            node.touchDown(touch)
             delegate?.buttonDown(node.type)
         }
 
