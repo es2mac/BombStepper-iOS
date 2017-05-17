@@ -24,7 +24,7 @@ class ButtonProfilesListViewController: UIViewController {
         super.viewDidLoad()
 
 
-        print(ButtonLayoutProfile.listProfileNames())
+        print(ButtonProfilesManager().listProfileNames())
     }
 
     @IBAction func done(_ sender: UIBarButtonItem) {
@@ -32,6 +32,9 @@ class ButtonProfilesListViewController: UIViewController {
     }
 
     @IBAction func createOrCloneProfile(_ sender: UIBarButtonItem) {
+
+        // Pass existing layout in for clone action
+        
         let randomName = String(arc4random() % 10)
         let profile = ButtonLayoutProfile(name: randomName)
 
@@ -44,6 +47,10 @@ class ButtonProfilesListViewController: UIViewController {
             print("failed")
         }
         
+    }
+// TODO
+    private func showLayoutEditor(layout: Int?) {
+
     }
 
 }

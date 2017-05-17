@@ -100,3 +100,85 @@ extension UIImage {
 }
 
 
+extension UIImage {
+
+    class func image(from configuration: ButtonConfiguration) -> UIImage {
+
+        let side = (configuration.swipeDistance + 4) * 2
+
+        UIGraphicsBeginImageContextWithOptions(CGSize(width: side, height: side), false, UIScreen.main.scale)
+        defer { UIGraphicsEndImageContext() }
+
+        let context = UIGraphicsGetCurrentContext()!
+
+        let centerX = side / 2
+        let centerY = side / 2
+        let distance = configuration.swipeDistance
+
+        let centerPoint    = CGPoint(x: centerX,            y: centerY)
+        let leftPoint      = CGPoint(x: centerX - distance, y: centerY)
+        let rightPoint     = CGPoint(x: centerX + distance, y: centerY)
+        let downPoint      = CGPoint(x: centerX,            y: centerY + distance)
+        let leftDownPoint  = CGPoint(x: centerX - distance, y: centerY + distance)
+        let rightDownPoint = CGPoint(x: centerX + distance, y: centerY + distance)
+        let upPoint        = CGPoint(x: centerX,            y: centerY - distance)
+
+        let color = #colorLiteral(red: 0.926155746, green: 0.9410773516, blue: 0.9455420375, alpha: 1)
+        color.set()
+
+        let dash: [CGFloat] = [3, 2]
+        context.setLineDash(phase: 0, lengths: dash)
+
+        func dotPath(at center: CGPoint) -> CGPath {
+            return UIBezierPath(arcCenter: center, radius: 3, startAngle: 0, endAngle: .pi * 2, clockwise: true).cgPath
+        }
+
+        func dashedLinePath(from point1: CGPoint, to point2: CGPoint) -> CGPath {
+            let path = UIBezierPath()
+            path.move(to: point1)
+            path.addLine(to: point2)
+            return path.cgPath
+        }
+
+        func fillPaths(_ paths: [CGPath]) {
+            context.beginPath()
+            paths.forEach(context.addPath)
+            context.fillPath()
+        }
+
+        func strokePaths(_ paths: [CGPath]) {
+            context.beginPath()
+            paths.forEach(context.addPath)
+            context.strokePath()
+        }
+
+        fillPaths([dotPath(at: centerPoint)])
+
+        if configuration.leftRightSwipeEnabled {
+            fillPaths([ dotPath(at: leftPoint),
+                        dotPath(at: rightPoint) ])
+            strokePaths([ dashedLinePath(from: centerPoint, to: leftPoint),
+                          dashedLinePath(from: centerPoint, to: rightPoint) ])
+        }
+
+        if configuration.downSwipeEnabled {
+            fillPaths([ dotPath(at: downPoint) ])
+            strokePaths([ dashedLinePath(from: centerPoint, to: downPoint) ])
+        }
+
+        if configuration.comboSwipeEnabled {
+            fillPaths([ dotPath(at: leftDownPoint),
+                        dotPath(at: rightDownPoint) ])
+            strokePaths([ dashedLinePath(from: leftPoint, to: leftDownPoint),
+                          dashedLinePath(from: rightPoint, to: rightDownPoint) ])
+        }
+
+        if configuration.upSwipeEnabled {
+            fillPaths([ dotPath(at: upPoint) ])
+            strokePaths([ dashedLinePath(from: centerPoint, to: upPoint) ])
+        }
+        
+        return UIGraphicsGetImageFromCurrentImageContext()!
+    }
+}
+

@@ -9,7 +9,11 @@
 import Foundation
 
 
-private let folderName = "ButtonLayouts"
+private enum Keys {
+    static let name: String = "name"
+    static let modificationDate: String = "modificationDate"
+    static let buttons: String = "buttons"
+}
 
 
 enum SaveResult {
@@ -19,9 +23,10 @@ enum SaveResult {
 }
 
 
-class ButtonLayoutProfile {
+final class ButtonLayoutProfile {
 
     var name: String
+    var modificationDate: Date = Date()
     var buttons: [ButtonConfiguration] = []
 
     init(name: String) {
@@ -30,23 +35,11 @@ class ButtonLayoutProfile {
         buttons = [config, config]
     }
 
-    class func listProfileNames() -> [String] {
-
-        let directory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-        let url = URL(fileURLWithPath: directory, isDirectory: true).appendingPathComponent(folderName)
-
-        let files = try? FileManager.default.contentsOfDirectory(at: url, includingPropertiesForKeys: nil, options: [])
-
-
-        return (files ?? []).map { $0.deletingPathExtension().lastPathComponent }
-        
-    }
-
     @discardableResult
     func save() -> SaveResult {
 
         let directory = NSSearchPathForDirectoriesInDomains(.documentDirectory, .userDomainMask, true).first!
-        let url = URL(fileURLWithPath: directory, isDirectory: true).appendingPathComponent(folderName)
+        let url = URL(fileURLWithPath: directory, isDirectory: true).appendingPathComponent(DirectoryName.buttonLayouts)
 
         var isDirectory: ObjCBool = true
         if !(FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory) && isDirectory.boolValue == true) {
@@ -67,14 +60,43 @@ class ButtonLayoutProfile {
         catch {
             return .failed
         }
-
-        
-
-        
         
         return .success
     }
-    
+}
+
+
+
+// TODO: Test encoding & decoding
+
+private extension ButtonLayoutProfile {
+
+    func encodeAsDictionary() -> [String : Any] {
+        return [ Keys.name             : name,
+                 Keys.modificationDate : modificationDate,
+                 Keys.buttons          : buttons.map { $0.encodeAsDictionary() } ]
+    }
+
+    convenience init?(dictionary: [String : Any]) {
+
+        guard let name = dictionary[Keys.name] as? String,
+            let modificationDate = dictionary[Keys.modificationDate] as? Date,
+            let buttons = dictionary[Keys.buttons] as? [[String : Any]] else {
+                return nil
+        }
+
+        self.init(name: name)
+        self.modificationDate = modificationDate
+        self.buttons = buttons.flatMap { ButtonConfiguration(dictionary: $0) }
+    }
+
+}
+
+
+extension ButtonLayoutProfile: CustomDebugStringConvertible {
+    var debugDescription: String {
+        return "Name:\(name)\nDate: \(modificationDate)\nButtons:\(buttons)"
+    }
 }
 
 
