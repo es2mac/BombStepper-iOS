@@ -11,6 +11,8 @@ import UIKit
 
 class ButtonProfilesListViewController: UIViewController {
 
+    private let profilesManager = ButtonProfilesManager()
+
     @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var addButton: UIBarButtonItem!
     @IBOutlet var editButton: UIBarButtonItem!
@@ -24,7 +26,7 @@ class ButtonProfilesListViewController: UIViewController {
         super.viewDidLoad()
 
 
-        print(ButtonProfilesManager().listProfileNames())
+        print(profilesManager.profileNames)
     }
 
     @IBAction func done(_ sender: UIBarButtonItem) {
@@ -34,9 +36,57 @@ class ButtonProfilesListViewController: UIViewController {
     @IBAction func createOrCloneProfile(_ sender: UIBarButtonItem) {
 
         // Pass existing layout in for clone action
+
+
+
+        var profile = ButtonLayoutProfile(name: "")
+
+        askForValidName(title: "Enter a name for your new layout.", previousName: nil) { [unowned self] newName in
+            profile.name = newName
+            self.showButtonEditor(profile: profile)
+        }
         
-        let randomName = String(arc4random() % 10)
-        let profile = ButtonLayoutProfile(name: randomName)
+
+    }
+
+    private func askForValidName(title: String, previousName: String? = nil, completion: @escaping (_ name: String) -> Void ) {
+
+        guard let defaultName = profilesManager.nextGenericProfileName() else {
+            let alertController = UIAlertController(title: "Can't create another profile", message: nil, preferredStyle: .alert)
+            show(alertController, sender: nil)
+            return
+        }
+
+        let name = previousName ?? defaultName
+
+        let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        alertController.addTextField(configurationHandler: { textField in
+            textField.text = name
+            let range = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument)
+            textField.selectedTextRange = range
+            textField.clearButtonMode = .always
+        })
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: { [unowned alertController, unowned self] action in
+            let newName = alertController.textFields![0].text ?? ""
+            if newName.isEmpty {
+                self.askForValidName(title: "The name cannot be empty. Please enter a new name for your layout.", previousName: newName, completion: completion)
+            }
+            else if self.profilesManager.isNameAvailable(newName) {
+                completion(newName)
+            }
+            else {
+                self.askForValidName(title: "This name is taken, please enter a new name for your layout.", previousName: newName, completion: completion)
+            }
+
+        }))
+
+        show(alertController, sender: nil)
+    }
+
+    private func showButtonEditor(profile: ButtonLayoutProfile) {
+
+        // Test
 
         switch profile.save() {
         case .duplicateName:
@@ -46,8 +96,11 @@ class ButtonProfilesListViewController: UIViewController {
         case .failed:
             print("failed")
         }
-        
     }
+
+
+
+
 // TODO
     private func showLayoutEditor(layout: Int?) {
 

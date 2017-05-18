@@ -23,7 +23,7 @@ enum SaveResult {
 }
 
 
-final class ButtonLayoutProfile {
+struct ButtonLayoutProfile {
 
     var name: String
     var modificationDate: Date = Date()
@@ -77,7 +77,7 @@ private extension ButtonLayoutProfile {
                  Keys.buttons          : buttons.map { $0.encodeAsDictionary() } ]
     }
 
-    convenience init?(dictionary: [String : Any]) {
+    init?(dictionary: [String : Any]) {
 
         guard let name = dictionary[Keys.name] as? String,
             let modificationDate = dictionary[Keys.modificationDate] as? Date,
@@ -85,7 +85,7 @@ private extension ButtonLayoutProfile {
                 return nil
         }
 
-        self.init(name: name)
+        self.name = name
         self.modificationDate = modificationDate
         self.buttons = buttons.flatMap { ButtonConfiguration(dictionary: $0) }
     }

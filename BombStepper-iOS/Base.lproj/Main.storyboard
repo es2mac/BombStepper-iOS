@@ -54,7 +54,7 @@
                                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qzd-zk-7Eq">
                                                         <rect key="frame" x="8" y="200" width="284" height="60"/>
                                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                                                        <state key="normal" title="Button Profiles"/>
+                                                        <state key="normal" title="Button Layouts"/>
                                                         <connections>
                                                             <segue destination="ljc-w5-wJk" kind="show" id="E7o-dM-jb1"/>
                                                         </connections>
