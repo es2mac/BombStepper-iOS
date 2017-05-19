@@ -140,6 +140,14 @@
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ea5-Rc-N88">
                                                     <rect key="frame" x="0.0" y="0.0" width="367" height="323"/>
+                                                    <subviews>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rnK-tp-Q7Z">
+                                                            <rect key="frame" x="0.0" y="0.0" width="367" height="323"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
                                                 </stackView>
                                             </subviews>
                                         </view>
@@ -150,10 +158,12 @@
                                             <constraint firstAttribute="bottom" secondItem="ea5-Rc-N88" secondAttribute="bottom" id="jQO-5j-oqU"/>
                                             <constraint firstAttribute="trailing" secondItem="ea5-Rc-N88" secondAttribute="trailing" id="uon-6y-XQb"/>
                                         </constraints>
+                                        <connections>
+                                            <outlet property="label" destination="rnK-tp-Q7Z" id="eMp-Nr-1sa"/>
+                                        </connections>
                                     </collectionViewCell>
                                 </cells>
                                 <connections>
-                                    <outlet property="dataSource" destination="ljc-w5-wJk" id="xks-Xg-Wzv"/>
                                     <outlet property="delegate" destination="ljc-w5-wJk" id="k3u-te-o1D"/>
                                 </connections>
                             </collectionView>
@@ -169,7 +179,11 @@
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="npT-LH-wl9"/>
                                     <barButtonItem enabled="NO" systemItem="edit" id="Jw7-yq-3k8"/>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="PaN-wn-zgx"/>
-                                    <barButtonItem enabled="NO" systemItem="trash" id="Bu0-Nr-dVr"/>
+                                    <barButtonItem enabled="NO" systemItem="trash" id="Bu0-Nr-dVr">
+                                        <connections>
+                                            <action selector="deleteProfile:" destination="ljc-w5-wJk" id="rGO-Yx-qcN"/>
+                                        </connections>
+                                    </barButtonItem>
                                     <barButtonItem style="plain" systemItem="flexibleSpace" id="17z-Qq-0WB"/>
                                     <barButtonItem systemItem="done" id="nyK-kr-MyG">
                                         <connections>

@@ -25,8 +25,7 @@ class ButtonProfilesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-
-        print(profilesManager.profileNames)
+        collectionView.dataSource = profilesManager
     }
 
     @IBAction func done(_ sender: UIBarButtonItem) {
@@ -37,27 +36,71 @@ class ButtonProfilesListViewController: UIViewController {
 
         // Pass existing layout in for clone action
 
+        let previousName: String?
+
+        if let indexPath = collectionView.indexPathsForSelectedItems?.first {
+            previousName = profilesManager.profileNames[indexPath.item]
+        }
+        else {
+            previousName = nil
+        }
+
 
 
         var profile = ButtonLayoutProfile(name: "")
 
-        askForValidName(title: "Enter a name for your new layout.", previousName: nil) { [unowned self] newName in
+        askForValidName(title: "Enter a name for your new layout.", previousName: previousName) { [unowned self] newName in
             profile.name = newName
-            self.showButtonEditor(profile: profile)
-        }
-        
 
+            if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
+
+                let indexPath = IndexPath(item: index, section: 0)
+
+                self.collectionView.insertItems(at: [indexPath])
+
+                self.collectionView.performBatchUpdates({
+
+                    self.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+                    self.selectedIndexPath = indexPath
+
+                }, completion: { _ in
+                    
+                    self.showButtonEditor(profile: profile)
+                    
+                })
+
+            }
+            else { assertionFailure() }
+            
+        }
+    }
+
+    @IBAction func deleteProfile(_ sender: UIBarButtonItem) {
+        guard let indexPath = collectionView.indexPathsForSelectedItems?.first else { return }
+        let name = profilesManager.profileNames[indexPath.item]
+
+        let alertController = UIAlertController(title: "Are you sure you want to delete the profile \"\(name)\"?", message: nil, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alertController.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [unowned self] _ in
+            if self.profilesManager.deleteProfile(at: indexPath.item) {
+                self.collectionView.deleteItems(at: [indexPath])
+                self.selectedIndexPath = nil
+            }
+            else { assertionFailure() }
+        }))
+
+        show(alertController, sender: nil)
     }
 
     private func askForValidName(title: String, previousName: String? = nil, completion: @escaping (_ name: String) -> Void ) {
 
-        guard let defaultName = profilesManager.nextGenericProfileName() else {
-            let alertController = UIAlertController(title: "Can't create another profile", message: nil, preferredStyle: .alert)
+        guard let name = profilesManager.nextProfileName(from: previousName) else {
+            let count = profilesManager.profileNames.count
+            let alertController = UIAlertController(title: "Can't create more profiles\n(max \(count))", message: nil, preferredStyle: .alert)
+        alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             show(alertController, sender: nil)
             return
         }
-
-        let name = previousName ?? defaultName
 
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         alertController.addTextField(configurationHandler: { textField in
@@ -70,7 +113,7 @@ class ButtonProfilesListViewController: UIViewController {
         alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: { [unowned alertController, unowned self] action in
             let newName = alertController.textFields![0].text ?? ""
             if newName.isEmpty {
-                self.askForValidName(title: "The name cannot be empty. Please enter a new name for your layout.", previousName: newName, completion: completion)
+                self.askForValidName(title: "The name cannot be empty. Please enter a new name for your layout.", previousName: nil, completion: completion)
             }
             else if self.profilesManager.isNameAvailable(newName) {
                 completion(newName)
@@ -87,15 +130,14 @@ class ButtonProfilesListViewController: UIViewController {
     private func showButtonEditor(profile: ButtonLayoutProfile) {
 
         // Test
-
-        switch profile.save() {
-        case .duplicateName:
-            print("duplicate name")
-        case .success:
-            print("success")
-        case .failed:
-            print("failed")
-        }
+//        switch profile.save() {
+//        case .duplicateName:
+//            print("duplicate name")
+//        case .success:
+//            print("success")
+//        case .failed:
+//            print("failed")
+//        }
     }
 
 
@@ -104,19 +146,6 @@ class ButtonProfilesListViewController: UIViewController {
 // TODO
     private func showLayoutEditor(layout: Int?) {
 
-    }
-
-}
-
-
-extension ButtonProfilesListViewController: UICollectionViewDataSource {
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return 10
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        return collectionView.dequeueReusableCell(withReuseIdentifier: "ButtonProfileCollectionViewCell", for: indexPath)
     }
 
 }

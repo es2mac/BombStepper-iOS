@@ -16,13 +16,6 @@ private enum Keys {
 }
 
 
-enum SaveResult {
-    case success
-    case duplicateName
-    case failed
-}
-
-
 struct ButtonLayoutProfile {
 
     var name: String
@@ -69,7 +62,7 @@ struct ButtonLayoutProfile {
 
 // TODO: Test encoding & decoding
 
-private extension ButtonLayoutProfile {
+extension ButtonLayoutProfile {
 
     func encodeAsDictionary() -> [String : Any] {
         return [ Keys.name             : name,
