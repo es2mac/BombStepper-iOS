@@ -158,21 +158,6 @@ private extension ButtonProfilesManager {
 }
 
 
-// TODO: maybe I'll make the view controller do this afterall
-// So this guy doesn't know about UI
-extension ButtonProfilesManager: UICollectionViewDataSource {
-
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return profileNames.count
-    }
-
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ButtonProfileCollectionViewCell", for: indexPath) as! ButtonProfileCollectionViewCell
-        cell.label.text = profileNames[indexPath.item]
-        return cell
-    }
-
-}
 
 
 

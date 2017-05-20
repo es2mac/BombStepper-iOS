@@ -11,7 +11,7 @@ import UIKit
 
 class ButtonProfilesListViewController: UIViewController {
 
-    private let profilesManager = ButtonProfilesManager()
+    fileprivate let profilesManager = ButtonProfilesManager()
 
     @IBOutlet var collectionView: UICollectionView!
     @IBOutlet var addButton: UIBarButtonItem!
@@ -25,7 +25,6 @@ class ButtonProfilesListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        collectionView.dataSource = profilesManager
     }
 
     @IBAction func done(_ sender: UIBarButtonItem) {
@@ -65,7 +64,7 @@ class ButtonProfilesListViewController: UIViewController {
 
                 }, completion: { _ in
                     
-                    self.showButtonEditor(profile: profile)
+                    self.showLayoutEditor(profile: profile)
                     
                 })
 
@@ -73,6 +72,13 @@ class ButtonProfilesListViewController: UIViewController {
             else { assertionFailure() }
             
         }
+    }
+
+    @IBAction func editProfile(_ sender: UIBarButtonItem) {
+
+        // TODO: get from manager
+        let profile = ButtonLayoutProfile(name: "")
+        showLayoutEditor(profile: profile)
     }
 
     @IBAction func deleteProfile(_ sender: UIBarButtonItem) {
@@ -89,7 +95,7 @@ class ButtonProfilesListViewController: UIViewController {
             else { assertionFailure() }
         }))
 
-        show(alertController, sender: nil)
+        present(alertController, animated: true, completion: nil)
     }
 
     private func askForValidName(title: String, previousName: String? = nil, completion: @escaping (_ name: String) -> Void ) {
@@ -98,7 +104,7 @@ class ButtonProfilesListViewController: UIViewController {
             let count = profilesManager.profileNames.count
             let alertController = UIAlertController(title: "Can't create more profiles\n(max \(count))", message: nil, preferredStyle: .alert)
         alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-            show(alertController, sender: nil)
+            present(alertController, animated: true, completion: nil)
             return
         }
 
@@ -124,30 +130,32 @@ class ButtonProfilesListViewController: UIViewController {
 
         }))
 
-        show(alertController, sender: nil)
+        present(alertController, animated: true, completion: nil)
     }
 
-    private func showButtonEditor(profile: ButtonLayoutProfile) {
-
-        // Test
-//        switch profile.save() {
-//        case .duplicateName:
-//            print("duplicate name")
-//        case .success:
-//            print("success")
-//        case .failed:
-//            print("failed")
-//        }
+    private func showLayoutEditor(profile: ButtonLayoutProfile) {
+        performSegue(withIdentifier: "showButtonLayoutEditorViewController", sender: profile)
     }
 
-
-
-
-// TODO
-    private func showLayoutEditor(layout: Int?) {
-
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        print(sender as Any)
     }
 
+}
+
+
+extension ButtonProfilesListViewController: UICollectionViewDataSource {
+
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return profilesManager.profileNames.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ButtonProfileCollectionViewCell", for: indexPath) as! ButtonProfileCollectionViewCell
+        cell.label.text = profilesManager.profileNames[indexPath.item]
+        return cell
+    }
+    
 }
 
 

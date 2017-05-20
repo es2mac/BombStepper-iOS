@@ -22,7 +22,10 @@ final class ButtonLayoutEditorViewController: UIViewController {
             presentLayoutScene()
         }
     }
-    
+
+    @IBAction func done() {
+        navigationController?.popViewController(animated: true)
+    }
 
     @IBAction func create() {
         layoutScene.addButton(with: .standard)

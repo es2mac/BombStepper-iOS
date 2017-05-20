@@ -49,7 +49,7 @@
 		DA882A9D1EAFBDCA0066A606 /* UIImageDrawing.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A9C1EAFBDCA0066A606 /* UIImageDrawing.swift */; };
 		DA882A9F1EAFC0910066A606 /* PreviewsNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */; };
 		DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */; };
-		DAADA6DC1ECC347C00B2CFB8 /* ButtonLayoutEditingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAADA6DB1ECC347C00B2CFB8 /* ButtonLayoutEditingViewController.swift */; };
+		DAADA6DC1ECC347C00B2CFB8 /* ButtonLayoutEditorViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAADA6DB1ECC347C00B2CFB8 /* ButtonLayoutEditorViewController.swift */; };
 		DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */; };
 		DACEAB521EB0298900939488 /* HeldPieceNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACEAB511EB0298900939488 /* HeldPieceNode.swift */; };
 		DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD280A61EA8C1930064CB4D /* ControllerNode.swift */; };
@@ -112,7 +112,7 @@
 		DA882A9C1EAFBDCA0066A606 /* UIImageDrawing.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UIImageDrawing.swift; sourceTree = "<group>"; };
 		DA882A9E1EAFC0910066A606 /* PreviewsNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PreviewsNode.swift; sourceTree = "<group>"; };
 		DAA6C0EA1EABEF2700A65D47 /* TetrominoRandomizer.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TetrominoRandomizer.swift; sourceTree = "<group>"; };
-		DAADA6DB1ECC347C00B2CFB8 /* ButtonLayoutEditingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonLayoutEditingViewController.swift; sourceTree = "<group>"; };
+		DAADA6DB1ECC347C00B2CFB8 /* ButtonLayoutEditorViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonLayoutEditorViewController.swift; sourceTree = "<group>"; };
 		DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayfieldNode.swift; sourceTree = "<group>"; };
 		DACEAB511EB0298900939488 /* HeldPieceNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeldPieceNode.swift; sourceTree = "<group>"; };
 		DAD280A61EA8C1930064CB4D /* ControllerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerNode.swift; sourceTree = "<group>"; };
@@ -145,7 +145,7 @@
 				DA3DA35A1EB47C9100A7AED3 /* SprintViewController.swift */,
 				DA330B521EB9D7C60030D436 /* ButtonProfilesListViewController.swift */,
 				DA330B541EB9D8650030D436 /* ButtonProfileCollectionViewCell.swift */,
-				DAADA6DB1ECC347C00B2CFB8 /* ButtonLayoutEditingViewController.swift */,
+				DAADA6DB1ECC347C00B2CFB8 /* ButtonLayoutEditorViewController.swift */,
 				DA066E471ECC381B0029D5E5 /* ButtonEditorViewController.swift */,
 				DA066E491ECC38530029D5E5 /* AxisOverlayView.swift */,
 			);
@@ -394,7 +394,7 @@
 				DA29F62A1EB4D9280095F4D5 /* GameModeController.swift in Sources */,
 				DA882A9D1EAFBDCA0066A606 /* UIImageDrawing.swift in Sources */,
 				DA729B3F1EB5053700620824 /* SprintDisplayNode.swift in Sources */,
-				DAADA6DC1ECC347C00B2CFB8 /* ButtonLayoutEditingViewController.swift in Sources */,
+				DAADA6DC1ECC347C00B2CFB8 /* ButtonLayoutEditorViewController.swift in Sources */,
 				DA066E441ECC37EC0029D5E5 /* LayoutScene.swift in Sources */,
 				DA882A9F1EAFC0910066A606 /* PreviewsNode.swift in Sources */,
 				DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */,
