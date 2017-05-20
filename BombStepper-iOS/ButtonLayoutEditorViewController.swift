@@ -1,5 +1,5 @@
 //
-//  ButtonLayoutEditingViewController.swift
+//  ButtonLayoutEditorViewController.swift
 //  ButtonCreator
 //
 //  Created by Paul on 5/2/17.
@@ -22,6 +22,7 @@ final class ButtonLayoutEditorViewController: UIViewController {
             presentLayoutScene()
         }
     }
+    
 
     @IBAction func create() {
         layoutScene.addButton(with: .standard)
