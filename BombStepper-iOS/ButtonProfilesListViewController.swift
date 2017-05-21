@@ -75,10 +75,19 @@ class ButtonProfilesListViewController: UIViewController {
     }
 
     @IBAction func editProfile(_ sender: UIBarButtonItem) {
+        guard let indexPath = collectionView.indexPathsForSelectedItems?.first else { return }
 
         // TODO: get from manager
-        let profile = ButtonLayoutProfile(name: "")
-        showLayoutEditor(profile: profile)
+
+
+        let profile = profilesManager.loadProfile(at: indexPath.item)
+        print(profile as Any)
+
+
+        
+//        let profile = ButtonLayoutProfile(name: "")
+//        showLayoutEditor(profile: profile)
+        
     }
 
     @IBAction func deleteProfile(_ sender: UIBarButtonItem) {

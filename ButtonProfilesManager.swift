@@ -89,8 +89,6 @@ class ButtonProfilesManager: NSObject {
         return !name.isEmpty && !profileNames.contains(name)
     }
 
-
-
     @discardableResult
     func save(_ profile: ButtonLayoutProfile) -> SaveResult {
 
@@ -121,7 +119,21 @@ class ButtonProfilesManager: NSObject {
         return .success
     }
 
+    func loadProfile(at index: Int) -> ButtonLayoutProfile? {
 
+        let url = ButtonProfilesManager.directoryURL.appendingPathComponent(profileNames[index]).appendingPathExtension("plist")
+        var format = PropertyListSerialization.PropertyListFormat.xml
+
+        if let data = FileManager.default.contents(atPath: url.path),
+            let serialized = try? PropertyListSerialization.propertyList(from: data, options: [], format: &format),
+            let dictionary = serialized as? [String : Any],
+            let profile = ButtonLayoutProfile(dictionary: dictionary) {
+            return profile
+        }
+
+        return nil
+    }
+    
     func deleteProfile(at index: Int) -> Bool {
 
         let url = ButtonProfilesManager.directoryURL.appendingPathComponent(profileNames[index]).appendingPathExtension("plist")

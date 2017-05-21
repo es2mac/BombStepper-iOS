@@ -20,8 +20,6 @@
 		DA25F1C51EAB19110031F833 /* Block.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C41EAB19110031F833 /* Block.swift */; };
 		DA25F1C71EAB39130031F833 /* Piece.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA25F1C61EAB39130031F833 /* Piece.swift */; };
 		DA29F62A1EB4D9280095F4D5 /* GameModeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA29F6291EB4D9280095F4D5 /* GameModeController.swift */; };
-		DA330B4F1EB9D10A0030D436 /* Realm.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA330B4D1EB9D10A0030D436 /* Realm.framework */; };
-		DA330B501EB9D10A0030D436 /* RealmSwift.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DA330B4E1EB9D10A0030D436 /* RealmSwift.framework */; };
 		DA330B531EB9D7C60030D436 /* ButtonProfilesListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA330B521EB9D7C60030D436 /* ButtonProfilesListViewController.swift */; };
 		DA330B551EB9D8650030D436 /* ButtonProfileCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA330B541EB9D8650030D436 /* ButtonProfileCollectionViewCell.swift */; };
 		DA3DA35B1EB47C9100A7AED3 /* SprintViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA3DA35A1EB47C9100A7AED3 /* SprintViewController.swift */; };
@@ -79,8 +77,6 @@
 		DA25F1C41EAB19110031F833 /* Block.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Block.swift; sourceTree = "<group>"; };
 		DA25F1C61EAB39130031F833 /* Piece.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Piece.swift; sourceTree = "<group>"; };
 		DA29F6291EB4D9280095F4D5 /* GameModeController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GameModeController.swift; sourceTree = "<group>"; };
-		DA330B4D1EB9D10A0030D436 /* Realm.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Realm.framework; path = Carthage/Build/iOS/Realm.framework; sourceTree = SOURCE_ROOT; };
-		DA330B4E1EB9D10A0030D436 /* RealmSwift.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = RealmSwift.framework; path = Carthage/Build/iOS/RealmSwift.framework; sourceTree = SOURCE_ROOT; };
 		DA330B521EB9D7C60030D436 /* ButtonProfilesListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonProfilesListViewController.swift; sourceTree = "<group>"; };
 		DA330B541EB9D8650030D436 /* ButtonProfileCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonProfileCollectionViewCell.swift; sourceTree = "<group>"; };
 		DA3DA35A1EB47C9100A7AED3 /* SprintViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SprintViewController.swift; sourceTree = "<group>"; };
@@ -123,8 +119,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DA330B501EB9D10A0030D436 /* RealmSwift.framework in Frameworks */,
-				DA330B4F1EB9D10A0030D436 /* Realm.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -165,8 +159,6 @@
 			isa = PBXGroup;
 			children = (
 				DA7E711D1ECAC89D00144944 /* TiltingButtonNode.swift */,
-				DA330B4D1EB9D10A0030D436 /* Realm.framework */,
-				DA330B4E1EB9D10A0030D436 /* RealmSwift.framework */,
 				DA4D29071EA4F6C5008F3BDF /* Info.plist */,
 				DA4D29041EA4F6C5008F3BDF /* LaunchScreen.storyboard */,
 				DA4D29021EA4F6C5008F3BDF /* Assets.xcassets */,
@@ -276,7 +268,6 @@
 				DA4D28EE1EA4F6C5008F3BDF /* Sources */,
 				DA4D28EF1EA4F6C5008F3BDF /* Frameworks */,
 				DA4D28F01EA4F6C5008F3BDF /* Resources */,
-				DA330B511EB9D1250030D436 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -367,24 +358,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXResourcesBuildPhase section */
-
-/* Begin PBXShellScriptBuildPhase section */
-		DA330B511EB9D1250030D436 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/Carthage/Build/iOS/Realm.framework",
-				"$(SRCROOT)/Carthage/Build/iOS/RealmSwift.framework",
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "/usr/local/bin/carthage copy-frameworks";
-		};
-/* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
 		DA4D28EE1EA4F6C5008F3BDF /* Sources */ = {
