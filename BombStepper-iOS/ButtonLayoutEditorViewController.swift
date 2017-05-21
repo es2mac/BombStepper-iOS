@@ -11,6 +11,10 @@ import SpriteKit
 
 final class ButtonLayoutEditorViewController: UIViewController {
 
+    var profile: ButtonLayoutProfile!   // Whoever shows the editor should set this
+
+    var saveProfileAction: ((_ profile: ButtonLayoutProfile?) -> Void)?
+
     var layoutScene: LayoutScene!
 
     fileprivate var viewSize: CGSize? {
@@ -24,7 +28,25 @@ final class ButtonLayoutEditorViewController: UIViewController {
     }
 
     @IBAction func done() {
-        navigationController?.popViewController(animated: true)
+
+        let newButtons = layoutScene.buttonConfigurations()
+        
+        if profile.buttons == newButtons {
+            self.saveProfileAction?(nil)
+        }
+        else {
+            profile.buttons = newButtons
+            
+            let alertController = UIAlertController(title: "Save this layout?", message: nil, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: { [unowned self] _ in
+                self.saveProfileAction?(self.profile)
+            }))
+            alertController.addAction(UIAlertAction(title: "Don't Save", style: .destructive, handler: { [unowned self] _ in
+                self.saveProfileAction?(nil)
+            }))
+            
+            present(alertController, animated: true, completion: nil)
+        }
     }
 
     @IBAction func create() {
@@ -32,6 +54,12 @@ final class ButtonLayoutEditorViewController: UIViewController {
     }
     
     func editButton(buttonNode: ButtonPreviewNode?) {
+        // This is unfortunately rather confusing.
+        // The button tap gesture is handled by the layout scene
+        // Layout scene sends the button this way via action closure
+        // The button is trapped in the closure given to the button editor
+        // So when the button editor's done editing,
+        // We know which node needs to be replaced or removed
         performSegue(withIdentifier: "Edit Button", sender: buttonNode)
     }
 
@@ -39,7 +67,10 @@ final class ButtonLayoutEditorViewController: UIViewController {
         guard let editorViewController = segue.destination as? ButtonEditorViewController else { return }
 
         let buttonNode = sender as? ButtonPreviewNode
-        (buttonNode?.configuration).map { editorViewController.configuration = $0 }
+
+        if let configuration = buttonNode?.configuration {
+            editorViewController.configuration = configuration
+        }
 
         editorViewController.deleteButtonAction = { [unowned self] in
             self.navigationController?.popViewController(animated: true)
@@ -77,6 +108,8 @@ private extension ButtonLayoutEditorViewController {
         layoutScene.editButtonAction = { [unowned self] node in
             self.editButton(buttonNode: node)
         }
+
+        profile.buttons.forEach(layoutScene.addButton)
     }
 }
 

@@ -216,7 +216,7 @@
                         <outlet property="collectionView" destination="oQ5-LA-N2c" id="trW-Bm-wev"/>
                         <outlet property="editButton" destination="Jw7-yq-3k8" id="JDA-tT-6Et"/>
                         <outlet property="trashButton" destination="Bu0-Nr-dVr" id="Qcs-e7-TPE"/>
-                        <segue destination="hkb-dO-IVz" kind="show" identifier="showButtonLayoutEditorViewController" id="mzJ-w9-k8h"/>
+                        <segue destination="hkb-dO-IVz" kind="show" identifier="Show Layout Editor" id="mzJ-w9-k8h"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u4e-lF-f9W" userLabel="First Responder" sceneMemberID="firstResponder"/>

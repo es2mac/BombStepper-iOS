@@ -44,12 +44,18 @@ class ButtonProfilesListViewController: UIViewController {
             previousName = nil
         }
 
-
-
-        var profile = ButtonLayoutProfile(name: "")
-
         askForValidName(title: "Enter a name for your new layout.", previousName: previousName) { [unowned self] newName in
-            profile.name = newName
+
+            let profile: ButtonLayoutProfile = {
+                if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
+                    var profile = self.profilesManager.loadProfile(at: indexPath.item) {
+                    profile.name = newName
+                    return profile
+                }
+                else {
+                    return ButtonLayoutProfile(name: newName)
+                }
+            }()
 
             if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
 
@@ -75,19 +81,10 @@ class ButtonProfilesListViewController: UIViewController {
     }
 
     @IBAction func editProfile(_ sender: UIBarButtonItem) {
-        guard let indexPath = collectionView.indexPathsForSelectedItems?.first else { return }
+        guard let indexPath = collectionView.indexPathsForSelectedItems?.first,
+            let profile = profilesManager.loadProfile(at: indexPath.item) else { return }
 
-        // TODO: get from manager
-
-
-        let profile = profilesManager.loadProfile(at: indexPath.item)
-        print(profile as Any)
-
-
-        
-//        let profile = ButtonLayoutProfile(name: "")
-//        showLayoutEditor(profile: profile)
-        
+        showLayoutEditor(profile: profile)
     }
 
     @IBAction func deleteProfile(_ sender: UIBarButtonItem) {
@@ -143,11 +140,29 @@ class ButtonProfilesListViewController: UIViewController {
     }
 
     private func showLayoutEditor(profile: ButtonLayoutProfile) {
-        performSegue(withIdentifier: "showButtonLayoutEditorViewController", sender: profile)
+        performSegue(withIdentifier: "Show Layout Editor", sender: profile)
     }
 
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        print(sender as Any)
+        if let controller = segue.destination as? ButtonLayoutEditorViewController,
+            let profile = sender as? ButtonLayoutProfile {
+
+            controller.profile = profile
+
+            controller.saveProfileAction = { [unowned self] profile in
+                
+                if let profile = profile {
+                    if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
+                        let indexPath = IndexPath(item: index, section: 0)
+                        self.collectionView.reloadData()
+                        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredHorizontally)
+                    }
+                    else { assertionFailure() }
+                }
+
+                self.navigationController?.popViewController(animated: true)
+            }
+        }
     }
 
 }

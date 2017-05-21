@@ -22,8 +22,8 @@ struct ButtonConfiguration {
             return CGPoint(x: x, y: y)
         }
         set {
-            x = position.x
-            y = position.y
+            x = newValue.x
+            y = newValue.y
         }
     }
 
@@ -177,20 +177,26 @@ extension ButtonConfiguration {
         self.comboSwipeEnabled = comboSwipeEnabled
         self.upSwipeEnabled = upSwipeEnabled
     }
-
-//    func write() {
-//        let dictionary = self.encodeAsDictionary()
-//        do {
-//            let data = try PropertyListSerialization.data(fromPropertyList: dictionary, format: .xml, options: 0)
-////            let url = URL(fileURLWithPath: "")
-////            try data.write(to: url)
-//            print(String(data: data, encoding: .utf8)!)
-//        }
-//        catch {
-//            print(error)
-//        }
-//    }
     
+}
+
+extension ButtonConfiguration: Equatable {
+    
+    static func ==(lhs: ButtonConfiguration, rhs: ButtonConfiguration) -> Bool {
+        return lhs.type                  == rhs.type &&
+               lhs.x                     == rhs.x &&
+               lhs.y                     == rhs.y &&
+               lhs.width                 == rhs.width &&
+               lhs.height                == rhs.height &&
+               lhs.corner                == rhs.corner &&
+               lhs.tilt                  == rhs.tilt &&
+               lhs.swipeDistance         == rhs.swipeDistance &&
+               lhs.swipeAxisTilt         == rhs.swipeAxisTilt &&
+               lhs.leftRightSwipeEnabled == rhs.leftRightSwipeEnabled &&
+               lhs.downSwipeEnabled      == rhs.downSwipeEnabled &&
+               lhs.comboSwipeEnabled     == rhs.comboSwipeEnabled &&
+               lhs.upSwipeEnabled        == rhs.upSwipeEnabled
+    }
 }
 
 

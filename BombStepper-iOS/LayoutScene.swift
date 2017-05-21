@@ -57,10 +57,9 @@ extension LayoutScene {
         addChild(node)
     }
 
-    func clearAllButtons() {
-        for node in children where node is ButtonPreviewNode {
-            node.removeFromParent()
-        }
+    func buttonConfigurations() -> [ButtonConfiguration] {
+        let buttonNodes = children.flatMap { $0 as? ButtonPreviewNode }
+        return buttonNodes.map { $0.configuration }
     }
 }
 
