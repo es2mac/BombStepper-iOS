@@ -34,6 +34,7 @@ final class ButtonLayoutEditorViewController: UIViewController {
         layoutScene.hideAllNodeDetails()
         buttonsView.isHidden = true
 
+        // Delay a little for snapshot when saving
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: promptSavingIfNeeded)
     }
 
