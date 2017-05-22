@@ -149,18 +149,22 @@ class ButtonProfilesListViewController: UIViewController {
 
             controller.profile = profile
 
-            controller.saveProfileAction = { [unowned self] (profile, image) in
+            controller.saveProfileAction = { [unowned self] (newProfile, image) in
                 
-                if let profile = profile {
-                    if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
-                        let indexPath = IndexPath(item: index, section: 0)
-                        self.collectionView.reloadData()
-                        self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredHorizontally)
-                    }
+                if let newProfile = newProfile {
+                    if case .success = self.profilesManager.save(newProfile) { /* Defer update to after saving image */ }
                     else { assertionFailure() }
                 }
 
-                // TODO: Save image
+                if let image = image {
+                    self.profilesManager.saveImage(image: image, name: profile.name)
+                }
+
+                if (newProfile != nil || image != nil), let index = self.profilesManager.profileNames.index(of: profile.name) {
+                    let indexPath = IndexPath(item: index, section: 0)
+                    self.collectionView.reloadData()
+                    self.collectionView.selectItem(at: indexPath, animated: false, scrollPosition: .centeredHorizontally)
+                }
 
                 self.navigationController?.popViewController(animated: true)
             }

@@ -9,6 +9,7 @@
 import SpriteKit
 
 
+// Work in progress, but potentially unused
 extension UIImage {
     
     class func buttonLayoutImage(profile: ButtonLayoutProfile, dummyView: UIView) -> UIImage {
@@ -20,8 +21,7 @@ extension UIImage {
         view.backgroundColor = .red
         dummyView.addSubview(view)
 
-        // TODO
-//        defer { view.removeFromSuperview() }
+        defer { view.removeFromSuperview() }
         
         let scene = LayoutScene(sceneSize: size)
         view.presentScene(scene)

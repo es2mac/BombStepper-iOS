@@ -62,10 +62,16 @@ extension LayoutScene {
         let buttonNodes = children.flatMap { $0 as? ButtonPreviewNode }
         return buttonNodes.map { $0.configuration }
     }
+
+    func hideAllNodeDetails() {
+        children
+            .flatMap { $0 as? ButtonPreviewNode }
+            .forEach { $0.showDetails(false, animated: false) }
+    }
 }
 
 
-extension LayoutScene {
+private extension LayoutScene {
 
     @objc func pan(_ recognizer: UIPanGestureRecognizer) {
 
@@ -96,7 +102,7 @@ extension LayoutScene {
     @objc func singleTap(_ recognizer: UITapGestureRecognizer) {
         let location = locationInScene(viewLocation: recognizer.location(in: view))
         if let node = nodes(at: location).first(where: { $0 is ButtonPreviewNode }) as? ButtonPreviewNode {
-            node.showDetails = !node.showDetails
+            node.toggleShowDetails()
         }
     }
     
@@ -115,7 +121,7 @@ extension LayoutScene {
 }
 
 
-extension CGPoint {
+private extension CGPoint {
     func rounded() -> CGPoint {
         return CGPoint(x: x.rounded(), y: y.rounded())
     }

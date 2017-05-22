@@ -337,6 +337,7 @@
                     </view>
                     <navigationItem key="navigationItem" id="kVq-ep-WTN"/>
                     <connections>
+                        <outlet property="buttonsView" destination="hsc-Xj-f4V" id="d7s-4p-dew"/>
                         <segue destination="QqL-rL-fRc" kind="show" identifier="Edit Button" id="gdJ-8r-FcD">
                             <nil key="action"/>
                         </segue>

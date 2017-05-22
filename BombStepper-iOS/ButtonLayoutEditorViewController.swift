@@ -11,6 +11,8 @@ import SpriteKit
 
 final class ButtonLayoutEditorViewController: UIViewController {
 
+    @IBOutlet var buttonsView: UIStackView!
+
     var profile: ButtonLayoutProfile!   // Whoever shows the editor should set this
 
     var saveProfileAction: ((_ profile: ButtonLayoutProfile?, _ image: UIImage?) -> Void)?
@@ -29,26 +31,19 @@ final class ButtonLayoutEditorViewController: UIViewController {
 
     @IBAction func done() {
 
-        let newButtons = layoutScene.buttonConfigurations()
+        layoutScene.hideAllNodeDetails()
+        buttonsView.isHidden = true
 
-        // TODO: screenshot
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.01, execute: promptSavingIfNeeded)
+    }
 
-        if Set(profile.buttons) == Set(newButtons) {
-            self.saveProfileAction?(nil, nil)
-        }
-        else {
-            profile.buttons = newButtons
-            
-            let alertController = UIAlertController(title: "Save this layout?", message: nil, preferredStyle: .alert)
-            alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: { [unowned self] _ in
-                self.saveProfileAction?(self.profile, nil)
-            }))
-            alertController.addAction(UIAlertAction(title: "Don't Save", style: .destructive, handler: { [unowned self] _ in
-                self.saveProfileAction?(nil, nil)
-            }))
-            
-            present(alertController, animated: true, completion: nil)
-        }
+    func snapshotLayout() -> UIImage {
+        UIGraphicsBeginImageContextWithOptions(view.frame.size, true, UIScreen.main.scale)
+        defer { UIGraphicsEndImageContext() }
+
+        view.drawHierarchy(in: view.frame, afterScreenUpdates: true)
+
+        return UIGraphicsGetImageFromCurrentImageContext()!
     }
 
     @IBAction func create() {
@@ -115,6 +110,31 @@ private extension ButtonLayoutEditorViewController {
     }
 }
 
+
+private extension ButtonLayoutEditorViewController {
+
+    func promptSavingIfNeeded() {
+
+        let newButtons = layoutScene.buttonConfigurations()
+
+        if Set(profile.buttons) == Set(newButtons) {
+            self.saveProfileAction?(nil, snapshotLayout())
+        }
+        else {
+            profile.buttons = newButtons
+
+            let alertController = UIAlertController(title: "Save this layout?", message: nil, preferredStyle: .alert)
+            alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: { [unowned self] _ in
+                self.saveProfileAction?(self.profile, self.snapshotLayout())
+            }))
+            alertController.addAction(UIAlertAction(title: "Don't Save", style: .destructive, handler: { [unowned self] _ in
+                self.saveProfileAction?(nil, nil)
+            }))
+
+            present(alertController, animated: true, completion: nil)
+        }
+    }
+}
 
 
 

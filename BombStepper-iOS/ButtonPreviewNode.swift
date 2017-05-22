@@ -50,20 +50,35 @@ class ButtonPreviewNode: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var showDetails: Bool = false {
-        didSet {
-            if showDetails {
-                addChild(swipeAxisNode)
-                swipeAxisNode.run(.fadeAlpha(to: 0.5, duration: 0.5))
-                labelNode.run(.fadeOut(withDuration: 0.5))
+    private var isDetailsShown: Bool = false
+
+    func toggleShowDetails() {
+        showDetails(!isDetailsShown)
+    }
+
+    func showDetails(_ isShown: Bool, animated: Bool = true) {
+        guard isShown != isDetailsShown else { return }
+        isDetailsShown = isShown
+
+        switch (isShown, animated) {
+        case (true, true):
+            addChild(swipeAxisNode)
+            swipeAxisNode.run(.fadeAlpha(to: 0.5, duration: 0.3))
+            labelNode.run(.fadeOut(withDuration: 0.3))
+        case (true, false):
+            addChild(swipeAxisNode)
+            swipeAxisNode.alpha = 0.5
+            labelNode.alpha = 0
+        case (false, true):
+            swipeAxisNode.run(.fadeOut(withDuration: 0.3)) {
+                self.swipeAxisNode.removeFromParent()
             }
-            else {
-                swipeAxisNode.run(.fadeOut(withDuration: 0.5)) {
-                    self.swipeAxisNode.removeFromParent()
-                }
-                labelNode.run(.fadeIn(withDuration: 0.5))
-            }
+            labelNode.run(.fadeIn(withDuration: 0.3))
+        case (false, false):
+            swipeAxisNode.alpha = 0
+            swipeAxisNode.removeFromParent()
+            labelNode.alpha = 1
         }
     }
-    
+
 }
