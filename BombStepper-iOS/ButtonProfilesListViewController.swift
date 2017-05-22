@@ -9,6 +9,9 @@
 import UIKit
 
 
+// TODO: Default profile when the custom list is empty
+// TODO: Use the selected profile (or default profile) for playing
+
 class ButtonProfilesListViewController: UIViewController {
 
     fileprivate let profilesManager = ButtonProfilesManager()
@@ -182,12 +185,38 @@ extension ButtonProfilesListViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ButtonProfileCollectionViewCell", for: indexPath) as! ButtonProfileCollectionViewCell
+        
         let name = profilesManager.profileNames[indexPath.item]
+        
         cell.label.text = name
-        cell.imageView.image = profilesManager.loadImage(named: name)
+        cell.setImageAndAdjustAspectRatio(profilesManager.loadImage(named: name))
+        cell.selectionSwitch.isOn = profilesManager.selectedProfileName == name
+        
+        cell.selectionAction = { [unowned self] isSelected in
+            self.changeSelection(name: name, isSelected: isSelected)
+        }
         return cell
     }
-    
+
+    private func changeSelection(name: String, isSelected: Bool) {
+
+        let previousName = profilesManager.selectedProfileName
+        
+        switch (name == previousName, isSelected) {
+        case (true, false):
+            profilesManager.selectedProfileName = nil
+        case (false, true):
+            profilesManager.selectedProfileName = name
+            if let previousName = previousName, let previousIndex = profilesManager.profileNames.index(of: previousName) {
+                let indexPath = IndexPath(item: previousIndex, section: 0)
+                collectionView.reloadItems(at: [indexPath])
+            }
+        default:
+            break
+        }
+
+    }
+
 }
 
 

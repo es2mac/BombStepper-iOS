@@ -9,6 +9,9 @@
 import UIKit
 
 
+private let selectedButtonProfileKey = "kSelectedButtonProfileKey"
+
+
 enum SaveResult {
     case success
     case duplicateName
@@ -19,8 +22,17 @@ enum SaveResult {
 /// Mainly deal with writing/reading button layout profiles to/from files
 class ButtonProfilesManager: NSObject {
 
-    
     private(set) var profileNames: [String] = []
+    
+    var selectedProfileName: String? {
+        set {
+            UserDefaults.standard.set(newValue, forKey: selectedButtonProfileKey)
+            UserDefaults.standard.synchronize()
+        }
+        get {
+            return UserDefaults.standard.string(forKey: selectedButtonProfileKey)
+        }
+    }
 
     override init() {
         super.init()
