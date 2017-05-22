@@ -138,16 +138,20 @@
                                             <rect key="frame" x="0.0" y="0.0" width="367" height="323"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
-                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="ea5-Rc-N88">
+                                                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="8" translatesAutoresizingMaskIntoConstraints="NO" id="ea5-Rc-N88">
                                                     <rect key="frame" x="0.0" y="0.0" width="367" height="323"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rnK-tp-Q7Z">
-                                                            <rect key="frame" x="0.0" y="0.0" width="367" height="323"/>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="750" verticalHuggingPriority="750" horizontalCompressionResistancePriority="751" verticalCompressionResistancePriority="751" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rnK-tp-Q7Z">
+                                                            <rect key="frame" x="8" y="8" width="351" height="20.5"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                                             <nil key="textColor"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="dzh-ow-knS">
+                                                            <rect key="frame" x="8" y="36.5" width="351" height="278.5"/>
+                                                        </imageView>
                                                     </subviews>
+                                                    <edgeInsets key="layoutMargins" top="8" left="8" bottom="8" right="8"/>
                                                 </stackView>
                                             </subviews>
                                         </view>
@@ -159,6 +163,7 @@
                                             <constraint firstAttribute="trailing" secondItem="ea5-Rc-N88" secondAttribute="trailing" id="uon-6y-XQb"/>
                                         </constraints>
                                         <connections>
+                                            <outlet property="imageView" destination="dzh-ow-knS" id="H6x-cA-nDk"/>
                                             <outlet property="label" destination="rnK-tp-Q7Z" id="eMp-Nr-1sa"/>
                                         </connections>
                                     </collectionViewCell>
@@ -221,7 +226,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="u4e-lF-f9W" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="38" y="1185"/>
+            <point key="canvasLocation" x="37.331334332833585" y="1184.8"/>
         </scene>
         <!--Sprint View Controller-->
         <scene sceneID="tXr-a1-R10">

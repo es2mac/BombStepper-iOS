@@ -13,7 +13,7 @@ final class ButtonLayoutEditorViewController: UIViewController {
 
     var profile: ButtonLayoutProfile!   // Whoever shows the editor should set this
 
-    var saveProfileAction: ((_ profile: ButtonLayoutProfile?) -> Void)?
+    var saveProfileAction: ((_ profile: ButtonLayoutProfile?, _ image: UIImage?) -> Void)?
 
     var layoutScene: LayoutScene!
 
@@ -30,19 +30,21 @@ final class ButtonLayoutEditorViewController: UIViewController {
     @IBAction func done() {
 
         let newButtons = layoutScene.buttonConfigurations()
-        
-        if profile.buttons == newButtons {
-            self.saveProfileAction?(nil)
+
+        // TODO: screenshot
+
+        if Set(profile.buttons) == Set(newButtons) {
+            self.saveProfileAction?(nil, nil)
         }
         else {
             profile.buttons = newButtons
             
             let alertController = UIAlertController(title: "Save this layout?", message: nil, preferredStyle: .alert)
             alertController.addAction(UIAlertAction(title: "Save", style: .default, handler: { [unowned self] _ in
-                self.saveProfileAction?(self.profile)
+                self.saveProfileAction?(self.profile, nil)
             }))
             alertController.addAction(UIAlertAction(title: "Don't Save", style: .destructive, handler: { [unowned self] _ in
-                self.saveProfileAction?(nil)
+                self.saveProfileAction?(nil, nil)
             }))
             
             present(alertController, animated: true, completion: nil)
@@ -113,17 +115,6 @@ private extension ButtonLayoutEditorViewController {
     }
 }
 
-
-//extension UIColor {
-//    static let lightFlatBlack = #colorLiteral(red: 0.1686089337, green: 0.1686392725, blue: 0.1686022878, alpha: 1)
-//    static let playfieldBorder = #colorLiteral(red: 0.2549019754, green: 0.2745098174, blue: 0.3019607961, alpha: 1)
-//}
-//
-//
-//enum Alpha {
-//    static let pressedButton: CGFloat = 0.15
-//    static let releasedButton: CGFloat = 0.04
-//}
 
 
 

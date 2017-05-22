@@ -180,7 +180,7 @@ extension ButtonConfiguration {
     
 }
 
-extension ButtonConfiguration: Equatable {
+extension ButtonConfiguration: Hashable {
     
     static func ==(lhs: ButtonConfiguration, rhs: ButtonConfiguration) -> Bool {
         return lhs.type                  == rhs.type &&
@@ -197,16 +197,10 @@ extension ButtonConfiguration: Equatable {
                lhs.comboSwipeEnabled     == rhs.comboSwipeEnabled &&
                lhs.upSwipeEnabled        == rhs.upSwipeEnabled
     }
+
+    var hashValue: Int {
+        return Int(x * 1000 + y)
+    }
 }
 
-
-//extension UIView {
-//
-//    func configure(with configuration: ButtonConfiguration) {
-//        bounds.size = CGSize(width: configuration.width, height: configuration.height)
-//        layer.cornerRadius = configuration.corner
-//        transform = CGAffineTransform(rotationAngle: -configuration.tilt * .pi / 180)
-//    }
-//
-//}
 

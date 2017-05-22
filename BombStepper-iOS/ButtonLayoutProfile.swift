@@ -59,9 +59,6 @@ struct ButtonLayoutProfile {
 }
 
 
-
-// TODO: Test encoding & decoding
-
 extension ButtonLayoutProfile {
 
     func encodeAsDictionary() -> [String : Any] {

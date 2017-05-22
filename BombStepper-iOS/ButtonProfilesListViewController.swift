@@ -149,7 +149,7 @@ class ButtonProfilesListViewController: UIViewController {
 
             controller.profile = profile
 
-            controller.saveProfileAction = { [unowned self] profile in
+            controller.saveProfileAction = { [unowned self] (profile, image) in
                 
                 if let profile = profile {
                     if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
@@ -159,6 +159,8 @@ class ButtonProfilesListViewController: UIViewController {
                     }
                     else { assertionFailure() }
                 }
+
+                // TODO: Save image
 
                 self.navigationController?.popViewController(animated: true)
             }
@@ -176,7 +178,9 @@ extension ButtonProfilesListViewController: UICollectionViewDataSource {
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "ButtonProfileCollectionViewCell", for: indexPath) as! ButtonProfileCollectionViewCell
-        cell.label.text = profilesManager.profileNames[indexPath.item]
+        let name = profilesManager.profileNames[indexPath.item]
+        cell.label.text = name
+        cell.imageView.image = profilesManager.loadImage(named: name)
         return cell
     }
     

@@ -12,6 +12,7 @@ import UIKit
 final class ButtonProfileCollectionViewCell: UICollectionViewCell {
 
     @IBOutlet var label: UILabel!
+    @IBOutlet var imageView: UIImageView!
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -24,6 +25,7 @@ final class ButtonProfileCollectionViewCell: UICollectionViewCell {
         super.prepareForReuse()
 
         label.text = nil
+        imageView.image = nil
     }
 
 }

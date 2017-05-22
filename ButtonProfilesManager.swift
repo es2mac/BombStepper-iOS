@@ -134,6 +134,11 @@ class ButtonProfilesManager: NSObject {
         return nil
     }
     
+    func loadImage(named name: String) -> UIImage? {
+        let url = ButtonProfilesManager.directoryURL.appendingPathComponent(name).appendingPathExtension("png")
+        return UIImage(contentsOfFile: url.path)
+    }
+    
     func deleteProfile(at index: Int) -> Bool {
 
         let url = ButtonProfilesManager.directoryURL.appendingPathComponent(profileNames[index]).appendingPathExtension("plist")
@@ -151,10 +156,14 @@ class ButtonProfilesManager: NSObject {
         return true
     }
 
+    func saveImage(image: UIImage, name: String) {
+        
+        let data = UIImagePNGRepresentation(image)!
+        let url = ButtonProfilesManager.directoryURL.appendingPathComponent(name).appendingPathExtension("png")
+        FileManager.default.createFile(atPath: url.path, contents: data, attributes: nil)
+    }
+
 }
-
-
-// TODO: Read and reconstruct profile
 
 
 // TODO: Read or create thumbnail and save with the same name

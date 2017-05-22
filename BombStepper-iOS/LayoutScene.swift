@@ -16,6 +16,7 @@ final class LayoutScene: SKScene {
     fileprivate let sceneSize: CGSize
 
     fileprivate var movingNode: ButtonPreviewNode?
+    fileprivate var panStartTime: Date = Date()
 
     init(sceneSize: CGSize) {
         self.sceneSize = sceneSize
@@ -72,17 +73,18 @@ extension LayoutScene {
 
         case .began:
             let startLocation = locationInScene(viewLocation: recognizer.location(in: view), translation: recognizer.translation(in: view))
-            if let node = nodes(at: startLocation).first(where: { $0 is ButtonPreviewNode }) as? ButtonPreviewNode {
-                movingNode = node
-            }
+            movingNode = nodes(at: startLocation).first(where: { $0 is ButtonPreviewNode }) as? ButtonPreviewNode
+            movingNode?.run(.move(to: startLocation.rounded(), duration: 0.1))
+            panStartTime = Date()
 
         case .changed:
-            guard let node = movingNode else { return }
             let currentLocation = locationInScene(viewLocation: recognizer.location(in: view))
-            node.position = currentLocation.rounded()
+            let motionRemainingTime = max(0, 0.1 + panStartTime.timeIntervalSinceNow)
+            movingNode?.run(.move(to: currentLocation.rounded(), duration: motionRemainingTime))
 
         case .ended:
             let currentLocation = locationInScene(viewLocation: recognizer.location(in: view))
+            movingNode?.position = currentLocation.rounded()
             movingNode?.configuration.position = currentLocation.rounded()
             movingNode = nil
 
