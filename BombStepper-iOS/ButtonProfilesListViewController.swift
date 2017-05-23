@@ -118,7 +118,8 @@ class ButtonProfilesListViewController: UIViewController {
         }
 
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-        alertController.addTextField(configurationHandler: { textField in
+        alertController.addTextField(configurationHandler: { [unowned self] textField in
+            textField.delegate = self
             textField.text = name
             let range = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument)
             textField.selectedTextRange = range
@@ -245,5 +246,13 @@ extension ButtonProfilesListViewController: UICollectionViewDelegate, UICollecti
         trashButton.isEnabled = isEnabled
     }
 
+}
+
+
+extension ButtonProfilesListViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        let textLength = textField.text?.characters.count ?? 0
+        return (textLength - range.length + string.characters.count) <= 24
+    }
 }
 
