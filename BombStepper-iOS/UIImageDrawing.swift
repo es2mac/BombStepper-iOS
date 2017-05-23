@@ -75,7 +75,7 @@ extension UIImage {
 
         let context = UIGraphicsGetCurrentContext()!
 
-        context.addPath(UIBezierPath(roundedRect: rect.insetBy(dx: 0.5, dy: 0.5).offsetBy(dx: 1, dy: 1), cornerRadius: cornerRadius).cgPath)
+        context.addPath(UIBezierPath(roundedRect: rect, cornerRadius: cornerRadius).cgPath)
         color.setFill()
         context.fillPath()
 

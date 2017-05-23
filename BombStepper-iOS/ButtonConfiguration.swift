@@ -108,19 +108,19 @@ struct ButtonConfiguration {
 
 extension ButtonConfiguration {
 
-    static let standard = ButtonConfiguration(type: .moveLeft,
-                                              x: 0,
-                                              y: 0,
-                                              width: 100,
-                                              height: 100,
-                                              corner: 4,
-                                              tilt: 0,
-                                              swipeDistance: 50,
-                                              swipeAxisTilt: 0,
-                                              leftRightSwipeEnabled: true,
-                                              downSwipeEnabled: true,
-                                              comboSwipeEnabled: true,
-                                              upSwipeEnabled: true)
+    static let placeholder = ButtonConfiguration(type: .moveLeft,
+                                                 x: 0,
+                                                 y: 0,
+                                                 width: 100,
+                                                 height: 100,
+                                                 corner: 4,
+                                                 tilt: 0,
+                                                 swipeDistance: 50,
+                                                 swipeAxisTilt: 0,
+                                                 leftRightSwipeEnabled: true,
+                                                 downSwipeEnabled: true,
+                                                 comboSwipeEnabled: true,
+                                                 upSwipeEnabled: true)
 
 }
 

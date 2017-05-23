@@ -11,7 +11,7 @@ import UIKit
 
 final class AxisOverlayView: UIImageView {
 
-    var configuration: ButtonConfiguration = .standard {
+    var configuration: ButtonConfiguration = .placeholder {
         didSet {
             image = UIImage.image(from: configuration)
             transform = CGAffineTransform(rotationAngle: -(configuration.swipeAxisTilt - configuration.tilt) * .pi / 180)

@@ -24,8 +24,6 @@ struct ButtonLayoutProfile {
 
     init(name: String) {
         self.name = name
-        let config = ButtonConfiguration.standard
-        buttons = [config, config]
     }
 
     @discardableResult

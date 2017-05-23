@@ -52,6 +52,7 @@
 		DAC64B4A1EAA41EE008F9B5A /* PlayfieldNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */; };
 		DACEAB521EB0298900939488 /* HeldPieceNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DACEAB511EB0298900939488 /* HeldPieceNode.swift */; };
 		DAD280A71EA8C1930064CB4D /* ControllerNode.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAD280A61EA8C1930064CB4D /* ControllerNode.swift */; };
+		DAE096F01ED3D4BD00600932 /* ButtonLayoutPresets.swift in Sources */ = {isa = PBXBuildFile; fileRef = DAE096EF1ED3D4BD00600932 /* ButtonLayoutPresets.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -114,6 +115,7 @@
 		DAC64B491EAA41EE008F9B5A /* PlayfieldNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayfieldNode.swift; sourceTree = "<group>"; };
 		DACEAB511EB0298900939488 /* HeldPieceNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeldPieceNode.swift; sourceTree = "<group>"; };
 		DAD280A61EA8C1930064CB4D /* ControllerNode.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ControllerNode.swift; sourceTree = "<group>"; };
+		DAE096EF1ED3D4BD00600932 /* ButtonLayoutPresets.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ButtonLayoutPresets.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -255,6 +257,7 @@
 				DA4FCC121ECAF07800EE6515 /* ButtonType.swift */,
 				DA4FCC101ECAEF4C00EE6515 /* ButtonConfiguration.swift */,
 				DA4FCC151ECAF14800EE6515 /* ButtonLayoutProfile.swift */,
+				DAE096EF1ED3D4BD00600932 /* ButtonLayoutPresets.swift */,
 				DAB18DF91ED1FB0500FD9BDF /* ButtonLayoutDrawing.swift */,
 				DA4FCC0E1ECAED5D00EE6515 /* ButtonProfilesManager.swift */,
 			);
@@ -395,6 +398,7 @@
 				DACEAB521EB0298900939488 /* HeldPieceNode.swift in Sources */,
 				DA3DA35B1EB47C9100A7AED3 /* SprintViewController.swift in Sources */,
 				DA25F1C71EAB39130031F833 /* Piece.swift in Sources */,
+				DAE096F01ED3D4BD00600932 /* ButtonLayoutPresets.swift in Sources */,
 				DA4FCC0F1ECAED5D00EE6515 /* ButtonProfilesManager.swift in Sources */,
 				DAA6C0EB1EABEF2700A65D47 /* TetrominoRandomizer.swift in Sources */,
 				DA882A971EAF0D300066A606 /* MovementTimer.swift in Sources */,

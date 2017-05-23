@@ -9,6 +9,8 @@
 import SpriteKit
 
 
+// WISHLIST: Move multiple buttons as a group
+
 final class LayoutScene: SKScene {
 
     var editButtonAction: ((_ buttonNode: ButtonPreviewNode) -> Void)?

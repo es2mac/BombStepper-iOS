@@ -48,7 +48,7 @@ final class ButtonLayoutEditorViewController: UIViewController {
     }
 
     @IBAction func create() {
-        layoutScene.addButton(with: .standard)
+        layoutScene.addButton(with: .placeholder)
     }
     
     func editButton(buttonNode: ButtonPreviewNode?) {

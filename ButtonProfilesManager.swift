@@ -153,6 +153,9 @@ class ButtonProfilesManager: NSObject {
     
     func deleteProfile(at index: Int) -> Bool {
 
+        // TODO: Delete image too
+        // TODO: Remove selected, if this is the one
+
         let url = ButtonProfilesManager.directoryURL.appendingPathComponent(profileNames[index]).appendingPathExtension("plist")
 
         do {
@@ -176,9 +179,6 @@ class ButtonProfilesManager: NSObject {
     }
 
 }
-
-
-// TODO: Read or create thumbnail and save with the same name
 
 
 private extension ButtonProfilesManager {

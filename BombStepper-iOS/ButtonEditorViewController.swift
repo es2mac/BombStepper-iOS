@@ -14,7 +14,7 @@ final class ButtonEditorViewController: UIViewController {
 
     var editingDoneAction: ((_ configuration: ButtonConfiguration) -> Void)?
     var deleteButtonAction: (() -> Void)?
-    var configuration: ButtonConfiguration = .standard {
+    var configuration: ButtonConfiguration = .placeholder {
         didSet { updatePreview() }
     }
 

@@ -56,7 +56,7 @@ class ButtonProfilesListViewController: UIViewController {
                     return profile
                 }
                 else {
-                    return ButtonLayoutProfile(name: newName)
+                    return ButtonLayoutProfile.presetLayout3(name: newName)
                 }
             }()
 
@@ -151,6 +151,9 @@ class ButtonProfilesListViewController: UIViewController {
             let profile = sender as? ButtonLayoutProfile {
 
             controller.profile = profile
+
+            // TODO: Fix issue when a standard layout is created, adjusted but not saved, no image is created
+            // Idea: Check here if this profile has an image, if not, signal editor to snapshot first thing before edit
 
             controller.saveProfileAction = { [unowned self] (newProfile, image) in
                 
