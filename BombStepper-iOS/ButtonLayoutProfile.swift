@@ -11,7 +11,6 @@ import Foundation
 
 private enum Keys {
     static let name: String = "name"
-    static let modificationDate: String = "modificationDate"
     static let buttons: String = "buttons"
 }
 
@@ -19,7 +18,6 @@ private enum Keys {
 struct ButtonLayoutProfile {
 
     var name: String
-    var modificationDate: Date = Date()
     var buttons: [ButtonConfiguration] = []
 
     init(name: String) {
@@ -60,21 +58,18 @@ struct ButtonLayoutProfile {
 extension ButtonLayoutProfile {
 
     func encodeAsDictionary() -> [String : Any] {
-        return [ Keys.name             : name,
-                 Keys.modificationDate : modificationDate,
-                 Keys.buttons          : buttons.map { $0.encodeAsDictionary() } ]
+        return [ Keys.name    : name,
+                 Keys.buttons : buttons.map { $0.encodeAsDictionary() } ]
     }
 
     init?(dictionary: [String : Any]) {
 
         guard let name = dictionary[Keys.name] as? String,
-            let modificationDate = dictionary[Keys.modificationDate] as? Date,
             let buttons = dictionary[Keys.buttons] as? [[String : Any]] else {
                 return nil
         }
 
         self.name = name
-        self.modificationDate = modificationDate
         self.buttons = buttons.flatMap { ButtonConfiguration(dictionary: $0) }
     }
 
@@ -83,7 +78,7 @@ extension ButtonLayoutProfile {
 
 extension ButtonLayoutProfile: CustomDebugStringConvertible {
     var debugDescription: String {
-        return "Name:\(name)\nDate: \(modificationDate)\nButtons:\(buttons)"
+        return "Name:\(name)\nButtons:\(buttons)"
     }
 }
 

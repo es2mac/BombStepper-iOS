@@ -9,6 +9,7 @@
 import UIKit
 
 
+// TODO: Prevent hard drop & hold to be set as swipe-able?
 final class ButtonEditorViewController: UIViewController {
 
 

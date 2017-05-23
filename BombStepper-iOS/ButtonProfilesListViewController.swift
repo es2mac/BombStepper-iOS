@@ -35,9 +35,39 @@ class ButtonProfilesListViewController: UIViewController {
 
     @IBAction func createOrCloneProfile(_ sender: UIBarButtonItem) {
 
+        let alertController = UIAlertController(title: "New Layout", message: nil, preferredStyle: .alert)
+        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
+            let existingProfile = profilesManager.loadProfile(at: indexPath.item) {
+            alertController.addAction(UIAlertAction(title: "Duplicate \"\(existingProfile.name)\"", style: .default, handler: { _ in
+
+            }))
+        }
+        else if !profilesManager.profileNames.isEmpty {
+            alertController.addAction(UIAlertAction(title: "Duplicate...", style: .default, handler: { _ in
+                // TODO
+            }))
+        }
+        alertController.addAction(UIAlertAction(title: "Preset 1", style: .default, handler: { _ in
+            // TODO
+        }))
+        alertController.addAction(UIAlertAction(title: "Preset 2", style: .default, handler: { _ in
+            // TODO
+        }))
+        alertController.addAction(UIAlertAction(title: "Preset 3", style: .default, handler: { _ in
+            // TODO
+        }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
+            // TODO
+        }))
+
+        present(alertController, animated: true, completion: nil)
+        
+
         // TODO: show option to clone selected profile or use preset
         // If selected something, "clone that one" is an option
         // otherwise, "choose what to clone" is an option
+
+
 
         /*
         let profile: ButtonLayoutProfile
@@ -48,7 +78,6 @@ class ButtonProfilesListViewController: UIViewController {
         else {
             profile = ButtonLayoutProfile.presetLayout3()
         }
-         */
 
         let previousName: String?
         
@@ -62,6 +91,7 @@ class ButtonProfilesListViewController: UIViewController {
         askForValidNewName(title: "Enter a name for your new layout.", previousName: previousName, completion: { [unowned self] newName in
             self.saveAndShowNewProfile(name: newName)
         })
+         */
     }
 
     @IBAction func editProfile(_ sender: UIBarButtonItem) {
@@ -76,7 +106,6 @@ class ButtonProfilesListViewController: UIViewController {
         let name = profilesManager.profileNames[indexPath.item]
 
         let alertController = UIAlertController(title: "Are you sure you want to delete the profile \"\(name)\"?", message: nil, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alertController.addAction(UIAlertAction(title: "Delete", style: .destructive, handler: { [unowned self] _ in
             if self.profilesManager.deleteProfile(at: indexPath.item) {
                 self.collectionView.deleteItems(at: [indexPath])
@@ -84,6 +113,7 @@ class ButtonProfilesListViewController: UIViewController {
             }
             else { assertionFailure() }
         }))
+        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
         present(alertController, animated: true, completion: nil)
     }
