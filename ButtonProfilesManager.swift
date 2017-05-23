@@ -153,18 +153,25 @@ class ButtonProfilesManager: NSObject {
     
     func deleteProfile(at index: Int) -> Bool {
 
-        // TODO: Delete image too
-        // TODO: Remove selected, if this is the one
+        // Remove selected, if this is the one
+        let name = profileNames[index]
+        if selectedProfileName == name {
+            selectedProfileName = nil
+        }
 
-        let url = ButtonProfilesManager.directoryURL.appendingPathComponent(profileNames[index]).appendingPathExtension("plist")
-
+        // Remove plist
+        let plistURL = ButtonProfilesManager.directoryURL.appendingPathComponent(name).appendingPathExtension("plist")
         do {
-            try FileManager.default.removeItem(at: url)
+            try FileManager.default.removeItem(at: plistURL)
         }
         catch {
             assertionFailure()
             return false
         }
+
+        // Remove image
+        let imageURL = ButtonProfilesManager.directoryURL.appendingPathComponent(name).appendingPathExtension("png")
+        try? FileManager.default.removeItem(at: imageURL)
 
         reload()
 
