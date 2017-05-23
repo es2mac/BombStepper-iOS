@@ -35,51 +35,33 @@ class ButtonProfilesListViewController: UIViewController {
 
     @IBAction func createOrCloneProfile(_ sender: UIBarButtonItem) {
 
-        // Pass existing layout in for clone action
+        // TODO: show option to clone selected profile or use preset
+        // If selected something, "clone that one" is an option
+        // otherwise, "choose what to clone" is an option
+
+        /*
+        let profile: ButtonLayoutProfile
+        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
+            let existingProfile = self.profilesManager.loadProfile(at: indexPath.item) {
+            profile = existingProfile
+        }
+        else {
+            profile = ButtonLayoutProfile.presetLayout3()
+        }
+         */
 
         let previousName: String?
-
+        
         if let indexPath = collectionView.indexPathsForSelectedItems?.first {
             previousName = profilesManager.profileNames[indexPath.item]
         }
         else {
             previousName = nil
         }
-
-        askForValidName(title: "Enter a name for your new layout.", previousName: previousName) { [unowned self] newName in
-
-            let profile: ButtonLayoutProfile = {
-                if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
-                    var profile = self.profilesManager.loadProfile(at: indexPath.item) {
-                    profile.name = newName
-                    return profile
-                }
-                else {
-                    return ButtonLayoutProfile.presetLayout3(name: newName)
-                }
-            }()
-
-            if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
-
-                let indexPath = IndexPath(item: index, section: 0)
-
-                self.collectionView.insertItems(at: [indexPath])
-
-                self.collectionView.performBatchUpdates({
-
-                    self.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
-                    self.selectedIndexPath = indexPath
-
-                }, completion: { _ in
-                    
-                    self.showLayoutEditor(profile: profile)
-                    
-                })
-
-            }
-            else { assertionFailure() }
-            
-        }
+        
+        askForValidNewName(title: "Enter a name for your new layout.", previousName: previousName, completion: { [unowned self] newName in
+            self.saveAndShowNewProfile(name: newName)
+        })
     }
 
     @IBAction func editProfile(_ sender: UIBarButtonItem) {
@@ -106,7 +88,7 @@ class ButtonProfilesListViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
-    private func askForValidName(title: String, previousName: String? = nil, completion: @escaping (_ name: String) -> Void ) {
+    private func askForValidNewName(title: String, previousName: String? = nil, completion: @escaping (_ name: String) -> Void ) {
 
         guard let name = profilesManager.nextProfileName(from: previousName) else {
             let count = profilesManager.profileNames.count
@@ -128,18 +110,53 @@ class ButtonProfilesListViewController: UIViewController {
         alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: { [unowned alertController, unowned self] action in
             let newName = alertController.textFields![0].text ?? ""
             if newName.isEmpty {
-                self.askForValidName(title: "The name cannot be empty. Please enter a new name for your layout.", previousName: nil, completion: completion)
+                self.askForValidNewName(title: "The name cannot be empty. Please enter a new name for your layout.", previousName: nil, completion: completion)
             }
             else if self.profilesManager.isNameAvailable(newName) {
                 completion(newName)
             }
             else {
-                self.askForValidName(title: "This name is taken, please enter a new name for your layout.", previousName: newName, completion: completion)
+                self.askForValidNewName(title: "This name is taken, please enter a new name for your layout.", previousName: newName, completion: completion)
             }
 
         }))
 
         present(alertController, animated: true, completion: nil)
+    }
+
+    private func saveAndShowNewProfile(name: String) {
+
+        // TODO: This profile creation should be passed in instead
+        let profile: ButtonLayoutProfile = {
+            if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
+                var profile = self.profilesManager.loadProfile(at: indexPath.item) {
+                profile.name = name
+                return profile
+            }
+            else {
+                return ButtonLayoutProfile.presetLayout3(name: name)
+            }
+        }()
+
+        if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
+
+            let indexPath = IndexPath(item: index, section: 0)
+
+            self.collectionView.insertItems(at: [indexPath])
+
+            self.collectionView.performBatchUpdates({
+
+                self.collectionView.selectItem(at: indexPath, animated: true, scrollPosition: .centeredHorizontally)
+                self.selectedIndexPath = indexPath
+
+            }, completion: { _ in
+
+                self.showLayoutEditor(profile: profile)
+
+            })
+
+        }
+        else { assertionFailure() }
     }
 
     private func showLayoutEditor(profile: ButtonLayoutProfile) {

@@ -180,26 +180,40 @@ extension ButtonConfiguration {
     
 }
 
-extension ButtonConfiguration: Hashable {
-    
+
+extension ButtonConfiguration: Comparable {
+
     static func ==(lhs: ButtonConfiguration, rhs: ButtonConfiguration) -> Bool {
         return lhs.type                  == rhs.type &&
-               lhs.x                     == rhs.x &&
-               lhs.y                     == rhs.y &&
-               lhs.width                 == rhs.width &&
-               lhs.height                == rhs.height &&
-               lhs.corner                == rhs.corner &&
-               lhs.tilt                  == rhs.tilt &&
-               lhs.swipeDistance         == rhs.swipeDistance &&
-               lhs.swipeAxisTilt         == rhs.swipeAxisTilt &&
-               lhs.leftRightSwipeEnabled == rhs.leftRightSwipeEnabled &&
-               lhs.downSwipeEnabled      == rhs.downSwipeEnabled &&
-               lhs.comboSwipeEnabled     == rhs.comboSwipeEnabled &&
-               lhs.upSwipeEnabled        == rhs.upSwipeEnabled
+            lhs.x                     == rhs.x &&
+            lhs.y                     == rhs.y &&
+            lhs.width                 == rhs.width &&
+            lhs.height                == rhs.height &&
+            lhs.corner                == rhs.corner &&
+            lhs.tilt                  == rhs.tilt &&
+            lhs.swipeDistance         == rhs.swipeDistance &&
+            lhs.swipeAxisTilt         == rhs.swipeAxisTilt &&
+            lhs.leftRightSwipeEnabled == rhs.leftRightSwipeEnabled &&
+            lhs.downSwipeEnabled      == rhs.downSwipeEnabled &&
+            lhs.comboSwipeEnabled     == rhs.comboSwipeEnabled &&
+            lhs.upSwipeEnabled        == rhs.upSwipeEnabled
     }
 
-    var hashValue: Int {
-        return Int(x * 1000 + y)
+    static func <(lhs: ButtonConfiguration, rhs: ButtonConfiguration) -> Bool {
+        if lhs.type                  != rhs.type                  { return lhs.type.rawValue < rhs.type.rawValue }
+        if lhs.x                     != rhs.x                     { return lhs.x             < rhs.x }
+        if lhs.y                     != rhs.y                     { return lhs.y             < rhs.y }
+        if lhs.width                 != rhs.width                 { return lhs.width         < rhs.width }
+        if lhs.height                != rhs.height                { return lhs.height        < rhs.height }
+        if lhs.corner                != rhs.corner                { return lhs.corner        < rhs.corner }
+        if lhs.tilt                  != rhs.tilt                  { return lhs.tilt          < rhs.tilt }
+        if lhs.swipeDistance         != rhs.swipeDistance         { return lhs.swipeDistance < rhs.swipeDistance }
+        if lhs.swipeAxisTilt         != rhs.swipeAxisTilt         { return lhs.swipeAxisTilt < rhs.swipeAxisTilt }
+        if lhs.leftRightSwipeEnabled != rhs.leftRightSwipeEnabled { return rhs.leftRightSwipeEnabled }
+        if lhs.downSwipeEnabled      != rhs.downSwipeEnabled      { return rhs.downSwipeEnabled }
+        if lhs.comboSwipeEnabled     != rhs.comboSwipeEnabled     { return rhs.comboSwipeEnabled }
+        if lhs.upSwipeEnabled        != rhs.upSwipeEnabled        { return rhs.upSwipeEnabled }
+        return false
     }
 }
 

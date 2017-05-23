@@ -141,7 +141,7 @@ private extension ButtonLayoutEditorViewController {
 
         let newButtons = layoutScene.buttonConfigurations()
 
-        if Set(profile.buttons) == Set(newButtons) {
+        if profile.buttons.sorted() == newButtons.sorted() {
             self.saveProfileAction?(nil, initialSnapshot)
         }
         else {
