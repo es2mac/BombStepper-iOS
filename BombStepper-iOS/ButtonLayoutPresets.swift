@@ -18,7 +18,10 @@ extension ButtonLayoutProfile {
         let halfWidth: Double = 60
         let height: Double = 90
 
-        let screenSize = UIScreen.main.bounds.size.toDouble2
+        let screenSize = { () -> double2 in 
+            let size = UIScreen.main.bounds.size
+            return double2(Double(size.width), Double(size.height))
+        }()
 
         let tiltAngle = Double.pi * 22 / 180
         let tiltRotation = double2x2( [ double2(cos(tiltAngle), -sin(tiltAngle)),
@@ -175,13 +178,6 @@ extension ButtonLayoutProfile {
         return profile
     }
     
-}
-
-
-private extension CGSize {
-    var toDouble2: double2 {
-        return double2(Double(width), Double(height))
-    }
 }
 
 

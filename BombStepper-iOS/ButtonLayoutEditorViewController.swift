@@ -14,6 +14,8 @@ final class ButtonLayoutEditorViewController: UIViewController {
     @IBOutlet var buttonsView: UIStackView!
 
     var profile: ButtonLayoutProfile!   // Whoever shows the editor should set this
+    var takeInitialSnapshot = false             // If the profile doesn't yet have image, take a snapshot at the
+    fileprivate var initialSnapshot: UIImage?   // beginning in case user didn't do "modify + save"
 
     var saveProfileAction: ((_ profile: ButtonLayoutProfile?, _ image: UIImage?) -> Void)?
 
@@ -26,6 +28,27 @@ final class ButtonLayoutEditorViewController: UIViewController {
                 return
             }
             presentLayoutScene()
+        }
+    }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        buttonsView.isHidden = true
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        if takeInitialSnapshot && initialSnapshot == nil {
+            initialSnapshot = snapshotLayout()
+        }
+
+        if buttonsView.isHidden {
+            buttonsView.alpha = 0
+            buttonsView.isHidden = false
+            UIView.animate(withDuration: 0.5) {
+                self.buttonsView.alpha = 1
+            }
         }
     }
 
@@ -119,7 +142,7 @@ private extension ButtonLayoutEditorViewController {
         let newButtons = layoutScene.buttonConfigurations()
 
         if Set(profile.buttons) == Set(newButtons) {
-            self.saveProfileAction?(nil, snapshotLayout())
+            self.saveProfileAction?(nil, initialSnapshot)
         }
         else {
             profile.buttons = newButtons
@@ -129,7 +152,7 @@ private extension ButtonLayoutEditorViewController {
                 self.saveProfileAction?(self.profile, self.snapshotLayout())
             }))
             alertController.addAction(UIAlertAction(title: "Don't Save", style: .destructive, handler: { [unowned self] _ in
-                self.saveProfileAction?(nil, nil)
+                self.saveProfileAction?(nil, self.initialSnapshot)
             }))
 
             present(alertController, animated: true, completion: nil)

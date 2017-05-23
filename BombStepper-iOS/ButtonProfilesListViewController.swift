@@ -9,7 +9,6 @@
 import UIKit
 
 
-// TODO: Default profile when the custom list is empty
 // TODO: Use the selected profile (or default profile) for playing
 
 class ButtonProfilesListViewController: UIViewController {
@@ -152,9 +151,8 @@ class ButtonProfilesListViewController: UIViewController {
             let profile = sender as? ButtonLayoutProfile {
 
             controller.profile = profile
-
-            // TODO: Fix issue when a standard layout is created, adjusted but not saved, no image is created
-            // Idea: Check here if this profile has an image, if not, signal editor to snapshot first thing before edit
+            let hasImage = (profilesManager.loadImage(named: profile.name) != nil)
+            controller.takeInitialSnapshot = !hasImage
 
             controller.saveProfileAction = { [unowned self] (newProfile, image) in
                 
