@@ -35,63 +35,11 @@ class ButtonProfilesListViewController: UIViewController {
 
     @IBAction func createOrCloneProfile(_ sender: UIBarButtonItem) {
 
-        let alertController = UIAlertController(title: "New Layout", message: nil, preferredStyle: .alert)
-        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
-            let existingProfile = profilesManager.loadProfile(at: indexPath.item) {
-            alertController.addAction(UIAlertAction(title: "Duplicate \"\(existingProfile.name)\"", style: .default, handler: { _ in
-
-            }))
-        }
-        else if !profilesManager.profileNames.isEmpty {
-            alertController.addAction(UIAlertAction(title: "Duplicate...", style: .default, handler: { _ in
-                // TODO
-            }))
-        }
-        alertController.addAction(UIAlertAction(title: "Preset 1", style: .default, handler: { _ in
-            // TODO
-        }))
-        alertController.addAction(UIAlertAction(title: "Preset 2", style: .default, handler: { _ in
-            // TODO
-        }))
-        alertController.addAction(UIAlertAction(title: "Preset 3", style: .default, handler: { _ in
-            // TODO
-        }))
-        alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: { _ in
-            // TODO
-        }))
-
-        present(alertController, animated: true, completion: nil)
-        
-
-        // TODO: show option to clone selected profile or use preset
-        // If selected something, "clone that one" is an option
-        // otherwise, "choose what to clone" is an option
-
-
-
-        /*
-        let profile: ButtonLayoutProfile
-        if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
-            let existingProfile = self.profilesManager.loadProfile(at: indexPath.item) {
-            profile = existingProfile
-        }
-        else {
-            profile = ButtonLayoutProfile.presetLayout3()
+        let profile = self.collectionView.indexPathsForSelectedItems?.first.flatMap { indexPath in
+            profilesManager.loadProfile(at: indexPath.item)
         }
 
-        let previousName: String?
-        
-        if let indexPath = collectionView.indexPathsForSelectedItems?.first {
-            previousName = profilesManager.profileNames[indexPath.item]
-        }
-        else {
-            previousName = nil
-        }
-        
-        askForValidNewName(title: "Enter a name for your new layout.", previousName: previousName, completion: { [unowned self] newName in
-            self.saveAndShowNewProfile(name: newName)
-        })
-         */
+        askForValidNewName(title: "Name your new layout.", previousName: nil, profile: profile)
     }
 
     @IBAction func editProfile(_ sender: UIBarButtonItem) {
@@ -118,55 +66,63 @@ class ButtonProfilesListViewController: UIViewController {
         present(alertController, animated: true, completion: nil)
     }
 
-    private func askForValidNewName(title: String, previousName: String? = nil, completion: @escaping (_ name: String) -> Void ) {
+    /// This is the intermediate step between clicking the plus button, and segue to layout editor
+    /// Which profile to create/clone is selected at the same time as asking for the name, that's why it's handled here
+    /// First time calling this should have no name, and generate a default name
+    /// If passing in a profile, then present the choice of cloning this profile
+    /// Otherwise, the preset profiles are always available choices
+    private func askForValidNewName(title: String, previousName: String? = nil, profile: ButtonLayoutProfile? = nil) {
 
         guard let name = profilesManager.nextProfileName(from: previousName) else {
             let count = profilesManager.profileNames.count
             let alertController = UIAlertController(title: "Can't create more profiles\n(max \(count))", message: nil, preferredStyle: .alert)
-        alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
+            alertController.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
             present(alertController, animated: true, completion: nil)
             return
         }
 
         let alertController = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+
         alertController.addTextField(configurationHandler: { [unowned self] textField in
             textField.delegate = self
             textField.text = name
             let range = textField.textRange(from: textField.beginningOfDocument, to: textField.endOfDocument)
             textField.selectedTextRange = range
             textField.clearButtonMode = .always
+            textField.isUserInteractionEnabled = false
         })
+
+        func alertHandler(with profile: ButtonLayoutProfile, isPreset: Bool) -> (UIAlertAction) -> Void {
+            return { [unowned alertController, unowned self] action in
+                let newName = alertController.textFields![0].text ?? ""
+                if newName.isEmpty {
+                    self.askForValidNewName(title: "The name cannot be empty. Please enter a new name for your layout.", previousName: nil, profile: isPreset ? nil : profile)
+                }
+                else if !self.profilesManager.isNameAvailable(newName) {
+                    self.askForValidNewName(title: "This name is taken, please enter a new name for your layout.", previousName: newName, profile: isPreset ? nil : profile)
+                }
+                else {
+                    var newProfile = profile
+                    newProfile.name = newName
+                    self.saveAndShowNewProfile(newProfile)
+                }
+            }
+        }
+
+        if let profile = profile {
+            alertController.addAction(UIAlertAction(title: "Duplicate \"\(profile.name)\"", style: .default, handler: alertHandler(with: profile, isPreset: false)))
+        }
+        alertController.addAction(UIAlertAction(title: "Create Preset 1", style: .default, handler: alertHandler(with: ButtonLayoutProfile.presetLayout1(), isPreset: true)))
+        alertController.addAction(UIAlertAction(title: "Create Preset 2", style: .default, handler: alertHandler(with: ButtonLayoutProfile.presetLayout2(), isPreset: true)))
+        alertController.addAction(UIAlertAction(title: "Create Preset 3", style: .default, handler: alertHandler(with: ButtonLayoutProfile.presetLayout3(), isPreset: true)))
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        alertController.addAction(UIAlertAction(title: "OK", style: .default, handler: { [unowned alertController, unowned self] action in
-            let newName = alertController.textFields![0].text ?? ""
-            if newName.isEmpty {
-                self.askForValidNewName(title: "The name cannot be empty. Please enter a new name for your layout.", previousName: nil, completion: completion)
-            }
-            else if self.profilesManager.isNameAvailable(newName) {
-                completion(newName)
-            }
-            else {
-                self.askForValidNewName(title: "This name is taken, please enter a new name for your layout.", previousName: newName, completion: completion)
-            }
 
-        }))
-
-        present(alertController, animated: true, completion: nil)
+        present(alertController, animated: true, completion: { _ in
+            alertController.textFields?.first?.isUserInteractionEnabled = true
+        })
     }
 
-    private func saveAndShowNewProfile(name: String) {
-
-        // TODO: This profile creation should be passed in instead
-        let profile: ButtonLayoutProfile = {
-            if let indexPath = self.collectionView.indexPathsForSelectedItems?.first,
-                var profile = self.profilesManager.loadProfile(at: indexPath.item) {
-                profile.name = name
-                return profile
-            }
-            else {
-                return ButtonLayoutProfile.presetLayout3(name: name)
-            }
-        }()
+    private func saveAndShowNewProfile(_ profile: ButtonLayoutProfile) {
 
         if case .success = self.profilesManager.save(profile), let index = self.profilesManager.profileNames.index(of: profile.name) {
 
