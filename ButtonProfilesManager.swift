@@ -131,9 +131,9 @@ class ButtonProfilesManager: NSObject {
         return .success
     }
 
-    func loadProfile(at index: Int) -> ButtonLayoutProfile? {
-
-        let url = ButtonProfilesManager.directoryURL.appendingPathComponent(profileNames[index]).appendingPathExtension("plist")
+    func loadProfile(name: String) -> ButtonLayoutProfile? {
+        
+        let url = ButtonProfilesManager.directoryURL.appendingPathComponent(name).appendingPathExtension("plist")
         var format = PropertyListSerialization.PropertyListFormat.xml
 
         if let data = FileManager.default.contents(atPath: url.path),
@@ -144,6 +144,14 @@ class ButtonProfilesManager: NSObject {
         }
 
         return nil
+    }
+
+    func loadSelectedProfile() -> ButtonLayoutProfile {
+        return selectedProfileName.flatMap(loadProfile) ?? ButtonLayoutProfile.presetLayout1()
+    }
+
+    func loadProfile(at index: Int) -> ButtonLayoutProfile? {
+        return loadProfile(name: profileNames[index])
     }
     
     func loadImage(named name: String) -> UIImage? {

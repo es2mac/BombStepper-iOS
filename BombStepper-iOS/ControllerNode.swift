@@ -9,61 +9,52 @@
 import SpriteKit
 
 
+// TODO: Individual buttons fire through delegate themselves
+
 protocol ControllerDelegate: class {
     func buttonDown(_ button: ButtonType)
     func buttonUp(_ button: ButtonType)
 }
 
 
-
-/**
- Buttons layout:
- 0 1        6  7
- 2 3        8  9
- 4 5       10 11
- */
 final class ControllerNode: SKNode {
 
     let sceneSize: CGSize
-    weak var delegate: ControllerDelegate?
+    weak var delegate: ControllerDelegate? {
+        didSet { buttonNodes.forEach { $0.delegate = delegate } }
+    }
     
 
     fileprivate let buttonNodes: [ButtonNode]
 
-    fileprivate var lrSwipeEnabled: Bool = true
-    fileprivate var offCenterWarning: Bool = true
-
     // Stores touches that correspond to buttons to calculate swipe speed
-    fileprivate var touchesData = [UITouch : TouchData]()
+//    fileprivate var touchesData = [UITouch : TouchData]()
 
 
     init(sceneSize: CGSize, delegate: ControllerDelegate? = nil) {
         self.sceneSize = sceneSize
         self.delegate = delegate
 
-        let size = ControllerNode.buttonSize(for: sceneSize)
-        buttonNodes = SettingsManager.defaultButtons.map { ButtonNode(size: size, type: $0) }
+        // TODO: create buttons using config
+        let layoutProfile = ButtonProfilesManager().loadSelectedProfile()
+        buttonNodes = layoutProfile.buttons.map(ButtonNode.init)
 
         super.init()
 
-        buttonNodes.forEach(self.addChild)
+        buttonNodes.forEach {
+            addChild($0)
+            $0.delegate = delegate
+        }
         layoutButtons(for: sceneSize)
 
         // Make touchable area span the scene
-        let touchableNode = SKSpriteNode(color: .clear, size: sceneSize)
-        addChild(touchableNode)
+//        let touchableNode = SKSpriteNode(color: .clear, size: sceneSize)
+//        addChild(touchableNode)
 
         NotificationCenter.default.addObserver(forName: .UIApplicationWillResignActive, object: nil, queue: nil) { [weak self] _ in
             self?.stopAllTouches()
         }
-
-        // Test timing
-//        labelNode.fontColor = .red
-//        labelNode.fontSize = 20
-//        labelNode.position.y = 100
-//        addChild(labelNode)
     }
-//    let labelNode = SKLabelNode()
 
     deinit {
         NotificationCenter.default.removeObserver(self)
@@ -73,10 +64,8 @@ final class ControllerNode: SKNode {
         fatalError("init(coder:) has not been implemented")
     }
 
-    var startTime: MachAbsTime = 0
-
+    /*
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
-        startTime = mach_absolute_time()
         touches.forEach { touchDown($0) }
     }
 
@@ -85,40 +74,28 @@ final class ControllerNode: SKNode {
     }
 
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        let endTime = mach_absolute_time()
-//        labelNode.text = String(absToMs(endTime - startTime))
         touches.forEach(touchUp)
     }
 
     override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
         touches.forEach(touchUp)
     }
+     */
 
-}
-
-
-extension ControllerNode: SettingsNotificationTarget {
-    func settingsDidUpdate(_ settings: SettingsManager) {
-        TouchData.swipeDrops = settings.swipeDrops
-        TouchData.swipeDownThreshold = settings.swipeDownThreshold
-        lrSwipeEnabled = settings.lrSwipeEnabled
-        offCenterWarning = settings.offCenterWarning
-        for (node, type) in zip(buttonNodes, settings.buttons) { node.type = type }
-    }
 }
 
 
 private extension ControllerNode {
 
+    /*
+    // TODO: Move swipe functionality to nodes
     final class TouchData {
-        static var swipeDrops = [Bool](repeating: true, count: 12)
         static var swipeDownThreshold = 1000.0
 
         let node: ButtonNode
         var lastTime: TimeInterval
         var lastLocation: CGPoint
         let isOnLeftHalf: Bool
-        let swipeDropEnabled: Bool
 
         var speeds: [Double] = []
 
@@ -127,11 +104,10 @@ private extension ControllerNode {
             self.lastTime = time
             self.lastLocation = location
             self.isOnLeftHalf = location.x < 0
-            self.swipeDropEnabled = TouchData.swipeDrops[buttonIndex]
         }
 
         func recordSpeed(time: TimeInterval, location: CGPoint) {
-            guard swipeDropEnabled else { return }
+//            guard swipeDropEnabled else { return }
 
             // Calculate speed by taking account to slanted directions
             // (Buttons are slanted pi/8, detection slant goes half way at pi/16)
@@ -165,22 +141,9 @@ private extension ControllerNode {
         }) {
             touchesData[touch] = TouchData(node: node, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
             node.touchDown(touch)
-            delegate?.buttonDown(node.type)
+            delegate?.buttonDown(node.configuration.type)
         }
-
-//        if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
-//            let button = buttonMap[node] {
-//            touchesData[touch] = TouchData(node: node, button: button, buttonIndex: buttonNodes.index(of: node)!, time: touch.timestamp, location: location)
-//            node.touchDown(touch, warnIfOffCenter: (!isLRSwipe && offCenterWarning))
-//            delegate?.buttonDown(button)
-//        }
     }
-
-//    private func buttons(at location: CGPoint) -> [Button] {
-//        return buttonNodes
-//            .filter { node in node.contains(node.convert(location, from: self)) }
-//            .flatMap { buttonMap[$0] }
-//    }
 
     func touchMoved(_ touch: UITouch) {
         guard let data = touchesData[touch] else { return }
@@ -193,9 +156,9 @@ private extension ControllerNode {
         }
         
         // LR swipe test
-        guard lrSwipeEnabled else { return }
+//        guard lrSwipeEnabled else { return }
         
-        let button = data.node.type
+        let button = data.node.configuration.type
         let oppositeButton: ButtonType
         switch button {
         case .moveLeft: oppositeButton = .moveRight
@@ -206,7 +169,7 @@ private extension ControllerNode {
         let location = touch.location(in: self)
         if let node = nodes(at: location).first(where: { $0 is ButtonNode }) as? ButtonNode,
             node != data.node,
-            node.type == oppositeButton {
+            node.configuration.type == oppositeButton {
             touchUp(touch)
             touchDown(touch, isLRSwipe: true)
         }
@@ -216,12 +179,13 @@ private extension ControllerNode {
     func touchUp(_ touch: UITouch) {
         if let node = touchesData.removeValue(forKey: touch)?.node {
             node.touchUp(touch)
-            delegate?.buttonUp(node.type)
+            delegate?.buttonUp(node.configuration.type)
         }
     }
+    */
 
     func stopAllTouches() {
-        Array(touchesData.keys).forEach(touchUp)
+//        Array(touchesData.keys).forEach(touchUp)
     }
 }
 
@@ -229,56 +193,10 @@ private extension ControllerNode {
 
 fileprivate extension ControllerNode {
 
-    class func buttonSize(for sceneSize: CGSize) -> CGSize {
-        let xExpansion: CGFloat = 10
-        let baseUnit = (sceneSize.height / 8).rounded()
-        let width = baseUnit * 2  + xExpansion
-        let height = (baseUnit * 2 * 0.9).rounded()
-        return CGSize(width: width,
-                      height: height)
-    }
-
     func layoutButtons(for sceneSize: CGSize) {
-        let margin: CGFloat = 4
-        let buttonSize = ControllerNode.buttonSize(for: sceneSize)
-        let xUnit = buttonSize.width + margin
-        let yUnit = buttonSize.height + margin
-        let leftSlant = -CGFloat.pi / 8
-        let button5FromLeftEdgeUnits: CGFloat = 1.5
-        let button5FromBottomEdgeUnits: CGFloat = 0.4
-        let rowShiftUnits: CGFloat = 1 / 3  // was 2 /3
 
-        // x = (xUnit, 0), y = (0, yUnit)
-        // (x, y) => (u, v) rotation by -pi/8
-        let u = CGVector(dx: xUnit * cos(leftSlant), dy: xUnit * sin(leftSlant))
-        let v = CGVector(dx: -yUnit * sin(leftSlant), dy: yUnit * cos(leftSlant))
-        let shift = CGVector(dx: u.dx * rowShiftUnits, dy: u.dy * rowShiftUnits)
-
-        let origin = CGPoint(x: -sceneSize.width / 2 + xUnit * button5FromLeftEdgeUnits,
-                             y: -sceneSize.height / 2 + xUnit * button5FromBottomEdgeUnits)
-        var p = [CGPoint](repeating: .zero, count: 12)
-        p[5] = origin
-        p[4] = p[5] - u
-        p[3] = p[5] + v - shift
-        p[2] = p[3] - u
-        p[1] = p[3] + v - shift
-        p[0] = p[1] - u
-        for (i, j) in zip([0, 1, 2, 3, 4, 5], [7, 6, 9, 8, 11, 10]) {
-            p[j] = CGPoint(x: -p[i].x, y: p[i].y)
-        }
-        zip(buttonNodes, p).forEach { $0.position = $1 }
-        buttonNodes[0 ..< 6].forEach { $0.zRotation = -.pi/8 }
-        buttonNodes[6 ..< 12].forEach { $0.zRotation = .pi/8 }
     }
 }
 
-
-private func +(lhs: CGPoint, rhs: CGVector) -> CGPoint  {
-    return CGPoint(x: lhs.x + rhs.dx, y: lhs.y + rhs.dy)
-}
-
-private func -(lhs: CGPoint, rhs: CGVector) -> CGPoint  {
-    return CGPoint(x: lhs.x - rhs.dx, y: lhs.y - rhs.dy)
-}
 
 
