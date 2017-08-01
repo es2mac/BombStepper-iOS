@@ -165,7 +165,7 @@ extension ButtonLayoutProfile {
             button.swipeAxisTilt *= -1
             return button
         })
-        swap(&newButtons[5], &newButtons[6])
+        newButtons.swapAt(5, 6)
         newButtons[1].type = .rotateLeft
         newButtons[2].type = .rotateRight
         newButtons[3].type = .none

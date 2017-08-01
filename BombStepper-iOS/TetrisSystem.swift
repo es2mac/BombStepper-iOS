@@ -103,7 +103,7 @@ extension TetrisSystem: ControllerDelegate {
         
         switch type {
         case .moveLeft:
-            filedManipulator.movePiece(.left)
+            filedManipulator.movePiece(.left)   // TODO: Let the timer decide on move action?
             movementTimer.startTiming(.das(.left))
         case .moveRight:
             filedManipulator.movePiece(.right)
