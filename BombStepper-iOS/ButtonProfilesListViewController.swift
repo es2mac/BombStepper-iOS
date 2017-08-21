@@ -117,7 +117,7 @@ class ButtonProfilesListViewController: UIViewController {
         alertController.addAction(UIAlertAction(title: "Create Preset 3", style: .default, handler: alertHandler(with: ButtonLayoutProfile.presetLayout3(), isPreset: true)))
         alertController.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
 
-        present(alertController, animated: true, completion: { _ in
+        present(alertController, animated: true, completion: {
             alertController.textFields?.first?.isUserInteractionEnabled = true
         })
     }

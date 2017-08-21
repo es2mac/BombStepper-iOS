@@ -61,7 +61,7 @@ class ButtonProfilesManager: NSObject {
         profileNames = sortedURLs.map { $0.deletingPathExtension().lastPathComponent }
     }
 
-    // Default to max 20 profiles,returns nil if cannot create any more
+    // Default to max 20 profiles, returns nil if cannot create any more
     func nextProfileName(from name: String? = nil) -> String? {
         guard profileNames.count < 20 else { return nil }
 
